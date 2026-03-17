@@ -11,6 +11,9 @@ public class UserActivityMonitor
     private readonly DispatcherTimer _timer;
     private bool _wasIdle;
 
+    public event EventHandler? IdleDetected;
+    public event EventHandler? UserActive;
+
     public UserActivityMonitor()
     {
         _timer = new DispatcherTimer
@@ -42,11 +45,13 @@ public class UserActivityMonitor
         {
             Debug.WriteLine($"[Sentinel] Idle Detected (idle for {idleMs}ms)");
             _wasIdle = true;
+            IdleDetected?.Invoke(this, EventArgs.Empty);
         }
         else if (!isIdle && _wasIdle)
         {
             Debug.WriteLine("[Sentinel] User Active");
             _wasIdle = false;
+            UserActive?.Invoke(this, EventArgs.Empty);
         }
     }
 
