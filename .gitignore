@@ -1,0 +1,38 @@
+# Build outputs
+bin/
+obj/
+out/
+
+# .NET
+*.user
+*.suo
+*.cache
+*.dll
+*.exe
+*.pdb
+
+# NuGet
+*.nupkg
+**/packages/
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# IDE
+.vs/
+.vscode/
+*.swp
+
+# Node (for Sentinel.UI later)
+node_modules/
+dist/
+
+# Firebase credentials — NEVER commit
+firebase-service-account.json
+**/firebase-service-account.json
+
+# Environment
+.env
+.env.*
