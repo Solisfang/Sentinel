@@ -10,22 +10,35 @@ public partial class MainWindow : Window
 {
     private readonly UserActivityMonitor _activityMonitor;
     private readonly DistractionRepository _repository;
+    private AppSettings _settings;
 
     public MainWindow()
     {
         InitializeComponent();
         Loaded += OnLoaded;
+        Closing += OnClosing;
 
-        _activityMonitor = new UserActivityMonitor();
+        _settings = SettingsService.Load();
+        _activityMonitor = new UserActivityMonitor(_settings.IdleThresholdSeconds);
         _activityMonitor.IdleDetected += OnIdleDetected;
         _activityMonitor.UserActive += OnUserActive;
 
         _repository = new DistractionRepository();
 
-        // Position window in bottom-right corner
-        var workArea = SystemParameters.WorkArea;
-        Left = workArea.Right - Width - 20;
-        Top = workArea.Bottom - Height - 20;
+        // Restore window position or default to bottom-right
+        if (_settings.WindowLeft >= 0 && _settings.WindowTop >= 0)
+        {
+            Left = _settings.WindowLeft;
+            Top = _settings.WindowTop;
+        }
+        else
+        {
+            var workArea = SystemParameters.WorkArea;
+            Left = workArea.Right - Width - 20;
+            Top = workArea.Bottom - Height - 20;
+        }
+
+        Topmost = _settings.AlwaysOnTop;
     }
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
@@ -41,16 +54,41 @@ public partial class MainWindow : Window
         var env = await CoreWebView2Environment.CreateAsync();
         await WebView.EnsureCoreWebView2Async(env);
 
-        // Prevent the default white background from showing through
         WebView.DefaultBackgroundColor = System.Drawing.Color.Transparent;
-
-        // Listen for messages from React
         WebView.CoreWebView2.WebMessageReceived += OnWebMessageReceived;
 
-        // Load the React dev server (or production build)
+        // Send initial settings when page loads
+        WebView.CoreWebView2.NavigationCompleted += (s, args) =>
+        {
+            if (args.IsSuccess)
+            {
+                SendSettingsToReact();
+            }
+        };
+
         var devServerUrl = "http://localhost:5173";
         WebView.CoreWebView2.Navigate(devServerUrl);
         Debug.WriteLine($"[Sentinel] WebView2 navigated to {devServerUrl}");
+    }
+
+    private void SendSettingsToReact()
+    {
+        var message = JsonSerializer.Serialize(new
+        {
+            type = "SETTINGS_LOADED",
+            settings = new
+            {
+                pomodoroMinutes = _settings.PomodoroMinutes,
+                shortBreakMinutes = _settings.ShortBreakMinutes,
+                longBreakMinutes = _settings.LongBreakMinutes,
+                idleThresholdSeconds = _settings.IdleThresholdSeconds,
+                cloudSyncEnabled = _settings.CloudSyncEnabled,
+                soundEnabled = _settings.SoundEnabled,
+                alwaysOnTop = _settings.AlwaysOnTop
+            }
+        });
+        WebView.CoreWebView2?.PostWebMessageAsJson(message);
+        Debug.WriteLine("[Sentinel] Settings sent to React");
     }
 
     #region Window Control Handlers
@@ -93,20 +131,23 @@ public partial class MainWindow : Window
         try
         {
             var json = e.WebMessageAsJson;
-            var message = JsonSerializer.Deserialize<WebMessage>(json);
+            using var doc = JsonDocument.Parse(json);
+            var root = doc.RootElement;
+            var messageType = root.GetProperty("type").GetString();
 
-            if (message?.Type == "LOG_DISTRACTION" && !string.IsNullOrEmpty(message.Note))
+            switch (messageType)
             {
-                Debug.WriteLine($"[Sentinel] Received distraction: {message.Note}");
+                case "LOG_DISTRACTION":
+                    await HandleLogDistraction(root);
+                    break;
 
-                var distraction = new Distraction
-                {
-                    Note = message.Note,
-                    Timestamp = message.Timestamp ?? DateTime.UtcNow
-                };
+                case "SAVE_SETTINGS":
+                    HandleSaveSettings(root);
+                    break;
 
-                await _repository.AddDistractionAsync(distraction);
-                Debug.WriteLine("[Sentinel] Distraction saved to SQLite");
+                case "GET_SETTINGS":
+                    SendSettingsToReact();
+                    break;
             }
         }
         catch (Exception ex)
@@ -115,18 +156,54 @@ public partial class MainWindow : Window
         }
     }
 
+    private async Task HandleLogDistraction(JsonElement root)
+    {
+        var note = root.GetProperty("note").GetString();
+        if (string.IsNullOrEmpty(note)) return;
+
+        var distraction = new Distraction
+        {
+            Note = note,
+            Timestamp = DateTime.UtcNow
+        };
+
+        await _repository.AddDistractionAsync(distraction);
+        Debug.WriteLine($"[Sentinel] Distraction saved: {note}");
+    }
+
+    private void HandleSaveSettings(JsonElement root)
+    {
+        var settings = root.GetProperty("settings");
+
+        _settings.PomodoroMinutes = settings.GetProperty("pomodoroMinutes").GetInt32();
+        _settings.ShortBreakMinutes = settings.GetProperty("shortBreakMinutes").GetInt32();
+        _settings.LongBreakMinutes = settings.GetProperty("longBreakMinutes").GetInt32();
+        _settings.IdleThresholdSeconds = settings.GetProperty("idleThresholdSeconds").GetInt32();
+        _settings.CloudSyncEnabled = settings.GetProperty("cloudSyncEnabled").GetBoolean();
+        _settings.SoundEnabled = settings.GetProperty("soundEnabled").GetBoolean();
+        _settings.AlwaysOnTop = settings.GetProperty("alwaysOnTop").GetBoolean();
+
+        // Apply settings immediately
+        _activityMonitor.IdleThresholdSeconds = _settings.IdleThresholdSeconds;
+        Topmost = _settings.AlwaysOnTop;
+
+        SettingsService.Save(_settings);
+        Debug.WriteLine("[Sentinel] Settings saved");
+    }
+
+    private void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e)
+    {
+        // Save window position
+        _settings.WindowLeft = Left;
+        _settings.WindowTop = Top;
+        SettingsService.Save(_settings);
+    }
+
     protected override void OnClosed(EventArgs e)
     {
         _activityMonitor.IdleDetected -= OnIdleDetected;
         _activityMonitor.UserActive -= OnUserActive;
         _activityMonitor.Stop();
         base.OnClosed(e);
-    }
-
-    private class WebMessage
-    {
-        public string? Type { get; set; }
-        public string? Note { get; set; }
-        public DateTime? Timestamp { get; set; }
     }
 }

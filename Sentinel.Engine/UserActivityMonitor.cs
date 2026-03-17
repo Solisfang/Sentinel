@@ -6,16 +6,22 @@ namespace Sentinel.Engine;
 
 public class UserActivityMonitor
 {
-    private const int IdleThresholdMs = 10_000; // 10 seconds for testing
-
     private readonly DispatcherTimer _timer;
     private bool _wasIdle;
+    private int _idleThresholdMs;
 
     public event EventHandler? IdleDetected;
     public event EventHandler? UserActive;
 
-    public UserActivityMonitor()
+    public int IdleThresholdSeconds
     {
+        get => _idleThresholdMs / 1000;
+        set => _idleThresholdMs = value * 1000;
+    }
+
+    public UserActivityMonitor(int idleThresholdSeconds = 45)
+    {
+        _idleThresholdMs = idleThresholdSeconds * 1000;
         _timer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(1)
@@ -27,7 +33,7 @@ public class UserActivityMonitor
     {
         _wasIdle = false;
         _timer.Start();
-        Debug.WriteLine("[Sentinel] UserActivityMonitor started. Polling every 1s, idle threshold: 10s.");
+        Debug.WriteLine($"[Sentinel] UserActivityMonitor started. Idle threshold: {IdleThresholdSeconds}s.");
     }
 
     public void Stop()
@@ -39,7 +45,7 @@ public class UserActivityMonitor
     private void OnTimerTick(object? sender, EventArgs e)
     {
         uint idleMs = GetIdleTimeMs();
-        bool isIdle = idleMs >= IdleThresholdMs;
+        bool isIdle = idleMs >= _idleThresholdMs;
 
         if (isIdle && !_wasIdle)
         {
@@ -62,7 +68,6 @@ public class UserActivityMonitor
         if (!GetLastInputInfo(ref lastInput))
             return 0;
 
-        // Handle tick count overflow (wraps every ~24.9 days)
         uint currentTick = (uint)Environment.TickCount;
         return unchecked(currentTick - lastInput.dwTime);
     }
