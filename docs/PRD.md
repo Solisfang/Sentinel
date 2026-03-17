@@ -4,13 +4,15 @@
 
 ### Platform: Windows 11 Desktop (Native C# Wrapper + Web UI Overlay)
 
-**Core Premise:** A privacy-first, zero-telemetry Pomodoro overlay that utilizes passive OS-level hardware polling to detect "phone drift," aggressively intervening to force users to log their distractions.
+
+**Core Premise:** A privacy-first Pomodoro overlay that utilizes passive OS-level hardware polling to detect "phone drift," aggressively intervening to force users to log their distractions. All data is stored locally by default, with optional, encrypted cloud sync and authentication via Firebase (Firestore + Auth).
 
 ---
 
 ## 1. Product Vision & Market Differentiation
 
-Standard Pomodoro apps assume ticking clocks equal productivity. Sentinel closes the accountability loop by monitoring physical presence. To stand out against competitors like Rize or RescueTime, Sentinel leans entirely into "Absolute Local Privacy" and "Immediate Cognitive Friction." It intervenes during the distraction, not after, and guarantees that behavior data never leaves the user's local C:\ drive unless explicitly opted into an encrypted backup.
+
+Standard Pomodoro apps assume ticking clocks equal productivity. Sentinel closes the accountability loop by monitoring physical presence. To stand out against competitors like Rize or RescueTime, Sentinel leans into "Absolute Local Privacy" and "Immediate Cognitive Friction"—but now offers optional, encrypted cloud sync and authentication via Firebase. By default, behavior data never leaves the user's local C:\ drive unless the user opts in to cloud sync (Firestore) and login (Firebase Auth).
 
 ---
 
@@ -18,7 +20,7 @@ Standard Pomodoro apps assume ticking clocks equal productivity. Sentinel closes
 
 - Developers, writers, and deep-work professionals.
 - Digital artists and designers (Explicitly supported via Wacom/Digitizer raw input tracking).
-- Privacy-conscious users hostile to cloud-dependent tracking tools.
+- Privacy-conscious users who want local-only mode, and users who want secure, encrypted cloud sync and cross-device access via Firebase.
 
 ---
 
@@ -28,14 +30,14 @@ Standard Pomodoro apps assume ticking clocks equal productivity. Sentinel closes
 1. User launches Sentinel. A minimalist overlay appears.
 2. User sets the timer (default 25 mins) and clicks "Start."
 3. The C# backend shifts the application into Windows "Efficiency Mode" (EcoQoS) and suspends the UI's Chromium renderer to drop CPU/RAM usage to near-zero.
-4. Timer hits 00:00. The UI wakes up, plays a soft chime, and logs the session to the local SQLite database.
+4. Timer hits 00:00. The UI wakes up, plays a soft chime, and logs the session to the local SQLite database and (if enabled) syncs to Firestore.
 
 ### Workflow B: The "Caught" Intervention (Idle Detected)
 1. Timer is running. The user grabs their phone to scroll social media.
 2. The C# backend, passively polling GetLastInputInfo, detects 45 seconds of zero hardware input.
 3. The backend instantly wakes the WebView2 renderer (Resume()).
 4. The overlay forces itself to the front. Prompt: "Idle Detected. Distracted?"
-5. The text input box instantly steals Windows focus. The user types "Twitter", hits Enter, and the timer seamlessly resumes.
+5. The text input box instantly steals Windows focus. The user types "Twitter", hits Enter, and the timer seamlessly resumes. The distraction is logged locally and (if enabled) synced to Firestore.
 
 ### Workflow C: The "Smart Suppression" Edge Case (Media/Learning)
 1. User starts a session but is watching a 45-minute AWS tutorial on YouTube.
@@ -69,7 +71,7 @@ Standard Pomodoro apps assume ticking clocks equal productivity. Sentinel closes
 
 ### Data & Sync
 - **Local First:** Entity Framework Core + SQLite.
-- **Cloud Sync (Future):** Firebase Web SDK, but strictly positioned as an "Opt-in Encrypted Backup," not a required telemetry stream.
+- **Cloud Sync:** Firebase Auth (for user identity) and Firestore (for encrypted, opt-in backup and cross-device sync). Cloud sync is strictly opt-in and encrypted—never required for core functionality.
 
 ---
 
@@ -88,5 +90,5 @@ To prevent feature creep, the Day 1 MVP should only include:
 - The C# WebView2 wrapper with a transparent, Topmost window.
 - The Angular/React UI (Timer + Input Box + Recharts Pie Chart).
 - The GetLastInputInfo polling loop to trigger the Angular UI when idle.
-- Basic local JSON or SQLite saving.
+- Basic local JSON or SQLite saving, with optional Firebase Auth and Firestore sync (user can enable cloud sync at any time).
   - (Smart media suppression, DPI scaling, and Wacom RawInput can be pushed to V1.1).
