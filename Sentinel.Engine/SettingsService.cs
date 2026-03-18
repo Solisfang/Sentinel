@@ -12,6 +12,8 @@ public class AppSettings
     public bool CloudSyncEnabled { get; set; } = false;
     public bool SoundEnabled { get; set; } = true;
     public bool AlwaysOnTop { get; set; } = true;
+    public bool SuppressDuringMedia { get; set; } = true;
+    public int DailyFocusGoalMinutes { get; set; } = 120;
     public double WindowLeft { get; set; } = -1;
     public double WindowTop { get; set; } = -1;
 }

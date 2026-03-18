@@ -7,25 +7,27 @@
         AllowsTransparency="True"
         Background="Transparent"
         Topmost="True"
-        Width="280"
-        Height="160"
+        Width="300"
+        Height="200"
+        MinWidth="240"
+        MinHeight="160"
         ResizeMode="CanResizeWithGrip"
         WindowStartupLocation="Manual"
         ShowInTaskbar="True">
 
     <Window.Resources>
         <Style x:Key="WindowButton" TargetType="Button">
-            <Setter Property="Width" Value="28"/>
-            <Setter Property="Height" Value="28"/>
+            <Setter Property="Width" Value="26"/>
+            <Setter Property="Height" Value="26"/>
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#888"/>
+            <Setter Property="Foreground" Value="#777"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontSize" Value="13"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="4">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
@@ -33,8 +35,8 @@
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#333"/>
-                    <Setter Property="Foreground" Value="#fff"/>
+                    <Setter Property="Background" Value="#2a2a2e"/>
+                    <Setter Property="Foreground" Value="#ddd"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -42,22 +44,33 @@
         <Style x:Key="CloseButton" TargetType="Button" BasedOn="{StaticResource WindowButton}">
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#e81123"/>
+                    <Setter Property="Background" Value="#c42b1c"/>
                     <Setter Property="Foreground" Value="#fff"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
     </Window.Resources>
 
-    <Border Background="#E6181818" CornerRadius="12" BorderBrush="#333" BorderThickness="1">
+    <!-- Outer border with glassmorphism effect -->
+    <Border CornerRadius="14"
+            BorderBrush="#30ffffff"
+            BorderThickness="1">
+        <Border.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#D9141418" Offset="0"/>
+                <GradientStop Color="#D91a1a20" Offset="1"/>
+            </LinearGradientBrush>
+        </Border.Background>
+
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="28"/>
+                <RowDefinition Height="30"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- Custom Title Bar -->
-            <Grid Grid.Row="0" Background="Transparent" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+            <!-- Title Bar -->
+            <Grid Grid.Row="0" Background="Transparent"
+                  MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
@@ -65,20 +78,26 @@
 
                 <TextBlock Grid.Column="0"
                            Text="Sentinel"
-                           Foreground="#666"
+                           Foreground="#555"
                            VerticalAlignment="Center"
-                           Margin="10,0,0,0"
-                           FontSize="11"/>
+                           Margin="12,0,0,0"
+                           FontSize="11"
+                           FontWeight="Medium"/>
 
-                <!-- Window Control Buttons -->
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="0,0,4,0">
-                    <Button x:Name="MinimizeBtn" Content="−" Click="MinimizeBtn_Click" Style="{StaticResource WindowButton}"/>
-                    <Button x:Name="CloseBtn" Content="×" Click="CloseBtn_Click" Style="{StaticResource CloseButton}"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal"
+                            VerticalAlignment="Center" Margin="0,0,6,0">
+                    <Button Content="−" Click="MinimizeBtn_Click"
+                            Style="{StaticResource WindowButton}"/>
+                    <Button Content="□" Click="MaximizeBtn_Click"
+                            Style="{StaticResource WindowButton}"/>
+                    <Button Content="×" Click="CloseBtn_Click"
+                            Style="{StaticResource CloseButton}"/>
                 </StackPanel>
             </Grid>
 
             <!-- WebView Content -->
-            <wv2:WebView2 x:Name="WebView" Grid.Row="1" DefaultBackgroundColor="Transparent"/>
+            <wv2:WebView2 x:Name="WebView" Grid.Row="1"
+                          DefaultBackgroundColor="Transparent"/>
         </Grid>
     </Border>
 </Window>

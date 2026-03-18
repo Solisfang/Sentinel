@@ -9,9 +9,17 @@ public class UserActivityMonitor
     private readonly DispatcherTimer _timer;
     private bool _wasIdle;
     private int _idleThresholdMs;
+    private DateTime? _snoozeUntil;
 
     public event EventHandler? IdleDetected;
     public event EventHandler? UserActive;
+
+    public bool SuppressDuringMedia { get; set; } = true;
+
+    public bool IsSnoozed => _snoozeUntil.HasValue && DateTime.UtcNow < _snoozeUntil.Value;
+    public int SnoozeSecondsRemaining => IsSnoozed
+        ? (int)(_snoozeUntil!.Value - DateTime.UtcNow).TotalSeconds
+        : 0;
 
     public int IdleThresholdSeconds
     {
@@ -42,10 +50,38 @@ public class UserActivityMonitor
         Debug.WriteLine("[Sentinel] UserActivityMonitor stopped.");
     }
 
+    public void Snooze(int minutes)
+    {
+        _snoozeUntil = DateTime.UtcNow.AddMinutes(minutes);
+        _wasIdle = false;
+        Debug.WriteLine($"[Sentinel] Idle detection snoozed for {minutes} minutes.");
+    }
+
+    public void CancelSnooze()
+    {
+        _snoozeUntil = null;
+        Debug.WriteLine("[Sentinel] Snooze cancelled.");
+    }
+
     private void OnTimerTick(object? sender, EventArgs e)
     {
+        if (IsSnoozed) return;
+
+        // Clear expired snooze
+        if (_snoozeUntil.HasValue && DateTime.UtcNow >= _snoozeUntil.Value)
+        {
+            _snoozeUntil = null;
+            Debug.WriteLine("[Sentinel] Snooze expired.");
+        }
+
         uint idleMs = GetIdleTimeMs();
         bool isIdle = idleMs >= _idleThresholdMs;
+
+        // Suppress idle detection if media is playing
+        if (isIdle && SuppressDuringMedia && MediaDetector.IsAudioPlaying())
+        {
+            isIdle = false;
+        }
 
         if (isIdle && !_wasIdle)
         {
