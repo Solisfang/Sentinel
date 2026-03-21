@@ -11,9 +11,10 @@ public class AppSettings
     public int IdleThresholdSeconds { get; set; } = 45;
     public bool CloudSyncEnabled { get; set; } = false;
     public bool SoundEnabled { get; set; } = true;
-    public bool AlwaysOnTop { get; set; } = true;
+    public bool AlwaysOnTop { get; set; } = false;
     public bool SuppressDuringMedia { get; set; } = true;
     public int DailyFocusGoalMinutes { get; set; } = 120;
+    public string OverlayStyle { get; set; } = "compact";
     public double WindowLeft { get; set; } = -1;
     public double WindowTop { get; set; } = -1;
 }
@@ -33,11 +34,16 @@ public class SettingsService
 
     public static AppSettings Load()
     {
+        return LoadFromPath(SettingsPath);
+    }
+
+    public static AppSettings LoadFromPath(string settingsPath)
+    {
         try
         {
-            if (File.Exists(SettingsPath))
+            if (File.Exists(settingsPath))
             {
-                var json = File.ReadAllText(SettingsPath);
+                var json = File.ReadAllText(settingsPath);
                 return JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
             }
         }
@@ -50,7 +56,18 @@ public class SettingsService
 
     public static void Save(AppSettings settings)
     {
+        SaveToPath(settings, SettingsPath);
+    }
+
+    public static void SaveToPath(AppSettings settings, string settingsPath)
+    {
+        var directory = Path.GetDirectoryName(settingsPath);
+        if (!string.IsNullOrWhiteSpace(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
         var json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(SettingsPath, json);
+        File.WriteAllText(settingsPath, json);
     }
 }

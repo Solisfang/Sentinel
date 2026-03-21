@@ -22,6 +22,7 @@ public partial class MainWindow : Window
     private double _savedHeight;
     private double _savedLeft;
     private double _savedTop;
+    private WindowState _savedWindowState;
 
     // Power broadcast constants
     private const int WM_POWERBROADCAST = 0x0218;
@@ -40,6 +41,26 @@ public partial class MainWindow : Window
 
     [System.Runtime.InteropServices.DllImport("user32.dll")]
     private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
+    private static extern bool FlashWindowEx(ref FLASHWINFO pwfi);
+
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+    private struct FLASHWINFO
+    {
+        public uint cbSize;
+        public IntPtr hwnd;
+        public uint dwFlags;
+        public uint uCount;
+        public uint dwTimeout;
+    }
+
+    private const uint FLASHW_ALL = 3;
+    private const uint FLASHW_TIMERNOFG = 12;
 
     public MainWindow()
     {
@@ -158,6 +179,7 @@ public partial class MainWindow : Window
         await WebView.EnsureCoreWebView2Async(env);
 
         WebView.DefaultBackgroundColor = System.Drawing.Color.FromArgb(255, 26, 26, 30);
+        WebView.CoreWebView2.Settings.IsNonClientRegionSupportEnabled = true;
         WebView.CoreWebView2.WebMessageReceived += OnWebMessageReceived;
 
         // Send initial settings when page loads
@@ -199,7 +221,8 @@ public partial class MainWindow : Window
                 soundEnabled = _settings.SoundEnabled,
                 alwaysOnTop = _settings.AlwaysOnTop,
                 suppressDuringMedia = _settings.SuppressDuringMedia,
-                dailyFocusGoalMinutes = _settings.DailyFocusGoalMinutes
+                dailyFocusGoalMinutes = _settings.DailyFocusGoalMinutes,
+                overlayStyle = _settings.OverlayStyle
             }
         });
         WebView.CoreWebView2?.PostWebMessageAsJson(message);
@@ -246,6 +269,27 @@ public partial class MainWindow : Window
 
         Dispatcher.Invoke(() =>
         {
+            // Force window to foreground so the intervention popup is visible
+            if (WindowState == WindowState.Minimized)
+                WindowState = WindowState.Normal;
+
+            Topmost = true; // Stay on top while intervention is shown
+
+            var hwnd = new WindowInteropHelper(this).Handle;
+            SetForegroundWindow(hwnd);
+            Activate();
+
+            // Flash taskbar if still not focused
+            var flashInfo = new FLASHWINFO
+            {
+                cbSize = (uint)System.Runtime.InteropServices.Marshal.SizeOf<FLASHWINFO>(),
+                hwnd = hwnd,
+                dwFlags = FLASHW_ALL | FLASHW_TIMERNOFG,
+                uCount = 3,
+                dwTimeout = 0
+            };
+            FlashWindowEx(ref flashInfo);
+
             var message = JsonSerializer.Serialize(new { type = "IDLE_DETECTED" });
             WebView.CoreWebView2?.PostWebMessageAsJson(message);
         });
@@ -287,6 +331,10 @@ public partial class MainWindow : Window
 
                 case "FALSE_ALARM":
                     await HandleFalseAlarm();
+                    break;
+
+                case "INTERVENTION_DISMISSED":
+                    Dispatcher.Invoke(() => Topmost = _settings.AlwaysOnTop);
                     break;
 
                 case "SNOOZE":
@@ -346,6 +394,14 @@ public partial class MainWindow : Window
                     break;
 
                 case "TOGGLE_COMPACT":
+                    HandleToggleCompact();
+                    break;
+
+                case "OVERLAY_CLOSE":
+                    Dispatcher.Invoke(() => Close());
+                    break;
+
+                case "OVERLAY_MAXIMIZE":
                     HandleToggleCompact();
                     break;
             }
@@ -591,6 +647,8 @@ public partial class MainWindow : Window
             _settings.SuppressDuringMedia = sdm.GetBoolean();
         if (settings.TryGetProperty("dailyFocusGoalMinutes", out var dfg))
             _settings.DailyFocusGoalMinutes = dfg.GetInt32();
+        if (settings.TryGetProperty("overlayStyle", out var os))
+            _settings.OverlayStyle = os.GetString() ?? "compact";
 
         // Apply settings immediately
         _activityMonitor.IdleThresholdSeconds = _settings.IdleThresholdSeconds;
@@ -614,6 +672,7 @@ public partial class MainWindow : Window
                 Height = _savedHeight;
                 Left = _savedLeft;
                 Top = _savedTop;
+                WindowState = _savedWindowState;
                 Topmost = _settings.AlwaysOnTop;
                 TitleBarGrid.Visibility = Visibility.Visible;
                 TitleBarRow.Height = new GridLength(36);
@@ -625,16 +684,32 @@ public partial class MainWindow : Window
             {
                 // Save current size/pos and shrink
                 _isCompactMode = true;
-                _savedWidth = Width;
-                _savedHeight = Height;
+                _savedWindowState = WindowState;
+                _savedWidth = ActualWidth;
+                _savedHeight = ActualHeight;
                 _savedLeft = Left;
                 _savedTop = Top;
+                WindowState = WindowState.Normal;
                 TitleBarGrid.Visibility = Visibility.Collapsed;
                 TitleBarRow.Height = new GridLength(0);
-                MinWidth = 240;
-                MinHeight = 60;
-                Width = 280;
-                Height = 80;
+
+                // Size based on overlay style
+                var style = _settings.OverlayStyle ?? "compact";
+                switch (style)
+                {
+                    case "pill":
+                        MinWidth = 200; MinHeight = 80;
+                        Width = 220; Height = 100;
+                        break;
+                    case "monitoring":
+                        MinWidth = 280; MinHeight = 120;
+                        Width = 320; Height = 160;
+                        break;
+                    default: // compact
+                        MinWidth = 220; MinHeight = 100;
+                        Width = 260; Height = 140;
+                        break;
+                }
                 ResizeMode = ResizeMode.NoResize;
                 Topmost = true;
 

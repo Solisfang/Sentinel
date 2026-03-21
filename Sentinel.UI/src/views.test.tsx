@@ -9,6 +9,14 @@ import {
 } from './views';
 import { defaultSettings } from './utils';
 
+const navigation = {
+  onOpenTimer: vi.fn(),
+  onOpenReports: vi.fn(),
+  onOpenTaxonomy: vi.fn(),
+  onOpenSettings: vi.fn(),
+  onOpenAccount: vi.fn(),
+};
+
 describe('SettingsScreen', () => {
   it('renders grouped settings sections inside the shared shell', () => {
     const { container } = render(
@@ -24,6 +32,7 @@ describe('SettingsScreen', () => {
         onOpenAuth={vi.fn()}
         onOpenTaxonomy={vi.fn()}
         onDismissUpdate={vi.fn()}
+        navigation={navigation}
       />,
     );
 
@@ -49,6 +58,7 @@ describe('ReportsScreen', () => {
         onBack={vi.fn()}
         onSelectRange={vi.fn()}
         onOpenTaxonomy={vi.fn()}
+        navigation={navigation}
       />,
     );
 
@@ -120,6 +130,7 @@ describe('TaxonomyManagerScreen', () => {
         onBack={vi.fn()}
         onSaveGroup={vi.fn()}
         onRenameCategory={vi.fn()}
+        navigation={navigation}
       />,
     );
 
@@ -144,6 +155,7 @@ describe('AuthScreen', () => {
         onSignup={vi.fn()}
         onLogout={vi.fn()}
         onBack={vi.fn()}
+        navigation={navigation}
       />,
     );
 

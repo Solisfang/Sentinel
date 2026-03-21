@@ -5,11 +5,18 @@ namespace Sentinel.Engine;
 
 public class DistractionRepository
 {
+    private readonly Func<SentinelDbContext> _contextFactory;
+
+    public DistractionRepository(Func<SentinelDbContext>? contextFactory = null)
+    {
+        _contextFactory = contextFactory ?? (() => new SentinelDbContext());
+    }
+
     public async Task InitializeAsync()
     {
         try
         {
-            await using var db = new SentinelDbContext();
+            await using var db = _contextFactory();
             await db.Database.EnsureCreatedAsync();
             await EnsureSchemaAsync(db);
             await BackfillNormalizedNotesAsync(db);
@@ -23,7 +30,7 @@ public class DistractionRepository
 
     public async Task AddDistractionAsync(Distraction distraction, bool skipAutoCategory = false)
     {
-        await using var db = new SentinelDbContext();
+        await using var db = _contextFactory();
         await EnsureSchemaAsync(db);
 
         distraction.Note = distraction.Note.Trim();
@@ -45,7 +52,7 @@ public class DistractionRepository
 
     public async Task<List<Distraction>> GetDistractionsAsync(DateTime? since = null)
     {
-        await using var db = new SentinelDbContext();
+        await using var db = _contextFactory();
         var query = db.Distractions.AsQueryable();
 
         if (since.HasValue)
@@ -56,7 +63,7 @@ public class DistractionRepository
 
     public async Task<TaxonomyData> GetTaxonomyDataAsync()
     {
-        await using var db = new SentinelDbContext();
+        await using var db = _contextFactory();
         await EnsureSchemaAsync(db);
 
         var actualDistractions = await db.Distractions
@@ -116,7 +123,7 @@ public class DistractionRepository
         var cleanNormalized = DistractionNormalizer.Normalize(cleanNote);
         var cleanCategory = CleanCategory(categoryName);
 
-        await using var db = new SentinelDbContext();
+        await using var db = _contextFactory();
         await EnsureSchemaAsync(db);
 
         var matches = await db.Distractions
@@ -143,7 +150,7 @@ public class DistractionRepository
             return;
         }
 
-        await using var db = new SentinelDbContext();
+        await using var db = _contextFactory();
         await EnsureSchemaAsync(db);
 
         var matches = await db.Distractions
@@ -161,14 +168,14 @@ public class DistractionRepository
 
     public async Task AddSessionAsync(Session session)
     {
-        await using var db = new SentinelDbContext();
+        await using var db = _contextFactory();
         db.Sessions.Add(session);
         await db.SaveChangesAsync();
     }
 
     public async Task<List<Session>> GetSessionsAsync(DateTime? since = null)
     {
-        await using var db = new SentinelDbContext();
+        await using var db = _contextFactory();
         var query = db.Sessions.AsQueryable();
 
         if (since.HasValue)
@@ -179,7 +186,7 @@ public class DistractionRepository
 
     public async Task<List<Distraction>> GetUnsyncedDistractionsAsync()
     {
-        await using var db = new SentinelDbContext();
+        await using var db = _contextFactory();
         return await db.Distractions
             .Where(d => !d.SyncedToCloud)
             .ToListAsync();
@@ -187,7 +194,7 @@ public class DistractionRepository
 
     public async Task MarkAsSyncedAsync(int distractionId)
     {
-        await using var db = new SentinelDbContext();
+        await using var db = _contextFactory();
         var distraction = await db.Distractions.FindAsync(distractionId);
         if (distraction != null)
         {

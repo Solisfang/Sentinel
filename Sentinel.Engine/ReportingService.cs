@@ -40,11 +40,18 @@ public class SessionEntry
 
 public class ReportingService
 {
+    private readonly Func<SentinelDbContext> _contextFactory;
+
+    public ReportingService(Func<SentinelDbContext>? contextFactory = null)
+    {
+        _contextFactory = contextFactory ?? (() => new SentinelDbContext());
+    }
+
     public async Task<ReportData> GetReportDataAsync(DateTime since)
     {
         try
         {
-            await using var db = new SentinelDbContext();
+            await using var db = _contextFactory();
 
             var sessions = await db.Sessions
                 .Where(s => s.StartedAt >= since)

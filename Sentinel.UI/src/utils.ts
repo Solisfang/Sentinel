@@ -13,6 +13,8 @@ export const PRESETS: TimerPreset[] = [
 
 export type TimerMode = 'pomodoro' | 'shortBreak' | 'longBreak';
 
+export type OverlayStyle = 'pill' | 'compact' | 'monitoring';
+
 export interface Settings {
   pomodoroMinutes: number;
   shortBreakMinutes: number;
@@ -23,6 +25,7 @@ export interface Settings {
   alwaysOnTop: boolean;
   suppressDuringMedia: boolean;
   dailyFocusGoalMinutes: number;
+  overlayStyle: OverlayStyle;
 }
 
 export const defaultSettings: Settings = {
@@ -32,9 +35,10 @@ export const defaultSettings: Settings = {
   idleThresholdSeconds: 45,
   cloudSyncEnabled: false,
   soundEnabled: true,
-  alwaysOnTop: true,
+  alwaysOnTop: false,
   suppressDuringMedia: true,
   dailyFocusGoalMinutes: 120,
+  overlayStyle: 'compact',
 };
 
 export function formatTime(seconds: number): string {

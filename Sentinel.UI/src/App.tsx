@@ -80,7 +80,7 @@ function App() {
     groups: [],
     categories: [],
   });
-  const [taxonomyReturnView, setTaxonomyReturnView] = useState<'timer' | 'settings' | 'reports'>('timer');
+  const [taxonomyReturnView, setTaxonomyReturnView] = useState<'timer' | 'settings' | 'reports' | 'auth'>('timer');
   const [categorySelection, setCategorySelection] = useState('__auto__');
   const [newCategoryName, setNewCategoryName] = useState('');
   const [exportStatus, setExportStatus] = useState<string | null>(null);
@@ -430,6 +430,7 @@ function App() {
     setShowIntervention(false);
     setIsPausedByIntervention(false);
     resetDistractionDraft();
+    postMessage({ type: 'INTERVENTION_DISMISSED' });
     if (wasRunningRef.current) {
       setIsRunning(true);
       wasRunningRef.current = false;
@@ -570,7 +571,7 @@ function App() {
     requestReportData(reportRange);
   };
 
-  const openTaxonomy = (returnView: 'timer' | 'settings' | 'reports' = 'timer') => {
+  const openTaxonomy = (returnView: 'timer' | 'settings' | 'reports' | 'auth' = 'timer') => {
     setTaxonomyReturnView(returnView);
     setView('taxonomy');
     requestTaxonomyData();
@@ -635,6 +636,11 @@ function App() {
   const chartData = getChartData();
   const userEmail = user?.email ?? null;
   const isSynced = Boolean(user && settings.cloudSyncEnabled);
+  const timerDuration = getTimerDuration(timerMode, settings);
+  const timerProgress =
+    timerDuration > 0
+      ? Math.max(0, Math.min(100, Math.round(((timerDuration - timeLeft) / timerDuration) * 100)))
+      : 0;
   const quickSuggestions = buildQuickSuggestions(taxonomyData);
   const inferredCategoryName = distractionInput.trim()
     ? getMappedCategoryForNote(taxonomyData.groups, distractionInput)
@@ -646,6 +652,12 @@ function App() {
           normalizeDistractionNote(candidate) === normalizeDistractionNote(category),
       ) === index,
   );
+  const baseNavigation = {
+    onOpenTimer: () => setView('timer'),
+    onOpenReports: openReports,
+    onOpenSettings: () => setView('settings'),
+    onOpenAccount: () => setView('auth'),
+  };
 
   if (showOnboarding) {
     return (
@@ -702,6 +714,10 @@ function App() {
         onBack={() => setView('timer')}
         onSelectRange={requestReportData}
         onOpenTaxonomy={() => openTaxonomy('reports')}
+        navigation={{
+          ...baseNavigation,
+          onOpenTaxonomy: () => openTaxonomy('reports'),
+        }}
       />
     );
   }
@@ -713,6 +729,10 @@ function App() {
         onBack={() => setView(taxonomyReturnView)}
         onSaveGroup={handleSaveTaxonomyGroup}
         onRenameCategory={handleRenameCategory}
+        navigation={{
+          ...baseNavigation,
+          onOpenTaxonomy: () => setView('taxonomy'),
+        }}
       />
     );
   }
@@ -730,6 +750,10 @@ function App() {
         onSignup={handleSignup}
         onLogout={handleLogout}
         onBack={() => setView('timer')}
+        navigation={{
+          ...baseNavigation,
+          onOpenTaxonomy: () => openTaxonomy('auth'),
+        }}
       />
     );
   }
@@ -748,6 +772,10 @@ function App() {
         onOpenAuth={() => setView('auth')}
         onOpenTaxonomy={() => openTaxonomy('settings')}
         onDismissUpdate={() => setUpdateInfo(null)}
+        navigation={{
+          ...baseNavigation,
+          onOpenTaxonomy: () => openTaxonomy('settings'),
+        }}
       />
     );
   }
@@ -769,8 +797,13 @@ function App() {
         timerMode={timerMode}
         timeLabel={timeLabel}
         isRunning={isRunning}
+        progressPercent={timerProgress}
+        overlayStyle={settings.overlayStyle}
+        distractionCount={distractions.length}
         onStartPause={handleStartPause}
+        onReset={handleReset}
         onExpand={toggleCompact}
+        onClose={() => postMessage({ type: 'OVERLAY_CLOSE' })}
       />
     );
   }
@@ -789,6 +822,7 @@ function App() {
       isSynced={isSynced}
       dailyGoalMinutes={settings.dailyFocusGoalMinutes}
       goalProgress={goalProgress}
+      timerProgress={timerProgress}
       isSnoozed={isSnoozed}
       snoozeText={formatSnoozeTime(snoozeSecondsRemaining)}
       showPresets={showPresets}
@@ -802,6 +836,10 @@ function App() {
       onOpenReports={openReports}
       onOpenSettings={() => setView('settings')}
       onApplyPreset={applyPreset}
+      navigation={{
+        ...baseNavigation,
+        onOpenTaxonomy: () => openTaxonomy('timer'),
+      }}
     />
   );
 }
