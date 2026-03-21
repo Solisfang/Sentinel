@@ -95,7 +95,7 @@ public partial class MainWindow : Window
     {
         await _repository.InitializeAsync();
         await InitializeWebView();
-        _activityMonitor.Start();
+        // Activity monitor starts only when timer starts (via TIMER_RUNNING message)
 
         // Hook WndProc for power broadcast and global hotkeys
         _hwndSource = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
@@ -395,6 +395,15 @@ public partial class MainWindow : Window
 
                 case "TOGGLE_COMPACT":
                     HandleToggleCompact();
+                    break;
+
+                case "TIMER_RUNNING":
+                    var running = root.GetProperty("running").GetBoolean();
+                    if (running)
+                        _activityMonitor.Start();
+                    else
+                        _activityMonitor.Stop();
+                    Debug.WriteLine($"[Sentinel] Timer running: {running} — idle monitor {(running ? "started" : "stopped")}");
                     break;
 
                 case "OVERLAY_CLOSE":

@@ -236,6 +236,11 @@ function App() {
     return () => clearInterval(interval);
   }, [isRunning, timeLeft, timerMode]);
 
+  // Notify C# when timer starts/stops so idle monitor only runs during active sessions
+  useEffect(() => {
+    postMessage({ type: 'TIMER_RUNNING', running: isRunning });
+  }, [isRunning]);
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {

@@ -528,7 +528,7 @@ export function ReportsScreen({
           </SectionCard>
         ) : reportData ? (
           <>
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
               <SummaryStat
                 icon="target"
                 label="Focus Time"
@@ -558,8 +558,8 @@ export function ReportsScreen({
               />
             </div>
 
-            <div className="grid gap-5 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,0.95fr)]">
-              <div className="space-y-5">
+            <div className="grid gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,0.95fr)]">
+              <div className="space-y-8">
                 <SectionCard
                   title="Focus Intensity"
                   description="Minutes of focused work completed each day in the selected range."
@@ -642,7 +642,7 @@ export function ReportsScreen({
                 </SectionCard>
               </div>
 
-              <div className="space-y-5">
+              <div className="space-y-8">
                 <SectionCard
                   title="Top Categories"
                   description="Grouped interruptions so repeat habits are easier to understand at a glance."
@@ -802,7 +802,7 @@ export function TaxonomyManagerScreen({
           backAriaLabel="Back to timer"
         />
 
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,0.9fr)]">
+        <div className="grid gap-8 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,0.9fr)]">
           <SectionCard
             title="Manage Labels"
             description="These grouped labels drive quick suggestions and category-aware reporting."
@@ -855,7 +855,7 @@ export function TaxonomyManagerScreen({
             )}
           </SectionCard>
 
-          <div className="space-y-5">
+          <div className="space-y-8">
             <SectionCard
               title="Categories"
               description="Rename categories globally whenever you want cleaner reporting language."
@@ -964,7 +964,7 @@ export function AuthScreen({
           backAriaLabel="Back to timer"
         />
 
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+        <div className="grid gap-8 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
           <SectionCard
             title="Identity & Continuity"
             description="Sentinel is built for local-first privacy. Syncing your data is optional and always secondary to the machine you control."
@@ -1003,7 +1003,7 @@ export function AuthScreen({
             </div>
           </SectionCard>
 
-          <div className="space-y-5">
+          <div className="space-y-8">
             <SectionCard
               title={userEmail ? 'Current Account' : 'Sign In'}
               description={
@@ -1062,7 +1062,7 @@ export function AuthScreen({
               )}
             </SectionCard>
 
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-2">
               <SectionCard
                 title="Stay Local"
                 description="Everything still works with no account at all."
@@ -1146,8 +1146,8 @@ export function SettingsScreen({
           backAriaLabel="Back to timer"
         />
 
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.3fr)_minmax(0,0.95fr)]">
-          <div className="space-y-5">
+        <div className="grid gap-8 xl:grid-cols-[minmax(0,1.3fr)_minmax(0,0.95fr)]">
+          <div className="space-y-8">
             <SectionCard
               title="Timer & Presets"
               description="Set the core rhythm for focus, short breaks, and longer resets."
@@ -1289,7 +1289,7 @@ export function SettingsScreen({
             </SectionCard>
           </div>
 
-          <div className="space-y-5">
+          <div className="space-y-8">
             <SectionCard
               title="Account & Shortcuts"
               description="Manage optional sign-in and keep the most useful keyboard actions close."
@@ -1670,9 +1670,9 @@ export function TimerScreen({
       aria-label="Focus timer"
     >
       <ScreenShell wide className="justify-center">
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.15fr)_22rem]">
-          <div className="space-y-5">
-            <div className="space-y-4">
+        <div className="grid gap-10 xl:grid-cols-[minmax(0,1.15fr)_20rem]">
+          <div className="space-y-8">
+            <div className="space-y-3">
               <p className="sentinel-eyebrow">Current Session</p>
               <div className="max-w-xl">
                 <input
@@ -1718,7 +1718,7 @@ export function TimerScreen({
             </div>
 
             <section className="sentinel-panel sentinel-card sentinel-focus-stage">
-              <div className="space-y-8">
+              <div className="space-y-5">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="space-y-1">
                     <p className="text-xs uppercase tracking-[0.22em] text-(--text-muted)">{modeMeta.label} Session</p>
@@ -1727,8 +1727,8 @@ export function TimerScreen({
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <button type="button" onClick={onToggleCompact} className={buttonClasses.icon} aria-label="Switch to corner overlay mode">
-                      <Glyph name="overlay" className="h-4 w-4" />
+                    <button type="button" onClick={onToggleCompact} className={buttonClasses.icon} aria-label="Switch to mini overlay">
+                      <Glyph name="pip" className="h-4 w-4" />
                     </button>
                     <button type="button" onClick={onTogglePresets} className={buttonClasses.inline}>
                       Presets
@@ -1736,7 +1736,7 @@ export function TimerScreen({
                   </div>
                 </div>
 
-                <div className="flex flex-col items-center justify-center gap-5 text-center">
+                <div className="flex flex-col items-center justify-center gap-4 text-center">
                   <ProgressRing progress={timerProgress} accent={modeMeta.accent} timeLabel={timeLabel} />
 
                   {isPausedByIntervention && !showIntervention && (
@@ -1800,7 +1800,7 @@ export function TimerScreen({
               </div>
             </section>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-6 sm:grid-cols-2">
               <MetricCard
                 label="Completed"
                 value={String(sessionsCompleted)}
@@ -1843,7 +1843,7 @@ export function TimerScreen({
             )}
           </div>
 
-          <div className="space-y-5">
+          <div className="space-y-8">
             <SectionCard
               title="Session Snapshot"
               description="A quick read on your current focus block."
@@ -1858,7 +1858,7 @@ export function TimerScreen({
             <SectionCard
               title="Workspace Actions"
               description="Jump into the full dashboard without losing timer context."
-              icon="overlay"
+              icon="dashboard"
             >
               <div className="grid gap-3">
                 <button type="button" onClick={onOpenReports} className={buttonClasses.secondary}>
@@ -1939,10 +1939,10 @@ function MetricCard({
           <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-(--text-muted)">
             {label}
           </p>
-          <p className="mt-3 text-3xl font-extrabold tracking-tight" style={{ color: accent }}>
+          <p className="mt-2 text-2xl font-extrabold tracking-tight" style={{ color: accent }}>
             {value}
           </p>
-          <p className="mt-2 text-sm leading-6 text-(--text-secondary)">{detail}</p>
+          <p className="mt-1.5 text-sm leading-6 text-(--text-secondary)">{detail}</p>
         </div>
         <span
           className="inline-flex h-11 w-11 items-center justify-center rounded-2xl"
@@ -1991,7 +1991,7 @@ function ProgressRing({
   const offset = circumference * (1 - safeProgress / 100);
 
   return (
-    <div className="relative flex h-72 w-72 items-center justify-center sm:h-80 sm:w-80">
+    <div className="relative flex h-56 w-56 items-center justify-center sm:h-64 sm:w-64">
       <svg viewBox="0 0 280 280" className="h-full w-full -rotate-90">
         <circle
           cx="140"
@@ -2015,10 +2015,10 @@ function ProgressRing({
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="[font-family:var(--font-display)] text-6xl font-extrabold tracking-tight text-(--text-primary) sentinel-focus-glow sm:text-7xl">
+        <span className="[font-family:var(--font-display)] text-5xl font-extrabold tracking-tight text-(--text-primary) sentinel-focus-glow sm:text-6xl">
           {timeLabel}
         </span>
-        <span className="mt-3 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-(--text-muted)">
+        <span className="mt-2 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-(--text-muted)">
           {safeProgress}% complete
         </span>
       </div>

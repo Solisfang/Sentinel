@@ -10,6 +10,8 @@ export type GlyphName =
   | 'settings'
   | 'account'
   | 'overlay'
+  | 'pip'
+  | 'dashboard'
   | 'play'
   | 'pause'
   | 'stop'
@@ -104,6 +106,22 @@ function renderGlyph(name: GlyphName) {
           <path d="M15 4.5H19.5V9" />
           <path d="M9 19.5H4.5V15" />
           <path d="M15 19.5H19.5V15" />
+        </>
+      );
+    case 'pip':
+      return (
+        <>
+          <rect x="3" y="4" width="18" height="14" rx="2" />
+          <rect x="11" y="10" width="8" height="6" rx="1" fill="currentColor" opacity="0.35" />
+        </>
+      );
+    case 'dashboard':
+      return (
+        <>
+          <rect x="4" y="4" width="6.5" height="7" rx="1.2" />
+          <rect x="13.5" y="4" width="6.5" height="4.5" rx="1.2" />
+          <rect x="4" y="14" width="6.5" height="6" rx="1.2" />
+          <rect x="13.5" y="11.5" width="6.5" height="8.5" rx="1.2" />
         </>
       );
     case 'play':

@@ -12,8 +12,8 @@
   --surface: #201f1f;
   --surface-high: #2a2a2a;
   --surface-highest: #353534;
-  --outline: rgba(73, 68, 85, 0.16);
-  --outline-strong: rgba(148, 142, 161, 0.22);
+  --outline: rgba(73, 68, 85, 0.32);
+  --outline-strong: rgba(148, 142, 161, 0.28);
   --primary: #cdbdff;
   --primary-strong: #7c4dff;
   --secondary: #8dcdff;
@@ -22,15 +22,15 @@
   --text-secondary: #cac3d8;
   --text-muted: #948ea1;
   --page-padding: clamp(1.1rem, 2.3vw, 1.8rem);
-  --section-gap: clamp(1.2rem, 2vw, 1.7rem);
+  --section-gap: clamp(1.75rem, 3vw, 2.25rem);
   --card-padding: clamp(1.15rem, 2vw, 1.65rem);
   --card-radius: 1.45rem;
   --control-height: 3rem;
   --shell-max: 54rem;
   --shell-max-wide: 78rem;
   --modal-max: 34rem;
-  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.35);
-  --shadow-soft: 0 16px 40px rgba(0, 0, 0, 0.26);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.3);
+  --shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.2);
   --nav-collapsed: 4.75rem;
   --nav-expanded: 15.5rem;
   --topbar-height: 3.2rem;
@@ -320,13 +320,11 @@ textarea {
 }
 
 .sentinel-panel {
-  border: 1px solid var(--outline);
+  border: 1px solid rgba(73, 68, 85, 0.42);
   border-radius: var(--card-radius);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
-    rgba(28, 27, 27, 0.72);
-  box-shadow: var(--shadow-soft);
-  backdrop-filter: blur(20px);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+    rgba(32, 31, 31, 0.88);
 }
 
 .sentinel-card {
