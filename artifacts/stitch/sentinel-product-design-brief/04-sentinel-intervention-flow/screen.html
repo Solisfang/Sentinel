@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "outline": "#948ea1",
+              "secondary": "#8dcdff",
+              "secondary-fixed-dim": "#8dcdff",
+              "on-error": "#690005",
+              "on-secondary-fixed-variant": "#004b70",
+              "error": "#ffb4ab",
+              "surface-bright": "#393939",
+              "surface-tint": "#cdbdff",
+              "surface-container-highest": "#353534",
+              "on-primary": "#370096",
+              "surface": "#131313",
+              "secondary-fixed": "#cae6ff",
+              "on-secondary-container": "#003f5f",
+              "surface-variant": "#353534",
+              "inverse-on-surface": "#313030",
+              "inverse-primary": "#6833ea",
+              "inverse-surface": "#e5e2e1",
+              "surface-container": "#201f1f",
+              "on-tertiary-container": "#e6ffe2",
+              "on-surface": "#e5e2e1",
+              "surface-container-lowest": "#0e0e0e",
+              "on-primary-fixed": "#20005f",
+              "tertiary": "#3ce36a",
+              "outline-variant": "#494455",
+              "surface-container-high": "#2a2a2a",
+              "on-primary-container": "#fcf6ff",
+              "background": "#131313",
+              "on-primary-fixed-variant": "#4f00d0",
+              "on-surface-variant": "#cac3d8",
+              "surface-container-low": "#1c1b1b",
+              "tertiary-container": "#008434",
+              "tertiary-fixed": "#69ff87",
+              "on-background": "#e5e2e1",
+              "secondary-container": "#00affe",
+              "error-container": "#93000a",
+              "primary-fixed": "#e8deff",
+              "on-secondary-fixed": "#001e30",
+              "tertiary-fixed-dim": "#3ce36a",
+              "on-tertiary-fixed-variant": "#00531e",
+              "primary": "#cdbdff",
+              "on-error-container": "#ffdad6",
+              "primary-fixed-dim": "#cdbdff",
+              "on-tertiary": "#003912",
+              "primary-container": "#7c4dff",
+              "on-secondary": "#00344f",
+              "on-tertiary-fixed": "#002108",
+              "surface-dim": "#131313",
+              "amber-warning": "#FFAB00"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .mica-effect {
+            backdrop-filter: blur(20px);
+            background-color: rgba(28, 27, 27, 0.85);
+        }
+        .text-shadow-glow {
+            text-shadow: 0 0 15px rgba(205, 189, 255, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body antialiased overflow-hidden">
+<!-- Background Layer (The Main App State) -->
+<div class="fixed inset-0 flex">
+<!-- SideNavBar - JSON Managed Component -->
+<aside class="hidden md:flex flex-col py-6 space-y-8 bg-[#1C1B1B] h-screen w-64 border-r border-[#494455]/15 font-['Inter'] text-[0.875rem] font-medium tracking-wide">
+<div class="px-6 flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container text-sm">shield</span>
+</div>
+<span class="text-[#E5E2E1] font-['Manrope'] font-semibold">The Sanctuary</span>
+</div>
+<nav class="flex-1 space-y-1">
+<div class="px-3">
+<!-- Active: Timer -->
+<a class="flex items-center gap-3 px-3 py-2 text-[#CDBDFF] font-bold border-r-2 border-[#7C4DFF] hover:bg-[#353534]/50 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">timer</span>
+<span>Timer</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#E5E2E1]/40 hover:text-[#E5E2E1]/80 hover:bg-[#353534]/50 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">bar_chart</span>
+<span>Reports</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#E5E2E1]/40 hover:text-[#E5E2E1]/80 hover:bg-[#353534]/50 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">category</span>
+<span>Taxonomy</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#E5E2E1]/40 hover:text-[#E5E2E1]/80 hover:bg-[#353534]/50 transition-all duration-300" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</div>
+</nav>
+<div class="px-3 border-t border-outline-variant/10 pt-4">
+<a class="flex items-center gap-3 px-3 py-2 text-[#E5E2E1]/40 hover:text-[#E5E2E1]/80" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span>Account</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area (Blurred) -->
+<main class="flex-1 flex flex-col blur-sm grayscale-[0.2]">
+<!-- TopAppBar - JSON Managed Component -->
+<header class="flex justify-between items-center w-full px-4 h-10 bg-[#131313] font-['Manrope'] font-bold text-sm tracking-tight border-b border-[#1C1B1B]">
+<div class="text-lg font-extrabold text-[#E5E2E1] tracking-widest uppercase">Sentinel</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-1 text-[#CDBDFF]">
+<span class="material-symbols-outlined text-[18px]">lock_open</span>
+<span class="text-[11px] uppercase tracking-widest">Focus Shield Active</span>
+</div>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-[#E5E2E1]/60 text-lg cursor-default">remove</span>
+<span class="material-symbols-outlined text-[#E5E2E1]/60 text-lg cursor-default">check_box_outline_blank</span>
+<span class="material-symbols-outlined text-[#E5E2E1]/60 text-lg cursor-default">close</span>
+</div>
+</div>
+</header>
+<!-- Background Dashboard Content -->
+<div class="flex-1 flex flex-col items-center justify-center p-12">
+<div class="relative w-96 h-96 flex items-center justify-center">
+<svg class="absolute inset-0 w-full h-full -rotate-90">
+<circle class="text-surface-container-highest" cx="192" cy="192" fill="transparent" r="180" stroke="currentColor" stroke-width="4"></circle>
+<circle class="text-primary" cx="192" cy="192" fill="transparent" r="180" stroke="currentColor" stroke-dasharray="1130" stroke-dashoffset="300" stroke-width="4"></circle>
+</svg>
+<div class="text-center">
+<div class="font-headline text-[5rem] font-extrabold text-primary leading-none tracking-tighter">23:14</div>
+<div class="font-label text-on-surface-variant uppercase tracking-[0.3em] mt-2">Deep Work Session</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Intervention Modal Overlay -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-[#000000]/70 backdrop-blur-[2px]">
+<!-- The Modal Container -->
+<div class="mica-effect w-full max-w-[560px] rounded-xl overflow-hidden shadow-2xl border border-outline-variant/20">
+<!-- Modal Header / Amber Warning State -->
+<div class="px-8 pt-10 pb-6 text-center space-y-2">
+<div class="flex justify-center mb-6">
+<div class="bg-amber-warning/10 p-3 rounded-full border border-amber-warning/20 ring-4 ring-amber-warning/5">
+<span class="material-symbols-outlined text-amber-warning text-3xl" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+</div>
+<h1 class="font-headline text-3xl font-bold text-on-surface tracking-tight">Still Focused?</h1>
+<p class="text-amber-warning font-medium text-sm tracking-wide">You've been idle for 2 minutes.</p>
+<p class="text-on-surface-variant text-base mt-2">The timer is paused. What's distracting you?</p>
+</div>
+<!-- Input & Suggestions -->
+<div class="px-8 py-4 space-y-6">
+<!-- Distraction Input -->
+<div class="relative group">
+<input class="w-full bg-surface-container-highest border-none border-b-2 border-transparent focus:border-primary-container focus:ring-0 text-on-surface py-4 px-4 text-lg placeholder:text-on-surface-variant/30 rounded-t-lg transition-all duration-200" placeholder="Type distraction or select below..." type="text"/>
+<div class="absolute bottom-0 left-0 h-[2px] w-0 bg-primary transition-all duration-300 group-focus-within:w-full"></div>
+</div>
+<!-- Suggestion Pills -->
+<div class="flex flex-wrap gap-2 justify-center">
+<button class="px-4 py-2 rounded-full bg-surface-container-low border border-outline-variant/10 hover:bg-surface-container-high hover:border-primary/40 text-on-surface-variant text-xs font-medium transition-all">Twitter</button>
+<button class="px-4 py-2 rounded-full bg-surface-container-low border border-outline-variant/10 hover:bg-surface-container-high hover:border-primary/40 text-on-surface-variant text-xs font-medium transition-all">Slack</button>
+<button class="px-4 py-2 rounded-full bg-surface-container-low border border-outline-variant/10 hover:bg-surface-container-high hover:border-primary/40 text-on-surface-variant text-xs font-medium transition-all">Email</button>
+<button class="px-4 py-2 rounded-full bg-surface-container-low border border-outline-variant/10 hover:bg-surface-container-high hover:border-primary/40 text-on-surface-variant text-xs font-medium transition-all">Meeting</button>
+<button class="px-4 py-2 rounded-full bg-surface-container-low border border-outline-variant/10 hover:bg-surface-container-high hover:border-primary/40 text-on-surface-variant text-xs font-medium transition-all">Reading</button>
+</div>
+<!-- Mapping Affordance -->
+<div class="flex items-center justify-between bg-surface-container-low/50 p-4 rounded-lg border border-outline-variant/10">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">label</span>
+<span class="text-xs text-on-surface-variant font-medium">Map to category:</span>
+</div>
+<div class="flex items-center gap-2 cursor-pointer group">
+<span class="text-sm font-semibold text-primary">Social Media</span>
+<span class="material-symbols-outlined text-primary text-sm group-hover:translate-y-0.5 transition-transform">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Primary Actions -->
+<div class="px-8 pt-4 pb-4 flex flex-col gap-3">
+<button class="w-full py-4 rounded-xl bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-extrabold text-sm tracking-widest uppercase shadow-lg shadow-primary-container/20 hover:brightness-110 active:scale-[0.98] transition-all">
+                    Log Distraction
+                </button>
+<button class="w-full py-3 rounded-xl border border-outline-variant/20 text-on-surface-variant font-headline font-bold text-sm hover:bg-on-surface/5 transition-all">
+                    False Alarm
+                </button>
+</div>
+<!-- Suppress Options (Suppress Canvas Footer) -->
+<div class="px-8 py-6 bg-surface-container-lowest/50 border-t border-outline-variant/10 grid grid-cols-2 gap-4">
+<div class="space-y-2">
+<label class="text-[10px] uppercase tracking-widest text-on-surface-variant/60 font-bold ml-1">Snooze</label>
+<div class="flex gap-1">
+<button class="flex-1 py-1.5 rounded bg-surface-container-high hover:bg-primary/20 hover:text-primary text-[11px] font-bold text-on-surface-variant/80 transition-colors">5m</button>
+<button class="flex-1 py-1.5 rounded bg-surface-container-high hover:bg-primary/20 hover:text-primary text-[11px] font-bold text-on-surface-variant/80 transition-colors">10m</button>
+<button class="flex-1 py-1.5 rounded bg-surface-container-high hover:bg-primary/20 hover:text-primary text-[11px] font-bold text-on-surface-variant/80 transition-colors">30m</button>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] uppercase tracking-widest text-on-surface-variant/60 font-bold ml-1">Watching Content</label>
+<div class="flex gap-1">
+<button class="flex-1 py-1.5 rounded bg-surface-container-high hover:bg-secondary/20 hover:text-secondary text-[11px] font-bold text-on-surface-variant/80 transition-colors">30m</button>
+<button class="flex-1 py-1.5 rounded bg-surface-container-high hover:bg-secondary/20 hover:text-secondary text-[11px] font-bold text-on-surface-variant/80 transition-colors">60m</button>
+<button class="flex-1 py-1.5 rounded bg-surface-container-high hover:bg-secondary/20 hover:text-secondary text-[11px] font-bold text-on-surface-variant/80 transition-colors">90m</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Background Grid Effect -->
+<div class="fixed inset-0 pointer-events-none opacity-[0.03] z-[-1]" data-alt="Subtle dot grid background pattern" style="background-image: radial-gradient(circle at 2px 2px, #E5E2E1 1px, transparent 0); background-size: 40px 40px;"></div>
+</body></html>

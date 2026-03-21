@@ -16,6 +16,13 @@ public partial class MainWindow : Window
     private AppSettings _settings;
     private HwndSource? _hwndSource;
 
+    // Compact mode state
+    private bool _isCompactMode;
+    private double _savedWidth;
+    private double _savedHeight;
+    private double _savedLeft;
+    private double _savedTop;
+
     // Power broadcast constants
     private const int WM_POWERBROADCAST = 0x0218;
     private const int PBT_APMSUSPEND = 0x0004;
@@ -52,17 +59,12 @@ public partial class MainWindow : Window
         _reportingService = new ReportingService();
         _activityMonitor.SuppressDuringMedia = _settings.SuppressDuringMedia;
 
-        // Restore window position or default to bottom-right
+        // Restore window position if saved
         if (_settings.WindowLeft >= 0 && _settings.WindowTop >= 0)
         {
+            WindowStartupLocation = WindowStartupLocation.Manual;
             Left = _settings.WindowLeft;
             Top = _settings.WindowTop;
-        }
-        else
-        {
-            var workArea = SystemParameters.WorkArea;
-            Left = workArea.Right - Width - 20;
-            Top = workArea.Bottom - Height - 20;
         }
 
         Topmost = _settings.AlwaysOnTop;
@@ -155,7 +157,7 @@ public partial class MainWindow : Window
         var env = await CoreWebView2Environment.CreateAsync();
         await WebView.EnsureCoreWebView2Async(env);
 
-        WebView.DefaultBackgroundColor = System.Drawing.Color.Transparent;
+        WebView.DefaultBackgroundColor = System.Drawing.Color.FromArgb(255, 26, 26, 30);
         WebView.CoreWebView2.WebMessageReceived += OnWebMessageReceived;
 
         // Send initial settings when page loads
@@ -319,6 +321,18 @@ public partial class MainWindow : Window
                     await HandleGetReportData(root);
                     break;
 
+                case "GET_TAXONOMY_DATA":
+                    await SendTaxonomyDataAsync();
+                    break;
+
+                case "UPDATE_DISTRACTION_GROUP":
+                    await HandleUpdateDistractionGroup(root);
+                    break;
+
+                case "RENAME_CATEGORY":
+                    await HandleRenameCategory(root);
+                    break;
+
                 case "LOG_SESSION":
                     await HandleLogSession(root);
                     break;
@@ -329,6 +343,10 @@ public partial class MainWindow : Window
 
                 case "PLAY_SOUND":
                     PlayNotificationSound();
+                    break;
+
+                case "TOGGLE_COMPACT":
+                    HandleToggleCompact();
                     break;
             }
         }
@@ -342,15 +360,23 @@ public partial class MainWindow : Window
     {
         var note = root.GetProperty("note").GetString();
         if (string.IsNullOrEmpty(note)) return;
+        var categoryName = root.TryGetProperty("categoryName", out var categoryProp)
+            ? categoryProp.GetString()
+            : null;
+        var forceUncategorized = root.TryGetProperty("forceUncategorized", out var forceProp) &&
+                                 forceProp.GetBoolean();
 
         var distraction = new Distraction
         {
             Note = note,
+            NormalizedNote = DistractionNormalizer.Normalize(note),
+            CategoryName = categoryName,
             Timestamp = DateTime.UtcNow
         };
 
-        await _repository.AddDistractionAsync(distraction);
+        await _repository.AddDistractionAsync(distraction, skipAutoCategory: forceUncategorized);
         Debug.WriteLine($"[Sentinel] Distraction saved: {note}");
+        await SendTaxonomyDataAsync();
     }
 
     private async Task HandleFalseAlarm()
@@ -358,6 +384,7 @@ public partial class MainWindow : Window
         var distraction = new Distraction
         {
             Note = "False Alarm",
+            NormalizedNote = DistractionNormalizer.Normalize("False Alarm"),
             Timestamp = DateTime.UtcNow,
             IsFalseAlarm = true
         };
@@ -391,6 +418,54 @@ public partial class MainWindow : Window
             }, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
             WebView.CoreWebView2?.PostWebMessageAsJson(message);
         });
+    }
+
+    private async Task SendTaxonomyDataAsync()
+    {
+        var data = await _repository.GetTaxonomyDataAsync();
+
+        Dispatcher.Invoke(() =>
+        {
+            var message = JsonSerializer.Serialize(new
+            {
+                type = "TAXONOMY_DATA",
+                data
+            }, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            WebView.CoreWebView2?.PostWebMessageAsJson(message);
+        });
+    }
+
+    private async Task HandleUpdateDistractionGroup(JsonElement root)
+    {
+        var normalizedNote = root.GetProperty("normalizedNote").GetString();
+        var note = root.GetProperty("note").GetString();
+        var categoryName = root.TryGetProperty("categoryName", out var categoryProp)
+            ? categoryProp.GetString()
+            : null;
+
+        if (string.IsNullOrWhiteSpace(normalizedNote) || string.IsNullOrWhiteSpace(note))
+        {
+            return;
+        }
+
+        await _repository.UpdateDistractionGroupAsync(normalizedNote, note, categoryName);
+        Debug.WriteLine($"[Sentinel] Taxonomy group updated: {normalizedNote} -> {note} ({categoryName ?? "none"})");
+        await SendTaxonomyDataAsync();
+    }
+
+    private async Task HandleRenameCategory(JsonElement root)
+    {
+        var oldName = root.GetProperty("oldName").GetString();
+        var newName = root.GetProperty("newName").GetString();
+
+        if (string.IsNullOrWhiteSpace(oldName) || string.IsNullOrWhiteSpace(newName))
+        {
+            return;
+        }
+
+        await _repository.RenameCategoryAsync(oldName, newName);
+        Debug.WriteLine($"[Sentinel] Category renamed: {oldName} -> {newName}");
+        await SendTaxonomyDataAsync();
     }
 
     private async Task HandleLogSession(JsonElement root)
@@ -450,9 +525,9 @@ public partial class MainWindow : Window
                 await File.WriteAllLinesAsync(filePath, lines);
 
                 var dFilePath = Path.Combine(exportDir, $"sentinel_distractions_{timestamp}.csv");
-                var dLines = new List<string> { "Timestamp,Note,IsFalseAlarm" };
+                var dLines = new List<string> { "Timestamp,Note,CategoryName,IsFalseAlarm" };
                 dLines.AddRange(distractions.Select(d =>
-                    $"{d.Timestamp:yyyy-MM-dd HH:mm:ss},\"{d.Note.Replace("\"", "\"\"")}\",{d.IsFalseAlarm}"));
+                    $"{d.Timestamp:yyyy-MM-dd HH:mm:ss},\"{d.Note.Replace("\"", "\"\"")}\",\"{(d.CategoryName ?? string.Empty).Replace("\"", "\"\"")}\",{d.IsFalseAlarm}"));
                 await File.WriteAllLinesAsync(dFilePath, dLines);
             }
             else
@@ -462,7 +537,7 @@ public partial class MainWindow : Window
                 {
                     exportedAt = DateTime.UtcNow,
                     sessions = sessions.Select(s => new { s.StartedAt, s.DurationSeconds, s.CompletedAt }),
-                    distractions = distractions.Select(d => new { d.Timestamp, d.Note, d.IsFalseAlarm })
+                    distractions = distractions.Select(d => new { d.Timestamp, d.Note, d.CategoryName, d.IsFalseAlarm })
                 };
                 var json = JsonSerializer.Serialize(data, new JsonSerializerOptions
                 {
@@ -520,10 +595,63 @@ public partial class MainWindow : Window
         // Apply settings immediately
         _activityMonitor.IdleThresholdSeconds = _settings.IdleThresholdSeconds;
         _activityMonitor.SuppressDuringMedia = _settings.SuppressDuringMedia;
-        Topmost = _settings.AlwaysOnTop;
+        if (!_isCompactMode)
+            Topmost = _settings.AlwaysOnTop;
 
         SettingsService.Save(_settings);
         Debug.WriteLine("[Sentinel] Settings saved");
+    }
+
+    private void HandleToggleCompact()
+    {
+        Dispatcher.Invoke(() =>
+        {
+            if (_isCompactMode)
+            {
+                // Restore full window
+                _isCompactMode = false;
+                Width = _savedWidth;
+                Height = _savedHeight;
+                Left = _savedLeft;
+                Top = _savedTop;
+                Topmost = _settings.AlwaysOnTop;
+                TitleBarGrid.Visibility = Visibility.Visible;
+                TitleBarRow.Height = new GridLength(36);
+                MinWidth = 360;
+                MinHeight = 480;
+                ResizeMode = ResizeMode.CanResizeWithGrip;
+            }
+            else
+            {
+                // Save current size/pos and shrink
+                _isCompactMode = true;
+                _savedWidth = Width;
+                _savedHeight = Height;
+                _savedLeft = Left;
+                _savedTop = Top;
+                TitleBarGrid.Visibility = Visibility.Collapsed;
+                TitleBarRow.Height = new GridLength(0);
+                MinWidth = 240;
+                MinHeight = 60;
+                Width = 280;
+                Height = 80;
+                ResizeMode = ResizeMode.NoResize;
+                Topmost = true;
+
+                // Position bottom-right of screen
+                var workArea = SystemParameters.WorkArea;
+                Left = workArea.Right - Width - 20;
+                Top = workArea.Bottom - Height - 20;
+            }
+
+            var message = JsonSerializer.Serialize(new
+            {
+                type = "COMPACT_MODE_CHANGED",
+                isCompact = _isCompactMode
+            });
+            WebView.CoreWebView2?.PostWebMessageAsJson(message);
+            Debug.WriteLine($"[Sentinel] Compact mode: {_isCompactMode}");
+        });
     }
 
     private void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e)

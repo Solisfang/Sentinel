@@ -133,6 +133,47 @@ SettingsService.Save() → writes to settings.json
 Settings applied immediately (e.g., idle threshold, always on top)
 ```
 
+### 4. Planned Distraction Taxonomy Flow
+```
+Idle detected -> Intervention modal appears
+  ->
+User can click a quick-select pill OR type a new distraction
+  ->
+If quick pill: save raw distraction immediately
+If new text: user may keep raw label, map it to an existing category, or create a new category
+  ->
+Sentinel stores:
+  - raw distraction label
+  - category (optional / editable)
+  - mapping relationship
+  ->
+Reports aggregate by category while preserving raw source labels
+```
+
+### 5. Planned Historical Taxonomy Editing Flow
+```
+User opens distraction history / taxonomy management
+  ->
+User reviews previously logged raw distractions
+  ->
+User renames a label, changes its category, or creates a new category
+  ->
+Mappings update
+  ->
+Reports become cleaner without losing original logged data
+```
+
+### 6. Planned Corner Overlay Flow
+```
+User switches from full window to corner overlay
+  ->
+Small always-available timer view remains visible in one corner
+  ->
+User can monitor focus session and perform essential actions
+  ->
+User expands back to full window for settings, reports, or taxonomy management
+```
+
 ---
 
 ## Key Components
@@ -157,6 +198,8 @@ Settings applied immediately (e.g., idle threshold, always on top)
 | Settings View | Configure timer, idle, sync options |
 | Auth View | Firebase email/password login |
 | Intervention Modal | Distraction input prompt |
+| Planned Taxonomy Manager | Review historical distractions, categories, and mappings |
+| Planned Corner Overlay | Small desktop overlay for essential timer visibility and control |
 
 ---
 
@@ -187,6 +230,7 @@ Settings applied immediately (e.g., idle threshold, always on top)
 | Local Database | `%LOCALAPPDATA%\Sentinel\sentinel.db` | SQLite |
 | Cloud Sessions | Firestore `sessions` collection | Document |
 | Cloud Distractions | Firestore `distractions` collection | Document |
+| Planned Taxonomy Data | Local database tables for distraction labels, categories, and mappings | SQLite |
 
 ---
 

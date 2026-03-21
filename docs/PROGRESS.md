@@ -1,270 +1,127 @@
 # Sentinel Development Progress
 
-> **Last Updated:** 2026-03-18
+> Last updated: 2026-03-21
 >
-> This file tracks the development progress of Sentinel. Updated as phases are completed.
+> This file tracks shipped progress and the newly approved next enhancement set.
 
 ---
 
-## Overall Progress
+## Overall Status
 
-```
-[████████████████████████████████] 100% Complete (8/8 Phases)
-```
+Sentinel's original 8-phase roadmap is documented as complete. The next approved product pass is now tracked as Phase 9.
 
 ---
 
 ## Phase Status
 
-| Phase | Name | Status | Completed Date |
-|-------|------|--------|----------------|
-| 1 | The Invisible Engine (C# Backend) | ✅ Complete | 2026-03-18 |
-| 2 | The Shiny UI (React Frontend) | ✅ Complete | 2026-03-18 |
-| 3 | The Bridge (Interop & Settings) | ✅ Complete | 2026-03-18 |
-| 4 | UX Polish & Intervention Flow | ✅ Complete | 2026-03-18 |
-| 5 | Reporting & Analytics Dashboard | ✅ Complete | 2026-03-18 |
-| 6 | Production Build & Distribution | ✅ Complete | 2026-03-18 |
-| 7 | Advanced Features | ✅ Complete | 2026-03-18 |
-| 8 | Polish & Optimization | ✅ Complete | 2026-03-18 |
+| Phase | Name | Status | Notes |
+|-------|------|--------|-------|
+| 1 | The Invisible Engine | Complete | Backend shell and idle detection foundation |
+| 2 | The Shiny UI | Complete | Timer UI, intervention shell, auth foundation |
+| 3 | The Bridge | Complete | WebView2 messaging, SQLite, settings |
+| 4 | UX Polish and Intervention Flow | Complete | Better UX and intervention handling |
+| 5 | Reporting and Analytics Dashboard | Complete | Reports, charts, filters, summaries |
+| 6 | Production Build and Distribution | Complete | Build pipeline and packaging |
+| 7 | Advanced Features | Complete | Media suppression, sleep recovery, hotkeys, export |
+| 8 | Polish and Optimization | Complete | Onboarding, accessibility, tests, optimization |
+| 9 | Distraction Taxonomy and Corner Overlay | Planned | Approved next enhancement set |
 
 ---
 
-## Detailed Progress
+## Completed Highlights
 
-### Phase 1: The Invisible Engine ✅
+### Phase 1
+- WPF shell with WebView2
+- passive idle detection via `GetLastInputInfo`
+- Firebase connectivity groundwork
 
-| Task | Status |
-|------|--------|
-| Create C# .NET 8 WPF project | ✅ Done |
-| Frameless, topmost, transparent window | ✅ Done |
-| WebView2 control integration | ✅ Done |
-| UserActivityMonitor with GetLastInputInfo | ✅ Done |
-| Configurable idle detection threshold | ✅ Done |
-| Firebase Admin SDK integration | ✅ Done |
-| Firebase connectivity logging | ✅ Done |
+### Phase 2
+- React timer UI
+- intervention modal
+- session completion summary
+- auth and sync foundation
 
-### Phase 2: The Shiny UI ✅
+### Phase 3
+- WebView2 bridge
+- SQLite persistence
+- settings UI and JSON settings persistence
+- window position persistence
 
-| Task | Status |
-|------|--------|
-| Vite + React + TypeScript scaffold | ✅ Done |
-| Tailwind CSS setup | ✅ Done |
-| Pomodoro countdown timer | ✅ Done |
-| Start/Pause functionality | ✅ Done |
-| Focus/Short Break/Long Break modes | ✅ Done |
-| Intervention modal | ✅ Done |
-| Recharts pie chart for session summary | ✅ Done |
-| Firebase Auth (email/password) | ✅ Done |
-| Firestore cloud sync | ✅ Done |
+### Phase 4
+- cleaner visual design
+- timer pause during interventions
+- false alarm, snooze, and watching content flows
+- configurable durations and presets
 
-### Phase 3: The Bridge ✅
+### Phase 5
+- reporting screen
+- date filters
+- summary cards and charts
+- recent session history
 
-| Task | Status |
-|------|--------|
-| WebView2 loads React dev server | ✅ Done |
-| C# → React messaging (IDLE_DETECTED) | ✅ Done |
-| React → C# messaging (LOG_DISTRACTION) | ✅ Done |
-| SQLite database with EF Core | ✅ Done |
-| Settings persistence (JSON) | ✅ Done |
-| Settings UI in React | ✅ Done |
-| Window position persistence | ✅ Done |
-| Draggable widget window | ✅ Done |
-| Window controls (minimize, close) | ✅ Done |
+### Phase 6
+- production asset build output
+- distribution and installer preparation
 
-### Phase 4: UX Polish & Intervention Flow ✅
+### Phase 7
+- media suppression
+- sleep and wake recovery
+- global hotkeys
+- sound, goals, and export
 
-| Task | Status |
-|------|--------|
-| **4A: Visual Design** | |
-| Glassmorphism effect (blur + transparency) | ✅ Done |
-| Better button styling (rounded, hover effects) | ✅ Done |
-| Add maximize button | ✅ Done |
-| Micro-animations and transitions | ✅ Done |
-| **4B: Configurable Timers** | |
-| Custom Focus duration | ✅ Done |
-| Custom Short Break duration | ✅ Done |
-| Custom Long Break duration | ✅ Done |
-| Timer presets (Classic, Deep Work, Sprint) | ✅ Done |
-| Custom named sessions | ✅ Done |
-| **4C: Intervention Flow** | |
-| Pause timer when modal appears | ✅ Done |
-| "Log Distraction" option | ✅ Done |
-| "False Alarm" option | ✅ Done |
-| "Snooze 5/10/30 min" option | ✅ Done |
-| "Watching Content" mode (30/60/90 min) | ✅ Done |
-| Snooze indicator in UI | ✅ Done |
-| Snooze state in C# UserActivityMonitor | ✅ Done |
-| **4D: Timer Behavior** | |
-| Visual pause indicator | ✅ Done |
-| Auto-resume after intervention | ✅ Done |
-
-### Phase 5: Reporting & Analytics ✅
-
-| Task | Status |
-|------|--------|
-| Reports view in React | ✅ Done |
-| ReportingService in C# | ✅ Done |
-| GET_REPORT_DATA message type | ✅ Done |
-| REPORT_DATA response message | ✅ Done |
-| LOG_SESSION message type | ✅ Done |
-| Daily focus bar chart (Recharts) | ✅ Done |
-| Distraction breakdown pie chart | ✅ Done |
-| Summary cards (time, sessions, distractions, avg) | ✅ Done |
-| Recent session history list | ✅ Done |
-| Date range filters (Today/Week/Month/All) | ✅ Done |
-| False alarm tracking & ratio | ✅ Done |
-| Firestore historical data fetch | ✅ Done |
-
-### Phase 6: Production Build ✅
-
-| Task | Status |
-|------|--------|
-| Vite production build config (output to wwwroot/) | ✅ Done |
-| Production mode detection in C# (file-based) | ✅ Done |
-| Build script (build.ps1 PowerShell) | ✅ Done |
-| Application icon (sentinel.ico) | ✅ Done |
-| Assembly metadata (version, description, company) | ✅ Done |
-| DPI awareness manifest (PerMonitorV2) | ✅ Done |
-| Single-file publish (.csproj config) | ✅ Done |
-| wwwroot content included in publish output | ✅ Done |
-| Windows installer | ✅ Done |
-| Auto-update mechanism | ✅ Done |
-
-### Phase 7: Advanced Features ✅
-
-| Task | Status |
-|------|--------|
-| **7A: Smart Media Suppression** | |
-| MediaDetector.cs (Core Audio API) | ✅ Done |
-| Auto-suppress idle during audio playback | ✅ Done |
-| Settings toggle: Suppress During Media | ✅ Done |
-| **7B: System Sleep/Wake Recovery** | |
-| WM_POWERBROADCAST handling in WPF | ✅ Done |
-| Pause timer on system suspend | ✅ Done |
-| Resume prompt on system wake | ✅ Done |
-| **7C: Global Hotkeys** | |
-| Ctrl+Shift+S — Start/Pause | ✅ Done |
-| Ctrl+Shift+D — Log Distraction | ✅ Done |
-| RegisterHotKey P/Invoke | ✅ Done |
-| **7D: Notifications & Sounds** | |
-| System sound on session complete | ✅ Done |
-| Sound enabled/disabled via settings | ✅ Done |
-| **7E: Goals & Streaks** | |
-| Daily focus goal setting (minutes) | ✅ Done |
-| Progress bar in timer view | ✅ Done |
-| **7F: Data Export** | |
-| Export sessions to JSON | ✅ Done |
-| Export sessions to CSV | ✅ Done |
-| Export distractions to CSV | ✅ Done |
-| Export status feedback in UI | ✅ Done |
-
-### Phase 8: Polish & Optimization ✅
-
-| Task | Status |
-|------|--------|
-| Onboarding flow (4-step walkthrough) | ✅ Done |
-| Keyboard navigation (Esc, Enter, Space) | ✅ Done |
-| Loading states (report loading spinner) | ✅ Done |
-| Error handling UI (catch blocks, export feedback) | ✅ Done |
-| Accessibility: ARIA labels | ✅ Done |
-| Accessibility: Focus rings | ✅ Done |
-| Accessibility: role attributes (timer, dialog, tablist, progressbar) | ✅ Done |
-| Accessibility: aria-live for timer | ✅ Done |
-| Semantic nav element for bottom nav | ✅ Done |
-| Bundle optimization | ✅ Done |
-| Unit tests (30 tests via Vitest) | ✅ Done |
-| Timer presets (Classic, Deep Work, Sprint) | ✅ Done |
-| Custom named sessions | ✅ Done |
-| Utility functions extracted to utils.ts | ✅ Done |
-| Code splitting (recharts, firebase chunks) | ✅ Done |
-| Windows installer (Inno Setup script) | ✅ Done |
-| Firestore historical data fetch for reports | ✅ Done |
-| Crash reporting (CrashReporter + ErrorBoundary) | ✅ Done |
-| Beta testing | 🔲 Deferred |
+### Phase 8
+- onboarding
+- accessibility improvements
+- tests
+- crash reporting and polish
 
 ---
 
-## Known Issues / Bugs
+## Approved Next Enhancements (Not Yet Implemented)
 
-| Issue | Severity | Status |
-|-------|----------|--------|
-| ~~Timer keeps running during intervention~~ | ~~🔴 High~~ | ✅ Fixed |
-| ~~No way to dismiss false alarms~~ | ~~🔴 High~~ | ✅ Fixed |
-| ~~No snooze for tutorials/content~~ | ~~🔴 High~~ | ✅ Fixed |
-| ~~Break durations not fully configurable~~ | ~~🟡 Medium~~ | ✅ Fixed |
-| ~~No maximize button~~ | ~~🟡 Medium~~ | ✅ Fixed |
-| ~~Basic visual design~~ | ~~🟡 Medium~~ | ✅ Fixed |
+These items are approved for the next implementation pass, but they are not shipped yet.
 
----
-
-## Changelog
-
-### 2026-03-18
-- ✅ Completed Phase 1: C# Backend with idle detection
-- ✅ Completed Phase 2: React UI with timer and Firebase
-- ✅ Completed Phase 3: WebView2 bridge, SQLite, settings
-- ✅ Completed Phase 4: UX Polish & Intervention Flow
-  - Glassmorphism visual design, maximize button, better button styles
-  - Full intervention flow: Log Distraction, False Alarm, Snooze (5/10/30m), Watching Content (30/60/90m)
-  - Timer pauses on intervention, auto-resumes after dismissal
-  - Snooze indicator with cancel option
-  - Configurable Focus/Short Break/Long Break durations in settings
-  - All 6 known bugs fixed
-- ✅ Completed Phase 5: Reporting & Analytics Dashboard
-  - ReportingService.cs with SQLite aggregation queries
-  - Reports view with date range filters (Today/Week/Month/All)
-  - Summary cards: focus time, sessions, distractions, avg session length
-  - Daily focus bar chart (Recharts BarChart)
-  - Distraction breakdown pie chart with legend
-  - Recent sessions list
-  - False alarm tracking and ratio display
-  - LOG_SESSION message saves completed sessions to SQLite
-- ✅ Completed Phase 6: Production Build & Distribution
-  - Vite builds to Sentinel.Engine/wwwroot/ (base: './')
-  - Dev/prod auto-detection: loads localhost:5173 or local wwwroot/index.html
-  - Application icon (sentinel.ico), assembly metadata (v1.0.0)
-  - DPI-aware manifest (PerMonitorV2)
-  - Single-file self-contained publish config in .csproj
-  - PowerShell build.ps1 script (npm build → dotnet publish)
-- ✅ Completed Phase 7: Advanced Features
-  - MediaDetector.cs: Core Audio API to detect audio playback
-  - Auto-suppress idle detection during media playback (settings toggle)
-  - Sleep/wake recovery: WM_POWERBROADCAST handler, resume prompt
-  - Global hotkeys: Ctrl+Shift+S (start/pause), Ctrl+Shift+D (distraction)
-  - Notification sound on session complete (System.Media.SystemSounds)
-  - Daily focus goal with progress bar in timer view
-  - Data export: JSON backup and CSV export to %LOCALAPPDATA%\Sentinel\exports\
-  - Keyboard shortcuts info in settings
-- ✅ Completed Phase 8: Polish & Optimization
-  - 4-step onboarding flow for first-time users (localStorage-based)
-  - Keyboard navigation: Esc to go back, Enter to confirm, Space to toggle timer
-  - ARIA labels, roles (dialog, timer, tablist, progressbar), aria-live for timer
-  - Focus rings on all interactive elements
-  - Semantic <nav> element for bottom navigation
-  - Back buttons show "Esc" hint
-- ✅ Deferred items now implemented:
-  - Timer presets: Classic (25/5/15), Deep Work (50/10/20), Sprint (15/3/10)
-  - Custom named sessions (optional label per session)
-  - Unit tests: 30 tests via Vitest covering all utility functions
-  - Bundle optimization: code splitting into 3 chunks (app 209KB, firebase 311KB, recharts 367KB)
-  - Extracted utility functions to src/utils.ts for testability
-- ✅ Additional improvements:
-  - Windows installer: Inno Setup script (installer.iss) with build.ps1 -Installer flag
-  - Firestore historical data fetch: reports merge cloud data when cloud sync is enabled
-  - Fixed handleReset bug (missing settings argument after refactor)
-- ✅ Final deferred items:
-  - Auto-update checker: UpdateChecker.cs polls GitHub Releases API, shows banner in settings
-  - Crash reporting: CrashReporter.cs catches UnhandledException, DispatcherUnhandledException, UnobservedTaskException; logs to %LOCALAPPDATA%\Sentinel\logs\crash.log
-  - React ErrorBoundary wraps App for graceful frontend crash recovery
-- 📝 Updated docs with Phase 4 UX priorities
-- 📝 Created PROGRESS.md for tracking
+| Enhancement | Purpose | Status |
+|-------------|---------|--------|
+| Quick-select distraction pills | Let users log repeated distractions without retyping | Planned |
+| Recent and top distraction suggestions | Show at least 5 pills using recent and frequent history | Planned |
+| Distraction categories and mappings | Group raw labels into cleaner reporting categories | Planned |
+| Historical taxonomy editing | Let users edit labels, categories, and mappings later | Planned |
+| Category-aware reporting | Improve analytics clarity without losing raw data | Planned |
+| Corner overlay / mini-window mode | Keep Sentinel visible in a small corner popup | Planned |
 
 ---
 
-## Next Steps
+## Current Documentation Note
 
-All 8 phases are complete! Sentinel v1.0 is ready.
+The documentation now reflects the following agreed product direction:
 
-Deferred items for future releases:
-- Beta testing
-- Sentry integration (external crash reporting service)
+- distraction suggestions should be fast and reusable in the intervention flow
+- taxonomy should be user-controlled and editable over time
+- reports should become category-aware while preserving raw entries
+- Sentinel should support a lightweight corner overlay for everyday desktop use
+
+---
+
+## Known Product Gaps
+
+These are not regressions in the shipped roadmap. They are the currently acknowledged gaps the next phase aims to solve.
+
+| Gap | Why It Matters | Planned Resolution |
+|-----|----------------|-------------------|
+| Users must retype common distractions too often | Adds friction at the exact moment of interruption | Quick-select pills and history-driven suggestions |
+| Similar distractions fragment reports | Analytics become noisy and harder to learn from | Category mapping and taxonomy editing |
+| Historical cleanup is limited | Users cannot easily improve old data quality | Dedicated taxonomy management flow |
+| Full window can feel heavy for constant visibility | Users may want a lighter always-visible timer presence | Corner overlay / mini-window mode |
+
+---
+
+## Next Step
+
+The next implementation pass should focus on Phase 9:
+
+1. quick distraction suggestions
+2. categories and mappings
+3. historical taxonomy editing
+4. category-aware reporting
+5. corner overlay / mini-window mode

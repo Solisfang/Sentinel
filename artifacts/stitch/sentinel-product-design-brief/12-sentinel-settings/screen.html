@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sentinel Settings - The Sanctuary</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-primary": "#6833ea",
+              "surface": "#131313",
+              "on-tertiary-container": "#e6ffe2",
+              "tertiary": "#3ce36a",
+              "on-tertiary-fixed": "#002108",
+              "on-error-container": "#ffdad6",
+              "on-error": "#690005",
+              "on-surface-variant": "#cac3d8",
+              "tertiary-container": "#008434",
+              "outline-variant": "#494455",
+              "surface-tint": "#cdbdff",
+              "on-secondary-fixed": "#001e30",
+              "tertiary-fixed-dim": "#3ce36a",
+              "surface-container-high": "#2a2a2a",
+              "surface-container": "#201f1f",
+              "error": "#ffb4ab",
+              "surface-container-highest": "#353534",
+              "error-container": "#93000a",
+              "on-primary-fixed-variant": "#4f00d0",
+              "on-tertiary-fixed-variant": "#00531e",
+              "secondary-container": "#00affe",
+              "on-secondary-container": "#003f5f",
+              "inverse-surface": "#e5e2e1",
+              "on-tertiary": "#003912",
+              "primary-fixed": "#e8deff",
+              "on-surface": "#e5e2e1",
+              "secondary": "#8dcdff",
+              "on-primary": "#370096",
+              "surface-variant": "#353534",
+              "surface-container-low": "#1c1b1b",
+              "surface-bright": "#393939",
+              "primary-fixed-dim": "#cdbdff",
+              "outline": "#948ea1",
+              "on-primary-fixed": "#20005f",
+              "on-primary-container": "#fcf6ff",
+              "on-background": "#e5e2e1",
+              "surface-dim": "#131313",
+              "surface-container-lowest": "#0e0e0e",
+              "primary-container": "#7c4dff",
+              "on-secondary": "#00344f",
+              "background": "#131313",
+              "inverse-on-surface": "#313030",
+              "on-secondary-fixed-variant": "#004b70",
+              "primary": "#cdbdff",
+              "tertiary-fixed": "#69ff87",
+              "secondary-fixed-dim": "#8dcdff",
+              "secondary-fixed": "#cae6ff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(53, 53, 52, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #131313;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #353534;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary/30">
+<div class="flex h-screen overflow-hidden">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col py-6 space-y-8 bg-[#1C1B1B] dark:bg-[#1C1B1B] h-screen w-64 border-r border-[#494455]/15 font-['Inter'] text-[0.875rem] font-medium tracking-wide">
+<div class="px-6 mb-2">
+<div class="text-[#E5E2E1] font-['Manrope'] font-semibold text-lg tracking-widest uppercase">Sentinel</div>
+<div class="text-on-surface-variant/60 text-[10px] uppercase tracking-widest mt-1">Privacy Engine</div>
+</div>
+<div class="px-4 flex-1 space-y-1">
+<div class="flex items-center px-4 py-3 text-[#E5E2E1]/40 hover:text-[#E5E2E1]/80 hover:bg-[#353534]/50 transition-all duration-300 rounded-lg cursor-default select-none group">
+<span class="material-symbols-outlined mr-3 text-xl" data-icon="timer">timer</span>
+<span>Timer</span>
+</div>
+<div class="flex items-center px-4 py-3 text-[#E5E2E1]/40 hover:text-[#E5E2E1]/80 hover:bg-[#353534]/50 transition-all duration-300 rounded-lg cursor-default select-none group">
+<span class="material-symbols-outlined mr-3 text-xl" data-icon="bar_chart">bar_chart</span>
+<span>Reports</span>
+</div>
+<div class="flex items-center px-4 py-3 text-[#E5E2E1]/40 hover:text-[#E5E2E1]/80 hover:bg-[#353534]/50 transition-all duration-300 rounded-lg cursor-default select-none group">
+<span class="material-symbols-outlined mr-3 text-xl" data-icon="category">category</span>
+<span>Taxonomy</span>
+</div>
+<div class="flex items-center px-4 py-3 text-[#CDBDFF] font-bold border-r-2 border-[#7C4DFF] bg-[#353534]/30 transition-all duration-300 cursor-default select-none">
+<span class="material-symbols-outlined mr-3 text-xl" data-icon="settings">settings</span>
+<span>Settings</span>
+</div>
+</div>
+<div class="px-4 pt-4 mt-auto border-t border-outline-variant/10">
+<div class="flex items-center px-4 py-3 text-[#E5E2E1]/40 hover:text-[#E5E2E1]/80 hover:bg-[#353534]/50 transition-all duration-300 rounded-lg cursor-default select-none">
+<span class="material-symbols-outlined mr-3 text-xl" data-icon="account_circle">account_circle</span>
+<span>Account</span>
+</div>
+<div class="mt-6 px-4 py-4 rounded-xl bg-surface-container-lowest border border-outline-variant/5">
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-on-primary-container text-xs font-bold">JD</div>
+<div class="overflow-hidden">
+<p class="text-xs font-bold text-on-surface truncate">The Sanctuary</p>
+<p class="text-[10px] text-on-surface-variant truncate">Deep Work Active</p>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col min-w-0 overflow-hidden bg-surface">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center w-full px-6 h-14 bg-[#131313] text-[#CDBDFF] font-['Manrope'] font-bold text-sm tracking-tight z-10">
+<div class="flex items-center space-x-2">
+<span class="text-[#E5E2E1]/40">System</span>
+<span class="material-symbols-outlined text-xs" data-icon="chevron_right">chevron_right</span>
+<span class="text-[#CDBDFF]">Settings</span>
+</div>
+<div class="flex items-center space-x-4">
+<button class="p-1.5 hover:bg-[#353534] transition-colors duration-200 rounded">
+<span class="material-symbols-outlined text-lg" data-icon="remove">remove</span>
+</button>
+<button class="p-1.5 hover:bg-[#353534] transition-colors duration-200 rounded">
+<span class="material-symbols-outlined text-lg" data-icon="check_box_outline_blank">check_box_outline_blank</span>
+</button>
+<button class="p-1.5 hover:bg-[#353534] transition-colors duration-200 rounded">
+<span class="material-symbols-outlined text-lg" data-icon="close">close</span>
+</button>
+</div>
+</header>
+<!-- Scrollable Settings Area -->
+<div class="flex-1 overflow-y-auto px-8 py-10 space-y-12 max-w-6xl mx-auto w-full">
+<!-- Hero Header -->
+<section class="space-y-2">
+<h1 class="font-headline font-extrabold text-4xl tracking-tight text-on-surface">Configuration</h1>
+<p class="font-body text-on-surface-variant/70 text-lg max-w-2xl">Refine your digital sanctuary. Adjust focus parameters and privacy triggers for optimal deep work performance.</p>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+<!-- Left Column: Primary Settings (60%) -->
+<div class="lg:col-span-3 space-y-8">
+<!-- Timer & Presets -->
+<div class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
+<div class="flex items-center space-x-3 mb-8">
+<span class="material-symbols-outlined text-primary" data-icon="timer">timer</span>
+<h2 class="font-headline font-bold text-xl">Timer &amp; Presets</h2>
+</div>
+<div class="space-y-6">
+<div class="flex items-center justify-between group">
+<div>
+<p class="font-medium text-on-surface">Adaptive Pomodoro</p>
+<p class="text-sm text-on-surface-variant/60">Automatically adjust break length based on work intensity.</p>
+</div>
+<button class="relative inline-flex h-5 w-10 shrink-0 cursor-pointer items-center rounded-full bg-primary-container transition-colors focus:outline-none">
+<span class="translate-x-5 inline-block h-3.5 w-3.5 transform rounded-full bg-surface-bright transition-transform"></span>
+</button>
+</div>
+<div class="pt-4 border-t border-outline-variant/5">
+<p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant/40 mb-4">Focus Intervals</p>
+<div class="grid grid-cols-3 gap-4">
+<div class="bg-surface-container-highest p-4 rounded-lg text-center cursor-pointer hover:bg-surface-bright transition-colors">
+<p class="text-2xl font-headline font-bold text-primary">25</p>
+<p class="text-[10px] font-bold text-on-surface-variant uppercase">Standard</p>
+</div>
+<div class="bg-surface-container p-4 rounded-lg text-center border-b-2 border-primary">
+<p class="text-2xl font-headline font-bold text-primary">45</p>
+<p class="text-[10px] font-bold text-on-surface-variant uppercase">Deep</p>
+</div>
+<div class="bg-surface-container-highest p-4 rounded-lg text-center cursor-pointer hover:bg-surface-bright transition-colors">
+<p class="text-2xl font-headline font-bold text-primary">90</p>
+<p class="text-[10px] font-bold text-on-surface-variant uppercase">Flow</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Idle & Behavior -->
+<div class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
+<div class="flex items-center space-x-3 mb-8">
+<span class="material-symbols-outlined text-secondary" data-icon="motion_sensor_active">motion_sensor_active</span>
+<h2 class="font-headline font-bold text-xl">Idle &amp; Behavior</h2>
+</div>
+<div class="space-y-8">
+<div class="flex items-center justify-between">
+<div class="max-w-[70%]">
+<p class="font-medium text-on-surface">Auto-Pause on Lock</p>
+<p class="text-sm text-on-surface-variant/60">Pause the active timer immediately when the workstation is locked or goes to sleep.</p>
+</div>
+<button class="relative inline-flex h-5 w-10 shrink-0 cursor-pointer items-center rounded-full bg-primary-container transition-colors focus:outline-none">
+<span class="translate-x-5 inline-block h-3.5 w-3.5 transform rounded-full bg-surface-bright transition-transform"></span>
+</button>
+</div>
+<div class="flex items-center justify-between">
+<div class="max-w-[70%]">
+<p class="font-medium text-on-surface">Stealth Mode Triggers</p>
+<p class="text-sm text-on-surface-variant/60">Activate VPN and hide desktop icons when a Focus session starts.</p>
+</div>
+<button class="relative inline-flex h-5 w-10 shrink-0 cursor-pointer items-center rounded-full bg-surface-container-highest transition-colors focus:outline-none">
+<span class="translate-x-1 inline-block h-3.5 w-3.5 transform rounded-full bg-outline transition-transform"></span>
+</button>
+</div>
+<div class="pt-4 space-y-3">
+<label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant/40">Inactivity Timeout</label>
+<div class="relative">
+<input class="w-full h-1.5 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-primary" type="range"/>
+<div class="flex justify-between mt-2 text-[10px] text-on-surface-variant/50 font-mono">
+<span>2 MIN</span>
+<span>5 MIN</span>
+<span>10 MIN</span>
+<span>NEVER</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Data Organization -->
+<div class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
+<div class="flex items-center space-x-3 mb-8">
+<span class="material-symbols-outlined text-tertiary" data-icon="database">database</span>
+<h2 class="font-headline font-bold text-xl">Data Organization</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-surface-container p-6 rounded-lg border-l-2 border-primary-container">
+<p class="text-sm font-bold text-on-surface mb-1">Local Ledger</p>
+<p class="text-xs text-on-surface-variant/60 mb-4">Store all session data locally with AES-256 encryption.</p>
+<button class="text-[10px] font-bold text-primary uppercase tracking-widest hover:underline">Manage Storage</button>
+</div>
+<div class="bg-surface-container p-6 rounded-lg border-l-2 border-outline-variant/20">
+<p class="text-sm font-bold text-on-surface mb-1">Auto-Archive</p>
+<p class="text-xs text-on-surface-variant/60 mb-4">Archive sessions older than 30 days to the sanctuary cloud.</p>
+<button class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest hover:text-on-surface">Enable Cloud</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Secondary Settings (40%) -->
+<div class="lg:col-span-2 space-y-8">
+<!-- Account & Shortcuts -->
+<div class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
+<div class="flex items-center space-x-3 mb-8">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="keyboard_command_key">keyboard_command_key</span>
+<h2 class="font-headline font-bold text-xl">Quick Controls</h2>
+</div>
+<div class="space-y-6">
+<div class="flex items-center justify-between p-3 bg-surface-container rounded-lg group hover:bg-surface-container-high transition-colors">
+<span class="text-sm text-on-surface-variant">Toggle Focus</span>
+<kbd class="px-2 py-1 bg-surface-container-highest rounded text-[10px] font-mono text-primary font-bold">⌘ + SHIFT + F</kbd>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container rounded-lg group hover:bg-surface-container-high transition-colors">
+<span class="text-sm text-on-surface-variant">Instant Break</span>
+<kbd class="px-2 py-1 bg-surface-container-highest rounded text-[10px] font-mono text-primary font-bold">⌘ + SHIFT + B</kbd>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container rounded-lg group hover:bg-surface-container-high transition-colors">
+<span class="text-sm text-on-surface-variant">Log Activity</span>
+<kbd class="px-2 py-1 bg-surface-container-highest rounded text-[10px] font-mono text-primary font-bold">⌘ + L</kbd>
+</div>
+<div class="pt-6">
+<button class="w-full py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-bold text-sm rounded shadow-lg shadow-primary/10 hover:opacity-90 transition-opacity">
+                                        Customize Shortcuts
+                                    </button>
+</div>
+</div>
+</div>
+<!-- Goals & Export -->
+<div class="bg-surface-container-low rounded-xl p-8 border border-outline-variant/5">
+<div class="flex items-center space-x-3 mb-8">
+<span class="material-symbols-outlined text-primary" data-icon="flag">flag</span>
+<h2 class="font-headline font-bold text-xl">Goals &amp; Export</h2>
+</div>
+<div class="space-y-6">
+<div>
+<p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant/40 mb-3">Weekly Focus Goal</p>
+<div class="flex items-end space-x-2">
+<input class="w-16 bg-surface-container-highest border-none border-b border-primary text-xl font-headline font-bold text-primary focus:ring-0 text-center" type="text" value="40"/>
+<span class="text-sm text-on-surface-variant pb-1">Hours / Week</span>
+</div>
+</div>
+<div class="pt-4">
+<p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant/40 mb-4">Export Format</p>
+<div class="flex space-x-2">
+<button class="flex-1 py-2 text-[10px] font-bold border border-outline-variant/30 rounded hover:bg-surface-container-highest transition-colors uppercase">CSV</button>
+<button class="flex-1 py-2 text-[10px] font-bold border border-outline-variant/30 rounded bg-surface-container-highest transition-colors uppercase">JSON</button>
+<button class="flex-1 py-2 text-[10px] font-bold border border-outline-variant/30 rounded hover:bg-surface-container-highest transition-colors uppercase">PDF</button>
+</div>
+</div>
+</div>
+</div>
+<!-- App Status/System -->
+<div class="glass-panel rounded-xl p-8 border border-outline-variant/5 relative overflow-hidden">
+<div class="relative z-10">
+<h3 class="font-headline font-bold text-lg mb-4">System Status</h3>
+<div class="space-y-4">
+<div class="flex items-center space-x-3">
+<div class="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_8px_rgba(60,227,106,0.6)]"></div>
+<span class="text-sm font-medium">Sentinel Core v2.4.1</span>
+</div>
+<div class="flex items-center space-x-3 text-on-surface-variant/60">
+<span class="material-symbols-outlined text-sm" data-icon="shield">shield</span>
+<span class="text-xs">Database encrypted &amp; secure</span>
+</div>
+<button class="w-full mt-4 py-2 text-[10px] font-bold text-on-surface-variant/40 uppercase tracking-widest hover:text-on-surface transition-colors text-left">
+                                        Check for updates...
+                                    </button>
+</div>
+</div>
+<!-- Background accent -->
+<div class="absolute -right-10 -bottom-10 w-32 h-32 bg-primary/5 rounded-full blur-3xl"></div>
+</div>
+</div>
+</div>
+<!-- Global Footer Actions -->
+<div class="flex items-center justify-end space-x-6 pt-10 border-t border-outline-variant/10">
+<button class="text-on-surface-variant font-medium text-sm hover:text-on-surface transition-colors">Discard changes</button>
+<button class="px-10 py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary-container font-headline font-extrabold text-sm rounded shadow-2xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">Save Environment</button>
+</div>
+</div>
+</main>
+</div>
+<!-- Mobile Navigation Suppressed per Design System Rule (No Mobile Patterns) -->
+<!-- But keeping a fallback for small screens to ensure content is reachable -->
+<div class="md:hidden fixed bottom-6 right-6 z-50">
+<button class="w-14 h-14 bg-primary rounded-full flex items-center justify-center shadow-2xl shadow-primary/40 text-on-primary">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</div>
+</body></html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sentinel Mini-Overlay</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "outline": "#948ea1",
+              "secondary": "#8dcdff",
+              "secondary-fixed-dim": "#8dcdff",
+              "on-error": "#690005",
+              "on-secondary-fixed-variant": "#004b70",
+              "error": "#ffb4ab",
+              "surface-bright": "#393939",
+              "surface-tint": "#cdbdff",
+              "surface-container-highest": "#353534",
+              "on-primary": "#370096",
+              "surface": "#131313",
+              "secondary-fixed": "#cae6ff",
+              "on-secondary-container": "#003f5f",
+              "surface-variant": "#353534",
+              "inverse-on-surface": "#313030",
+              "inverse-primary": "#6833ea",
+              "inverse-surface": "#e5e2e1",
+              "surface-container": "#201f1f",
+              "on-tertiary-container": "#e6ffe2",
+              "on-surface": "#e5e2e1",
+              "surface-container-lowest": "#0e0e0e",
+              "on-primary-fixed": "#20005f",
+              "tertiary": "#3ce36a",
+              "outline-variant": "#494455",
+              "surface-container-high": "#2a2a2a",
+              "on-primary-container": "#fcf6ff",
+              "background": "#131313",
+              "on-primary-fixed-variant": "#4f00d0",
+              "on-surface-variant": "#cac3d8",
+              "surface-container-low": "#1c1b1b",
+              "tertiary-container": "#008434",
+              "tertiary-fixed": "#69ff87",
+              "on-background": "#e5e2e1",
+              "secondary-container": "#00affe",
+              "error-container": "#93000a",
+              "primary-fixed": "#e8deff",
+              "on-secondary-fixed": "#001e30",
+              "tertiary-fixed-dim": "#3ce36a",
+              "on-tertiary-fixed-variant": "#00531e",
+              "primary": "#cdbdff",
+              "on-error-container": "#ffdad6",
+              "primary-fixed-dim": "#cdbdff",
+              "on-tertiary": "#003912",
+              "primary-container": "#7c4dff",
+              "on-secondary": "#00344f",
+              "on-tertiary-fixed": "#002108",
+              "surface-dim": "#131313"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+            font-size: 18px;
+        }
+        .glass-panel {
+            background: rgba(28, 27, 27, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+    </style>
+</head>
+<body class="bg-[#0e0e0e] min-h-screen flex items-center justify-center font-body text-on-surface">
+<!-- Mini Overlay Container -->
+<div class="relative w-[200px] h-[120px] glass-panel rounded-xl overflow-hidden shadow-2xl border border-outline-variant/20 flex flex-col group">
+<!-- Header / Draggable Area Simulation -->
+<div class="flex justify-between items-center px-3 pt-2 h-6">
+<div class="flex items-center gap-1.5">
+<div class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div>
+<span class="font-label text-[10px] tracking-[0.1em] text-primary font-semibold uppercase">Focus</span>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors duration-200">
+<span class="material-symbols-outlined" style="font-size: 16px;">open_in_full</span>
+</button>
+</div>
+<!-- Main Content (Timer) -->
+<div class="flex-grow flex flex-col items-center justify-center -mt-1">
+<span class="font-headline text-3xl font-extrabold tracking-tighter text-on-surface leading-none">
+                14:23
+            </span>
+</div>
+<!-- Footer / Actions -->
+<div class="flex justify-center items-center h-8 pb-1 gap-4">
+<button class="hover:scale-110 transition-transform text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">pause</span>
+</button>
+<button class="hover:scale-110 transition-transform text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined">stop</span>
+</button>
+</div>
+<!-- Progress Bar (The Obsidian Sanctuary Style) -->
+<div class="absolute bottom-0 left-0 w-full h-[3px] bg-surface-container-highest">
+<div class="h-full bg-gradient-to-r from-primary to-primary-container w-[65%] shadow-[0_0_8px_rgba(205,189,255,0.4)]"></div>
+</div>
+</div>
+<!-- Break Mode Variant (Hidden or Secondary Example for reference) -->
+<div class="fixed bottom-10 right-10 w-[200px] h-[120px] glass-panel rounded-xl overflow-hidden shadow-2xl border border-outline-variant/20 flex flex-col">
+<div class="flex justify-between items-center px-3 pt-2 h-6">
+<div class="flex items-center gap-1.5">
+<div class="w-1.5 h-1.5 rounded-full bg-tertiary"></div>
+<span class="font-label text-[10px] tracking-[0.1em] text-tertiary font-semibold uppercase">Break</span>
+</div>
+<button class="text-on-surface-variant hover:text-tertiary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 16px;">open_in_full</span>
+</button>
+</div>
+<div class="flex-grow flex flex-col items-center justify-center -mt-1">
+<span class="font-headline text-3xl font-extrabold tracking-tighter text-on-surface leading-none">
+                04:59
+            </span>
+</div>
+<div class="flex justify-center items-center h-8 pb-1 gap-4">
+<button class="text-tertiary hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<button class="text-on-surface-variant hover:text-tertiary transition-transform">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<div class="absolute bottom-0 left-0 w-full h-[3px] bg-surface-container-highest">
+<div class="h-full bg-tertiary w-[20%] shadow-[0_0_8px_rgba(60,227,106,0.3)]"></div>
+</div>
+</div>
+<!-- Context Label for user -->
+<div class="absolute top-10 text-on-surface-variant/40 font-label text-xs uppercase tracking-widest">
+        Sentinel Mini-Window Concept (Always-on-Top)
+    </div>
+</body></html>

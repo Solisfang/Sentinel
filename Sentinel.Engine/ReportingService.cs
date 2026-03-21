@@ -11,7 +11,8 @@ public class ReportData
     public int FalseAlarms { get; set; }
     public double AvgSessionSeconds { get; set; }
     public List<DailyFocus> DailyFocus { get; set; } = [];
-    public List<DistractionCategory> TopDistractions { get; set; } = [];
+    public List<ReportBreakdownItem> TopCategories { get; set; } = [];
+    public List<ReportBreakdownItem> TopDistractions { get; set; } = [];
     public List<SessionEntry> RecentSessions { get; set; } = [];
 }
 
@@ -23,10 +24,11 @@ public class DailyFocus
     public int Distractions { get; set; }
 }
 
-public class DistractionCategory
+public class ReportBreakdownItem
 {
     public string Name { get; set; } = "";
     public int Count { get; set; }
+    public string? CategoryName { get; set; }
 }
 
 public class SessionEntry
@@ -53,7 +55,9 @@ public class ReportingService
                 .ToListAsync();
 
             var completedSessions = sessions.Where(s => s.CompletedAt.HasValue).ToList();
-            var actualDistractions = distractions.Where(d => !d.IsFalseAlarm).ToList();
+            var actualDistractions = distractions
+                .Where(d => !d.IsFalseAlarm && !string.IsNullOrWhiteSpace(d.NormalizedNote))
+                .ToList();
 
             var report = new ReportData
             {
@@ -66,14 +70,13 @@ public class ReportingService
                     : 0,
             };
 
-            // Daily focus for last 7 days
             var startDate = DateTime.UtcNow.Date.AddDays(-6);
-            for (int i = 0; i < 7; i++)
+            for (var i = 0; i < 7; i++)
             {
                 var day = startDate.AddDays(i);
                 var nextDay = day.AddDays(1);
                 var daySessions = completedSessions.Where(s => s.StartedAt >= day && s.StartedAt < nextDay).ToList();
-                var dayDistractions = actualDistractions.Where(d => d.Timestamp >= day && d.Timestamp < nextDay).Count();
+                var dayDistractions = actualDistractions.Count(d => d.Timestamp >= day && d.Timestamp < nextDay);
 
                 report.DailyFocus.Add(new DailyFocus
                 {
@@ -84,15 +87,35 @@ public class ReportingService
                 });
             }
 
-            // Top distraction categories
-            report.TopDistractions = actualDistractions
-                .GroupBy(d => d.Note.ToLowerInvariant().Trim())
-                .Select(g => new DistractionCategory { Name = g.Key, Count = g.Count() })
-                .OrderByDescending(c => c.Count)
+            report.TopCategories = actualDistractions
+                .GroupBy(d => string.IsNullOrWhiteSpace(d.CategoryName) ? "Uncategorized" : d.CategoryName!.Trim())
+                .Select(group => new ReportBreakdownItem
+                {
+                    Name = group.Key,
+                    Count = group.Count()
+                })
+                .OrderByDescending(item => item.Count)
+                .ThenBy(item => item.Name)
                 .Take(6)
                 .ToList();
 
-            // Recent sessions (last 20)
+            report.TopDistractions = actualDistractions
+                .GroupBy(d => d.NormalizedNote)
+                .Select(group =>
+                {
+                    var mostRecent = group.OrderByDescending(item => item.Timestamp).First();
+                    return new ReportBreakdownItem
+                    {
+                        Name = mostRecent.Note,
+                        Count = group.Count(),
+                        CategoryName = mostRecent.CategoryName
+                    };
+                })
+                .OrderByDescending(item => item.Count)
+                .ThenBy(item => item.Name)
+                .Take(8)
+                .ToList();
+
             report.RecentSessions = sessions
                 .OrderByDescending(s => s.StartedAt)
                 .Take(20)
@@ -104,7 +127,8 @@ public class ReportingService
                 })
                 .ToList();
 
-            Debug.WriteLine($"[Sentinel] Report generated: {report.SessionsCompleted} sessions, {report.DistractionsLogged} distractions");
+            Debug.WriteLine(
+                $"[Sentinel] Report generated: {report.SessionsCompleted} sessions, {report.DistractionsLogged} distractions");
             return report;
         }
         catch (Exception ex)

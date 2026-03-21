@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sentinel | Account</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-primary": "#6833ea",
+                        "surface": "#131313",
+                        "on-tertiary-container": "#e6ffe2",
+                        "tertiary": "#3ce36a",
+                        "on-tertiary-fixed": "#002108",
+                        "on-error-container": "#ffdad6",
+                        "on-error": "#690005",
+                        "on-surface-variant": "#cac3d8",
+                        "tertiary-container": "#008434",
+                        "outline-variant": "#494455",
+                        "surface-tint": "#cdbdff",
+                        "on-secondary-fixed": "#001e30",
+                        "tertiary-fixed-dim": "#3ce36a",
+                        "surface-container-high": "#2a2a2a",
+                        "surface-container": "#201f1f",
+                        "error": "#ffb4ab",
+                        "surface-container-highest": "#353534",
+                        "error-container": "#93000a",
+                        "on-primary-fixed-variant": "#4f00d0",
+                        "on-tertiary-fixed-variant": "#00531e",
+                        "secondary-container": "#00affe",
+                        "on-secondary-container": "#003f5f",
+                        "inverse-surface": "#e5e2e1",
+                        "on-tertiary": "#003912",
+                        "primary-fixed": "#e8deff",
+                        "on-surface": "#e5e2e1",
+                        "secondary": "#8dcdff",
+                        "on-primary": "#370096",
+                        "surface-variant": "#353534",
+                        "surface-container-low": "#1c1b1b",
+                        "surface-bright": "#393939",
+                        "primary-fixed-dim": "#cdbdff",
+                        "outline": "#948ea1",
+                        "on-primary-fixed": "#20005f",
+                        "on-primary-container": "#fcf6ff",
+                        "on-background": "#e5e2e1",
+                        "surface-dim": "#131313",
+                        "surface-container-lowest": "#0e0e0e",
+                        "primary-container": "#7c4dff",
+                        "on-secondary": "#00344f",
+                        "background": "#131313",
+                        "inverse-on-surface": "#313030",
+                        "on-secondary-fixed-variant": "#004b70",
+                        "primary": "#cdbdff",
+                        "tertiary-fixed": "#69ff87",
+                        "secondary-fixed-dim": "#8dcdff",
+                        "secondary-fixed": "#cae6ff"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #131313;
+            color: #e5e2e1;
+        }
+        .obsidian-glass {
+            background: rgba(53, 53, 52, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        .auth-gradient {
+            background: linear-gradient(135deg, #cdbdff 0%, #7c4dff 100%);
+        }
+    </style>
+</head>
+<body class="font-body selection:bg-primary/30">
+<!-- TopNavBar Implementation -->
+<nav class="bg-[#131313] dark:bg-[#131313] fixed top-0 left-0 w-full z-50">
+<div class="flex justify-between items-center w-full px-4 h-10 bg-[#1C1B1B]">
+<div class="flex items-center gap-4">
+<span class="text-lg font-extrabold text-[#E5E2E1] tracking-widest uppercase font-['Manrope']">Sentinel</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-[#E5E2E1]/60 hover:bg-[#353534] transition-colors duration-200 p-1 cursor-default select-none">
+<span class="material-symbols-outlined text-sm">remove</span>
+</button>
+<button class="text-[#E5E2E1]/60 hover:bg-[#353534] transition-colors duration-200 p-1 cursor-default select-none">
+<span class="material-symbols-outlined text-sm">check_box_outline_blank</span>
+</button>
+<button class="text-[#E5E2E1]/60 hover:bg-[#353534] transition-colors duration-200 p-1 cursor-default select-none">
+<span class="material-symbols-outlined text-sm">close</span>
+</button>
+</div>
+</div>
+</nav>
+<div class="flex min-h-screen pt-10">
+<!-- SideNavBar Implementation -->
+<aside class="hidden md:flex flex-col py-6 space-y-8 h-screen w-64 border-r border-[#494455]/15 bg-[#1C1B1B] dark:bg-[#1C1B1B] sticky top-10">
+<div class="px-6 space-y-1">
+<h2 class="text-[#E5E2E1] font-['Manrope'] font-semibold">The Sanctuary</h2>
+<p class="text-[0.6875rem] text-on-surface-variant/60 font-medium">Deep Work Active</p>
+</div>
+<nav class="flex-1 space-y-1 px-3">
+<a class="flex items-center gap-3 px-3 py-2 text-[#E5E2E1]/40 hover:text-[#E5E2E1]/80 hover:bg-[#353534]/50 transition-all duration-300 rounded group font-['Inter'] text-[0.875rem] font-medium tracking-wide" href="#">
+<span class="material-symbols-outlined text-[20px]">timer</span>
+<span>Timer</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#E5E2E1]/40 hover:text-[#E5E2E1]/80 hover:bg-[#353534]/50 transition-all duration-300 rounded group font-['Inter'] text-[0.875rem] font-medium tracking-wide" href="#">
+<span class="material-symbols-outlined text-[20px]">bar_chart</span>
+<span>Reports</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#E5E2E1]/40 hover:text-[#E5E2E1]/80 hover:bg-[#353534]/50 transition-all duration-300 rounded group font-['Inter'] text-[0.875rem] font-medium tracking-wide" href="#">
+<span class="material-symbols-outlined text-[20px]">category</span>
+<span>Taxonomy</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#E5E2E1]/40 hover:text-[#E5E2E1]/80 hover:bg-[#353534]/50 transition-all duration-300 rounded group font-['Inter'] text-[0.875rem] font-medium tracking-wide" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<div class="px-3 pb-6">
+<a class="flex items-center gap-3 px-3 py-2 text-[#CDBDFF] font-bold border-r-2 border-[#7C4DFF] bg-[#353534]/50 rounded-l transition-all duration-300 font-['Inter'] text-[0.875rem] tracking-wide active:scale-[0.99]" href="#">
+<span class="material-symbols-outlined text-[20px]">account_circle</span>
+<span>Account</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 bg-surface flex flex-col items-center justify-start p-8 md:p-12">
+<div class="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Left Section: Editorial Intent -->
+<div class="lg:col-span-5 space-y-8 pt-4">
+<div class="space-y-4">
+<h1 class="font-headline text-5xl font-extrabold tracking-tighter text-on-surface leading-tight">
+                            Identity &amp; <br/><span class="text-primary">Continuity</span>
+</h1>
+<p class="font-body text-on-surface-variant text-base leading-relaxed max-w-sm">
+                            Sentinel is built for local-first privacy. Syncing your data is optional, encrypted end-to-end, and secondary to your local experience.
+                        </p>
+</div>
+<div class="space-y-6">
+<div class="flex items-start gap-4 p-4 rounded-lg bg-surface-container-low border border-outline-variant/10">
+<span class="material-symbols-outlined text-tertiary">security</span>
+<div class="space-y-1">
+<h3 class="text-sm font-semibold text-on-surface">Zero-Knowledge Storage</h3>
+<p class="text-xs text-on-surface-variant">Your password is never stored on our servers. We use SRP-6a for authentication.</p>
+</div>
+</div>
+<div class="flex items-start gap-4 p-4 rounded-lg bg-surface-container-low border border-outline-variant/10">
+<span class="material-symbols-outlined text-secondary">sync</span>
+<div class="space-y-1">
+<h3 class="text-sm font-semibold text-on-surface">Universal Sync</h3>
+<p class="text-xs text-on-surface-variant">Synchronize your deep work sessions across all your desktop sanctuaries.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Section: Bento Grid Auth Forms -->
+<div class="lg:col-span-7 grid grid-cols-1 gap-4">
+<!-- Primary Auth Card -->
+<div class="bg-surface-container-low rounded-xl p-8 relative overflow-hidden group">
+<!-- Subtle Background Accent -->
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
+<div class="relative z-10 space-y-6">
+<div class="flex justify-between items-end">
+<h2 class="font-headline text-2xl font-bold">Sign In</h2>
+<button class="text-xs font-medium text-primary hover:underline">Create new account</button>
+</div>
+<form class="space-y-4" onsubmit="return false;">
+<div class="space-y-1">
+<label class="text-[0.6875rem] font-label text-on-surface-variant uppercase tracking-widest pl-1">Email Address</label>
+<input class="w-full bg-surface-container-highest border-none border-b border-transparent focus:ring-0 focus:border-primary transition-all text-sm h-11 px-4 text-on-surface rounded-sm" placeholder="name@domain.com" type="email"/>
+</div>
+<div class="space-y-1">
+<label class="text-[0.6875rem] font-label text-on-surface-variant uppercase tracking-widest pl-1">Password</label>
+<div class="relative">
+<input class="w-full bg-surface-container-highest border-none border-b border-transparent focus:ring-0 focus:border-primary transition-all text-sm h-11 px-4 text-on-surface rounded-sm" placeholder="••••••••" type="password"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-lg">visibility</span>
+</button>
+</div>
+</div>
+<div class="pt-4">
+<button class="w-full h-11 auth-gradient text-on-primary-container font-bold text-sm rounded shadow-lg shadow-primary/10 active:scale-[0.98] transition-transform">
+                                        Access Sanctuary
+                                    </button>
+</div>
+</form>
+</div>
+</div>
+<!-- Secondary Options Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Local First Info -->
+<div class="bg-surface-container-low rounded-xl p-6 border border-outline-variant/5">
+<div class="flex items-center gap-3 mb-3">
+<span class="material-symbols-outlined text-primary text-xl">database</span>
+<h3 class="text-sm font-bold">Stay Local</h3>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed">
+                                You can continue using Sentinel without an account. All data stays in your local SQLite database.
+                            </p>
+</div>
+<!-- Recovery/Help -->
+<div class="bg-surface-container-low rounded-xl p-6 border border-outline-variant/5">
+<div class="flex items-center gap-3 mb-3">
+<span class="material-symbols-outlined text-secondary text-xl">help_outline</span>
+<h3 class="text-sm font-bold">Support</h3>
+</div>
+<ul class="text-xs text-on-surface-variant space-y-2">
+<li class="flex items-center gap-2 hover:text-on-surface cursor-pointer">
+<span class="w-1 h-1 rounded-full bg-secondary"></span>
+                                    Forgot Password?
+                                </li>
+<li class="flex items-center gap-2 hover:text-on-surface cursor-pointer">
+<span class="w-1 h-1 rounded-full bg-secondary"></span>
+                                    Privacy Policy
+                                </li>
+</ul>
+</div>
+</div>
+<!-- Logged-In State Mock (Hidden by default, shown for structure) -->
+<div class="mt-8 pt-8 border-t border-outline-variant/15 opacity-40">
+<p class="text-[0.6875rem] font-label text-on-surface-variant uppercase tracking-[0.2em] mb-4">Preview: Logged-in Profile</p>
+<div class="bg-surface-container-low rounded-xl p-4 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline-variant/20 overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="Abstract user avatar profile circle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzd54kqfCnRBZHAT7lQu3A9A6FYI-pN9TizaRXiKPsziJEM2Yf-gQKXuKqbykYT-9H-HxJGmjnh-rwiPzfdZ_qhnDnu4_cusfz_gRNnKIIMEVUNDREf29mXD63ynVAJfxBi2BlBXKPpfa4Q-dH4MZFXU7xJoVAN1JzG6JjUqxx3rnrFRO3qCGrww0pzqL8MT4TuQjMIsHAFHhD2dWwYaqcauzyg1_3XrIRy_qV90rISbWQilMvzsY57DWgiHALn0_Jn5zHz6CfvhAV"/>
+</div>
+<div>
+<h4 class="text-sm font-bold text-on-surface">focus@sentinel.app</h4>
+<p class="text-[10px] text-tertiary flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                        PRO SUBSCRIPTION ACTIVE
+                                    </p>
+</div>
+</div>
+<button class="px-4 py-2 text-xs font-bold text-error border border-error/20 hover:bg-error/10 rounded transition-all">
+                                Logout
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom decorative spacer for vertical rhythm -->
+<div class="mt-24 w-full max-w-5xl border-t border-outline-variant/10 pt-8 flex justify-between items-center opacity-50">
+<p class="text-[10px] tracking-widest uppercase font-label text-on-surface-variant">© 2024 Sentinel Research Group</p>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-sm">terminal</span>
+<span class="material-symbols-outlined text-sm">shield_person</span>
+</div>
+</div>
+</main>
+</div>
+</body></html>

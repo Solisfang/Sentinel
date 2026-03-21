@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sentinel Onboarding</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-primary": "#6833ea",
+              "surface": "#131313",
+              "on-tertiary-container": "#e6ffe2",
+              "tertiary": "#3ce36a",
+              "on-tertiary-fixed": "#002108",
+              "on-error-container": "#ffdad6",
+              "on-error": "#690005",
+              "on-surface-variant": "#cac3d8",
+              "tertiary-container": "#008434",
+              "outline-variant": "#494455",
+              "surface-tint": "#cdbdff",
+              "on-secondary-fixed": "#001e30",
+              "tertiary-fixed-dim": "#3ce36a",
+              "surface-container-high": "#2a2a2a",
+              "surface-container": "#201f1f",
+              "error": "#ffb4ab",
+              "surface-container-highest": "#353534",
+              "error-container": "#93000a",
+              "on-primary-fixed-variant": "#4f00d0",
+              "on-tertiary-fixed-variant": "#00531e",
+              "secondary-container": "#00affe",
+              "on-secondary-container": "#003f5f",
+              "inverse-surface": "#e5e2e1",
+              "on-tertiary": "#003912",
+              "primary-fixed": "#e8deff",
+              "on-surface": "#e5e2e1",
+              "secondary": "#8dcdff",
+              "on-primary": "#370096",
+              "surface-variant": "#353534",
+              "surface-container-low": "#1c1b1b",
+              "surface-bright": "#393939",
+              "primary-fixed-dim": "#cdbdff",
+              "outline": "#948ea1",
+              "on-primary-fixed": "#20005f",
+              "on-primary-container": "#fcf6ff",
+              "on-background": "#e5e2e1",
+              "surface-dim": "#131313",
+              "surface-container-lowest": "#0e0e0e",
+              "primary-container": "#7c4dff",
+              "on-secondary": "#00344f",
+              "background": "#131313",
+              "inverse-on-surface": "#313030",
+              "on-secondary-fixed-variant": "#004b70",
+              "primary": "#cdbdff",
+              "tertiary-fixed": "#69ff87",
+              "secondary-fixed-dim": "#8dcdff",
+              "secondary-fixed": "#cae6ff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .bg-gradient-primary {
+        background: linear-gradient(135deg, #cdbdff 0%, #7c4dff 100%);
+      }
+      .glass-panel {
+        background: rgba(53, 53, 52, 0.6);
+        backdrop-filter: blur(20px);
+      }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body antialiased min-h-screen selection:bg-primary/30">
+<!-- TopNavBar Strategy: Transactional/Focused Onboarding - Navigation Suppressed -->
+<header class="fixed top-0 left-0 right-0 flex justify-between items-center px-6 h-14 z-50">
+<div class="text-lg font-extrabold text-[#E5E2E1] tracking-widest uppercase font-headline">Sentinel</div>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded">
+<span class="material-symbols-outlined text-sm">close</span>
+</button>
+</div>
+</header>
+<main class="flex items-center justify-center min-h-screen p-4 md:p-8 relative overflow-hidden">
+<!-- Atmospheric Depth Elements -->
+<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 blur-[120px] rounded-full"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary-container/10 blur-[120px] rounded-full"></div>
+<!-- Main Onboarding Modal -->
+<div class="max-w-4xl w-full grid md:grid-cols-[1fr_400px] bg-surface-container-low rounded-xl overflow-hidden shadow-2xl relative z-10">
+<!-- Left Panel: Content Canvas -->
+<div class="p-8 md:p-12 flex flex-col justify-between">
+<div>
+<div class="mb-10">
+<span class="text-primary font-label text-[0.6875rem] tracking-[0.2em] uppercase font-bold">Step 03 of 04</span>
+<h1 class="font-headline font-extrabold text-4xl mt-4 leading-tight tracking-tight">The Local-First<br/><span class="text-primary">Privacy Focus</span></h1>
+<p class="text-on-surface-variant mt-6 text-base leading-relaxed max-w-md">
+                            Your focus is sacred. Sentinel operates entirely on your machine. No cloud syncing, no data tracking, no intrusions. Your work stays where it belongs—with you.
+                        </p>
+</div>
+<!-- Bento Grid of Features -->
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container p-5 rounded-lg border border-outline-variant/10">
+<span class="material-symbols-outlined text-primary mb-3" style="font-variation-settings: 'FILL' 1;">security</span>
+<h3 class="font-headline font-bold text-sm mb-1">Zero-Cloud</h3>
+<p class="text-on-surface-variant text-[0.75rem] leading-normal">Encrypted local database with no external API calls.</p>
+</div>
+<div class="bg-surface-container p-5 rounded-lg border border-outline-variant/10">
+<span class="material-symbols-outlined text-primary mb-3" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<h3 class="font-headline font-bold text-sm mb-1">Idle Detection</h3>
+<p class="text-on-surface-variant text-[0.75rem] leading-normal">Smart pauses your timer when you step away.</p>
+</div>
+</div>
+</div>
+<div class="mt-12 flex items-center justify-between">
+<button class="text-on-surface-variant hover:text-on-surface font-medium text-sm transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+                        Back
+                    </button>
+<div class="flex gap-2">
+<div class="w-2 h-2 rounded-full bg-surface-container-highest"></div>
+<div class="w-2 h-2 rounded-full bg-surface-container-highest"></div>
+<div class="w-6 h-2 rounded-full bg-primary transition-all duration-300"></div>
+<div class="w-2 h-2 rounded-full bg-surface-container-highest"></div>
+</div>
+<button class="bg-gradient-primary text-on-primary-container px-8 py-3 rounded-lg font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform active:scale-[0.98]">
+                        Next Chapter
+                    </button>
+</div>
+</div>
+<!-- Right Panel: Visual/Shortcut Reference (Asymmetric Sidebar) -->
+<div class="bg-surface-container-high p-8 flex flex-col justify-center border-l border-outline-variant/15">
+<div class="glass-panel p-6 rounded-xl border border-outline-variant/20 shadow-xl">
+<h4 class="font-headline text-xs font-bold tracking-widest uppercase text-on-surface-variant mb-6">Quick Shortcuts</h4>
+<ul class="space-y-4">
+<li class="flex items-center justify-between group">
+<span class="text-sm font-medium text-on-surface/80 group-hover:text-on-surface">Toggle Timer</span>
+<div class="flex gap-1">
+<kbd class="px-2 py-1 bg-surface-container-lowest rounded border border-outline-variant/30 text-[10px] font-bold">CMD</kbd>
+<kbd class="px-2 py-1 bg-surface-container-lowest rounded border border-outline-variant/30 text-[10px] font-bold">SPACE</kbd>
+</div>
+</li>
+<li class="flex items-center justify-between group">
+<span class="text-sm font-medium text-on-surface/80 group-hover:text-on-surface">Focus Mode</span>
+<div class="flex gap-1">
+<kbd class="px-2 py-1 bg-surface-container-lowest rounded border border-outline-variant/30 text-[10px] font-bold">CMD</kbd>
+<kbd class="px-2 py-1 bg-surface-container-lowest rounded border border-outline-variant/30 text-[10px] font-bold">F</kbd>
+</div>
+</li>
+<li class="flex items-center justify-between group">
+<span class="text-sm font-medium text-on-surface/80 group-hover:text-on-surface">Open Ledger</span>
+<div class="flex gap-1">
+<kbd class="px-2 py-1 bg-surface-container-lowest rounded border border-outline-variant/30 text-[10px] font-bold">CMD</kbd>
+<kbd class="px-2 py-1 bg-surface-container-lowest rounded border border-outline-variant/30 text-[10px] font-bold">L</kbd>
+</div>
+</li>
+</ul>
+<div class="mt-10 pt-10 border-t border-outline-variant/10">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-lg">privacy_tip</span>
+</div>
+<div>
+<h5 class="font-headline text-xs font-bold text-on-surface">Encrypted Node</h5>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-tight">Active Connection</p>
+</div>
+</div>
+<div class="w-full bg-surface-container-lowest h-1.5 rounded-full overflow-hidden">
+<div class="bg-tertiary w-3/4 h-full"></div>
+</div>
+<p class="mt-3 text-[11px] text-on-surface-variant leading-tight">
+                            Your local sanctuary is currently synced with the internal disk ledger.
+                        </p>
+</div>
+</div>
+<!-- Subtle Brand Detail -->
+<div class="mt-10 px-4 text-center">
+<img alt="Sentinel abstract shield logo" class="mx-auto mb-4 opacity-40 grayscale" data-alt="Abstract shield icon representing digital security and privacy" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCH9ViMgPP3WNxtqAvHpbMy3lZMZv6VVFsHyFbLqvq9dvSNx20QbKMzkLeTaeEXhB0trCm0Geyl98wM8RrPpl3kPWmV4VKfBbFLAh4gl73RVzIy90UNc0V0RDGoRZWCJ261_2v5dMYTVTmMgtEU98tbd5O-yk8M52QbwQA6h04PC8sezqzvi-UREJ4i-bZYD7N0XPLCEOvH1ftqv3bUbEZ5WSTzt4HrI9Leaaq3RievdAXDUP1mnxaJX9r9zsgia3PaoYYFZzlv81YN"/>
+<p class="text-[10px] font-label text-outline uppercase tracking-widest">A product for the focused mind.</p>
+</div>
+</div>
+</div>
+<!-- Background Image/Pattern Element -->
+<div class="fixed top-0 left-0 w-full h-full pointer-events-none opacity-20 -z-10 bg-[radial-gradient(circle_at_50%_50%,_#1c1b1b_0%,_#131313_100%)]"></div>
+</main>
+<!-- SideNavBar Suppressed for Transactional Flow -->
+<!-- BottomNavBar Suppressed for Focused Task -->
+</body></html>

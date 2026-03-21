@@ -1,0 +1,189 @@
+{
+  "createTime": "2026-03-21T06:24:54.025221Z",
+  "designTheme": {
+    "bodyFont": "INTER",
+    "colorMode": "DARK",
+    "colorVariant": "FIDELITY",
+    "customColor": "#7C4DFF",
+    "designMd": "# Design System Specification\n\n## 1. Overview & Creative North Star: \"The Obsidian Sanctuary\"\nThe digital landscape is often noisy and intrusive. This design system is the antithesis of that chaos. Our Creative North Star is **The Obsidian Sanctuary**—a high-end, editorial approach to privacy and focus that feels less like a utility and more like a bespoke physical workspace. \n\nWe reject the \"template\" look of modern SaaS. Instead of rigid grids and heavy borders, we use **Intentional Asymmetry** and **Tonal Depth** to guide the eye. By leveraging a high-contrast typography scale (pairing the architectural weight of Manrope with the precision of Inter), we create an environment that feels authoritative yet invisible, allowing the user’s work to remain the hero.\n\n---\n\n## 2. Color & Atmospheric Theory\nThe palette is rooted in deep graphite and charcoal, providing a low-light environment that reduces eye strain and signals a \"private\" mode of operation.\n\n### Surface Hierarchy & Nesting\nWe move beyond flat UI by treating the screen as a series of nested physical layers. \n- **The Base:** Use `surface` (#131313) for the primary application background.\n- **The Depth:** Use `surface-container-low` (#1C1B1B) for secondary sidebars and `surface-container-highest` (#353534) for active floating elements. \n- **The \"No-Line\" Rule:** 1px solid borders are strictly prohibited for sectioning. Boundaries must be defined solely through background color shifts or subtle tonal transitions between `surface-container` tiers.\n\n### The Glass & Gradient Rule\nTo achieve a premium, Windows-native \"Mica\" or \"Acrylic\" feel:\n- **Floating Elements:** Use `surface_variant` with a 60% opacity and a `backdrop-filter: blur(20px)`.\n- **Signature Gradients:** Main CTAs should utilize a subtle linear gradient from `primary` (#CDBDFF) to `primary_container` (#7C4DFF) at a 135-degree angle to provide \"visual soul.\"\n\n---\n\n## 3. Typography: The Editorial Scale\nWe employ a dual-typeface system to balance character with legibility.\n\n- **Display & Headlines (Manrope):** These are used sparingly to create focal points. Large scale differences (e.g., `display-lg` for timer states) create a sense of importance and calm.\n- **Body & UI Labels (Inter):** Used for all functional data. Inter provides the \"mechanical\" precision required for a privacy-first app.\n\n| Role | Token | Typeface | Size | Intent |\n| :--- | :--- | :--- | :--- | :--- |\n| Focus State | `display-lg` | Manrope | 3.5rem | High-impact, glanceable data. |\n| Section Head | `headline-sm` | Manrope | 1.5rem | Editorial grouping. |\n| Functional | `body-md` | Inter | 0.875rem | Standard interaction text. |\n| Metadata | `label-sm` | Inter | 0.6875rem | Non-critical privacy details. |\n\n---\n\n## 4. Elevation & Depth: Tonal Layering\nIn this design system, shadows and borders are secondary to light and material.\n\n- **The Layering Principle:** Depth is achieved by \"stacking.\" A `surface-container-lowest` card sitting on a `surface-container-low` section creates a natural \"sunken\" or \"lifted\" effect without artificial lines.\n- **Ambient Shadows:** When an element must float (e.g., a modal), use a high-spread, low-opacity shadow. Use `on-surface` (#E5E2E1) at 4% opacity with a 32px blur to mimic natural ambient light.\n- **The \"Ghost Border\" Fallback:** If accessibility requires a stroke, use the `outline-variant` (#494455) at 15% opacity. Never use 100% opaque strokes.\n\n---\n\n## 5. Component Architecture\n\n### Buttons: High-Tactility Controls\n- **Primary:** Gradient fill (`primary` to `primary_container`), `md` (0.375rem) corner radius. Text is `on_primary_container`.\n- **Secondary:** Ghost style. No background, `outline-variant` ghost border (20% opacity).\n- **Tertiary:** Text-only using `primary` color, reserved for low-priority desktop actions.\n\n### Cards & Focus Containers\n- **Construction:** Utilize `surface-container-low` with a `lg` (0.5rem) corner radius. \n- **Spacing:** Use a minimum of `spacing-6` (1.3rem) internal padding to ensure \"breathing room.\"\n- **Constraint:** Forbid the use of divider lines. Separate content blocks using `spacing-4` (0.9rem) vertical gaps or a shift to `surface-container-lowest`.\n\n### Desktop-Specific Inputs\n- **Toggles:** Use `primary` for the \"on\" state. The \"thumb\" should be a soft `surface_bright` white to contrast against the dark graphite track.\n- **Privacy Inputs:** Text fields use `surface-container-highest` backgrounds with a `sm` (0.125rem) bottom-only accent in `primary` when focused.\n\n### Specialized Components\n- **The Focus Ring:** A large, circular progress indicator using `primary` for work sessions, `tertiary` (#3CE36A) for short breaks, and `secondary` (#8DCDFF) for long breaks.\n- **The Stealth Ledger:** A compact list of privacy interventions using `body-sm` typography and `surface-container-low` backgrounds to minimize visual weight.\n\n---\n\n## 6. Do’s and Don’ts\n\n### Do:\n- **Use Vertical Rhythm:** Leverage the `spacing-10` and `spacing-12` tokens to create distinct editorial sections.\n- **Embrace Glassmorphism:** Use backdrop blurs for overlay panels to keep the user grounded in their desktop environment.\n- **Prioritize Legibility:** Ensure all `on-surface-variant` text meets a 4.5:1 contrast ratio against the graphite backgrounds.\n\n### Don't:\n- **No Mobile Patterns:** Avoid bottom navigation or hamburger menus. Use a persistent sidebar or top-level \"breadstyle\" tabs.\n- **No Harsh Borders:** Do not use `outline` at 100% opacity. It breaks the \"Obsidian Sanctuary\" immersion.\n- **No Standard Grids:** Avoid strictly equal column widths; try a 60/40 or 70/30 split to create a more premium, custom-built feel.",
+    "font": "MANROPE",
+    "headlineFont": "MANROPE",
+    "labelFont": "INTER",
+    "namedColors": {
+      "background": "#131313",
+      "error": "#ffb4ab",
+      "error_container": "#93000a",
+      "inverse_on_surface": "#313030",
+      "inverse_primary": "#6833ea",
+      "inverse_surface": "#e5e2e1",
+      "on_background": "#e5e2e1",
+      "on_error": "#690005",
+      "on_error_container": "#ffdad6",
+      "on_primary": "#370096",
+      "on_primary_container": "#fcf6ff",
+      "on_primary_fixed": "#20005f",
+      "on_primary_fixed_variant": "#4f00d0",
+      "on_secondary": "#00344f",
+      "on_secondary_container": "#003f5f",
+      "on_secondary_fixed": "#001e30",
+      "on_secondary_fixed_variant": "#004b70",
+      "on_surface": "#e5e2e1",
+      "on_surface_variant": "#cac3d8",
+      "on_tertiary": "#003912",
+      "on_tertiary_container": "#e6ffe2",
+      "on_tertiary_fixed": "#002108",
+      "on_tertiary_fixed_variant": "#00531e",
+      "outline": "#948ea1",
+      "outline_variant": "#494455",
+      "primary": "#cdbdff",
+      "primary_container": "#7c4dff",
+      "primary_fixed": "#e8deff",
+      "primary_fixed_dim": "#cdbdff",
+      "secondary": "#8dcdff",
+      "secondary_container": "#00affe",
+      "secondary_fixed": "#cae6ff",
+      "secondary_fixed_dim": "#8dcdff",
+      "surface": "#131313",
+      "surface_bright": "#393939",
+      "surface_container": "#201f1f",
+      "surface_container_high": "#2a2a2a",
+      "surface_container_highest": "#353534",
+      "surface_container_low": "#1c1b1b",
+      "surface_container_lowest": "#0e0e0e",
+      "surface_dim": "#131313",
+      "surface_tint": "#cdbdff",
+      "surface_variant": "#353534",
+      "tertiary": "#3ce36a",
+      "tertiary_container": "#008434",
+      "tertiary_fixed": "#69ff87",
+      "tertiary_fixed_dim": "#3ce36a"
+    },
+    "overrideNeutralColor": "#121212",
+    "overridePrimaryColor": "#7C4DFF",
+    "overrideSecondaryColor": "#00B0FF",
+    "overrideTertiaryColor": "#00C853",
+    "roundness": "ROUND_FOUR",
+    "spacingScale": 1
+  },
+  "deviceType": "DESKTOP",
+  "metadata": {
+    "userRole": "OWNER"
+  },
+  "name": "projects/16504665012451764696",
+  "origin": "STITCH",
+  "projectType": "TEXT_TO_UI_PRO",
+  "screenInstances": [
+    {
+      "height": 1024,
+      "id": "1733dc623cce4d43b6cf6370b4a8e813",
+      "sourceScreen": "projects/16504665012451764696/screens/1733dc623cce4d43b6cf6370b4a8e813",
+      "width": 1280,
+      "x": -1104,
+      "y": 1062
+    },
+    {
+      "height": 1207,
+      "id": "269a35f2b7f74c3c9b278e723db005d6",
+      "sourceScreen": "projects/16504665012451764696/screens/269a35f2b7f74c3c9b278e723db005d6",
+      "width": 1280,
+      "x": 7744,
+      "y": 2434
+    },
+    {
+      "height": 600,
+      "id": "2e93aba4a742485597773607295c4084",
+      "sourceScreen": "projects/16504665012451764696/screens/2e93aba4a742485597773607295c4084",
+      "width": 600,
+      "x": -121,
+      "y": -334
+    },
+    {
+      "height": 1024,
+      "id": "6cd43819432f4455b238d8a7d584c6da",
+      "sourceScreen": "projects/16504665012451764696/screens/6cd43819432f4455b238d8a7d584c6da",
+      "width": 1280,
+      "x": 3023,
+      "y": -167
+    },
+    {
+      "height": 973,
+      "id": "7145f2df6900476b8f0c1e7a54fcc1a8",
+      "sourceScreen": "projects/16504665012451764696/screens/7145f2df6900476b8f0c1e7a54fcc1a8",
+      "width": 1280,
+      "x": 9088,
+      "y": 2434
+    },
+    {
+      "height": 1024,
+      "id": "860261e416554b41b586525bb79cfd14",
+      "sourceScreen": "projects/16504665012451764696/screens/860261e416554b41b586525bb79cfd14",
+      "width": 1280,
+      "x": 1022,
+      "y": -361
+    },
+    {
+      "height": 1064,
+      "id": "8d88fe728ff243f486487724854eec54",
+      "sourceScreen": "projects/16504665012451764696/screens/8d88fe728ff243f486487724854eec54",
+      "width": 1280,
+      "x": 6400,
+      "y": 2434
+    },
+    {
+      "height": 1024,
+      "id": "8eb17707f5d94c5b9aa2bc27d31ba55c",
+      "sourceScreen": "projects/16504665012451764696/screens/8eb17707f5d94c5b9aa2bc27d31ba55c",
+      "width": 1280,
+      "x": 1024,
+      "y": 2434
+    },
+    {
+      "height": 1024,
+      "id": "ab84ad2700ee46b498d3976caa90e77a",
+      "sourceScreen": "projects/16504665012451764696/screens/ab84ad2700ee46b498d3976caa90e77a",
+      "width": 1280,
+      "x": 2368,
+      "y": 2434
+    },
+    {
+      "height": 540,
+      "id": "assets-127b2bfb2f8344fe841cb77ab26f8cb7-1774074329257",
+      "sourceAsset": "assets/127b2bfb2f8344fe841cb77ab26f8cb7",
+      "type": "DESIGN_SYSTEM_INSTANCE",
+      "width": 960,
+      "x": -1929,
+      "y": -325
+    },
+    {
+      "height": 1024,
+      "id": "cee643673c014370993e3fece205a5f8",
+      "sourceScreen": "projects/16504665012451764696/screens/cee643673c014370993e3fece205a5f8",
+      "width": 1280,
+      "x": 3712,
+      "y": 2434
+    },
+    {
+      "height": 1024,
+      "id": "d02799be01f04deca3e2c831e0d681bb",
+      "sourceScreen": "projects/16504665012451764696/screens/d02799be01f04deca3e2c831e0d681bb",
+      "width": 1280,
+      "x": 1053,
+      "y": 1154
+    },
+    {
+      "height": 1024,
+      "id": "fdf1176010e1489499d332cacf4e2f53",
+      "sourceScreen": "projects/16504665012451764696/screens/fdf1176010e1489499d332cacf4e2f53",
+      "width": 1280,
+      "x": 5056,
+      "y": 2434
+    }
+  ],
+  "thumbnailScreenshot": {
+    "downloadUrl": "https://lh3.googleusercontent.com/aida/ADBb0ujpyp_LAIMYLRYlOX4eSsko2KhYMreNXoXDMdD7q5rnK-WbB3g8ui8hyQomhe6R8L9H426zwwf_7zx5yIuj-JxyzKwIaVhn1avUmMIjt02nccywe7zoegL9sZWts72olbX1PGbaCe3ES32jDsFC4XogGCUY_NeAj_04HwC3MAFcRYi_OcAGv4ykZ586InipLe8ZMP0MOTxp5RscD7G4KtJ-VnvEUEEXTuqsjdIQqIOIWLjz325ERug1r6cZ",
+    "name": "projects/16504665012451764696/files/3da761ef52644d52a60685a71121ed32"
+  },
+  "title": "Sentinel Product Design Brief",
+  "updateTime": "2026-03-21T06:34:55.959519Z",
+  "visibility": "PRIVATE"
+}

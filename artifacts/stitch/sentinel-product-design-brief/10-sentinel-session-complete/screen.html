@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-primary": "#6833ea",
+                        "surface": "#131313",
+                        "on-tertiary-container": "#e6ffe2",
+                        "tertiary": "#3ce36a",
+                        "on-tertiary-fixed": "#002108",
+                        "on-error-container": "#ffdad6",
+                        "on-error": "#690005",
+                        "on-surface-variant": "#cac3d8",
+                        "tertiary-container": "#008434",
+                        "outline-variant": "#494455",
+                        "surface-tint": "#cdbdff",
+                        "on-secondary-fixed": "#001e30",
+                        "tertiary-fixed-dim": "#3ce36a",
+                        "surface-container-high": "#2a2a2a",
+                        "surface-container": "#201f1f",
+                        "error": "#ffb4ab",
+                        "surface-container-highest": "#353534",
+                        "error-container": "#93000a",
+                        "on-primary-fixed-variant": "#4f00d0",
+                        "on-tertiary-fixed-variant": "#00531e",
+                        "secondary-container": "#00affe",
+                        "on-secondary-container": "#003f5f",
+                        "inverse-surface": "#e5e2e1",
+                        "on-tertiary": "#003912",
+                        "primary-fixed": "#e8deff",
+                        "on-surface": "#e5e2e1",
+                        "secondary": "#8dcdff",
+                        "on-primary": "#370096",
+                        "surface-variant": "#353534",
+                        "surface-container-low": "#1c1b1b",
+                        "surface-bright": "#393939",
+                        "primary-fixed-dim": "#cdbdff",
+                        "outline": "#948ea1",
+                        "on-primary-fixed": "#20005f",
+                        "on-primary-container": "#fcf6ff",
+                        "on-background": "#e5e2e1",
+                        "surface-dim": "#131313",
+                        "surface-container-lowest": "#0e0e0e",
+                        "primary-container": "#7c4dff",
+                        "on-secondary": "#00344f",
+                        "background": "#131313",
+                        "inverse-on-surface": "#313030",
+                        "on-secondary-fixed-variant": "#004b70",
+                        "primary": "#cdbdff",
+                        "tertiary-fixed": "#69ff87",
+                        "secondary-fixed-dim": "#8dcdff",
+                        "secondary-fixed": "#cae6ff"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-obsidian-gradient {
+            background: linear-gradient(135deg, #cdbdff 0%, #7c4dff 100%);
+        }
+        .glass-panel {
+            background: rgba(53, 53, 52, 0.6);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary/30 min-h-screen flex overflow-hidden">
+<!-- Sidebar Navigation (SideNavBar Component) -->
+<aside class="hidden md:flex flex-col py-6 space-y-8 h-screen w-64 border-r border-outline-variant/15 bg-surface-container-low">
+<div class="px-6">
+<h1 class="text-on-surface font-headline font-semibold text-lg tracking-tight">The Sanctuary</h1>
+<p class="text-on-surface-variant text-xs opacity-60">Deep Work Active</p>
+</div>
+<nav class="flex-1 px-4 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 text-primary font-bold border-r-2 border-primary-container bg-surface-container-highest/30 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="timer">timer</span>
+<span class="font-label text-[0.875rem]">Timer</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface/40 hover:text-on-surface/80 hover:bg-surface-container-highest/50 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+<span class="font-label text-[0.875rem]">Reports</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface/40 hover:text-on-surface/80 hover:bg-surface-container-highest/50 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="category">category</span>
+<span class="font-label text-[0.875rem]">Taxonomy</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface/40 hover:text-on-surface/80 hover:bg-surface-container-highest/50 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label text-[0.875rem]">Settings</span>
+</a>
+</nav>
+<div class="px-4 mt-auto">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface/40 hover:text-on-surface/80 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="font-label text-[0.875rem]">Account</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col relative overflow-y-auto">
+<!-- Top Navigation (TopNavBar Component) -->
+<header class="flex justify-between items-center w-full px-4 h-10 bg-surface fixed top-0 z-50 md:sticky">
+<div class="text-lg font-extrabold text-inverse-surface tracking-widest uppercase font-headline">Sentinel</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface/60 hover:bg-surface-container-highest transition-colors duration-200 p-1">
+<span class="material-symbols-outlined text-sm" data-icon="remove">remove</span>
+</button>
+<button class="text-on-surface/60 hover:bg-surface-container-highest transition-colors duration-200 p-1">
+<span class="material-symbols-outlined text-sm" data-icon="check_box_outline_blank">check_box_outline_blank</span>
+</button>
+<button class="text-on-surface/60 hover:bg-surface-container-highest transition-colors duration-200 p-1">
+<span class="material-symbols-outlined text-sm" data-icon="close">close</span>
+</button>
+</div>
+</header>
+<!-- Session Success Content -->
+<section class="flex-1 flex flex-col items-center justify-center p-6 md:p-12 mt-10">
+<div class="max-w-4xl w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Hero Success Message -->
+<div class="lg:col-span-12 text-center mb-8">
+<div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-tertiary/10 text-tertiary mb-6">
+<span class="material-symbols-outlined text-4xl" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<h2 class="font-headline text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-2">Session Complete</h2>
+<p class="font-body text-on-surface-variant text-lg">You maintained peak focus for 45 minutes.</p>
+</div>
+<!-- Bento Grid Summary -->
+<div class="lg:col-span-7 flex flex-col gap-6">
+<!-- Main Focus Stats -->
+<div class="bg-surface-container-low p-8 rounded-xl relative overflow-hidden">
+<div class="relative z-10 flex flex-col gap-8">
+<div>
+<span class="text-label-sm font-label uppercase tracking-widest text-on-surface-variant/60">Focus Quality</span>
+<div class="font-headline text-5xl font-bold text-primary mt-1">94%</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<span class="text-label-sm font-label text-on-surface-variant/60">Duration</span>
+<div class="font-body text-xl font-medium">45:00</div>
+</div>
+<div>
+<span class="text-label-sm font-label text-on-surface-variant/60">Flow State</span>
+<div class="font-body text-xl font-medium">32 mins</div>
+</div>
+</div>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-5">
+<span class="material-symbols-outlined text-[12rem]" data-icon="verified">verified</span>
+</div>
+</div>
+<!-- Distraction Ledger -->
+<div class="bg-surface-container-low p-6 rounded-xl">
+<h3 class="font-headline text-sm font-semibold mb-4 text-on-surface-variant uppercase tracking-widest">Stealth Ledger</h3>
+<div class="space-y-3">
+<div class="flex justify-between items-center p-3 bg-surface-container-lowest rounded-lg">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary text-sm" data-icon="security">security</span>
+<span class="text-body-md font-medium">Social Notifications Blocked</span>
+</div>
+<span class="font-label text-sm text-on-surface-variant">12</span>
+</div>
+<div class="flex justify-between items-center p-3 bg-surface-container-lowest rounded-lg">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="tab">tab</span>
+<span class="text-body-md font-medium">Unproductive Tabs Closed</span>
+</div>
+<span class="font-label text-sm text-on-surface-variant">4</span>
+</div>
+<div class="flex justify-between items-center p-3 bg-surface-container-lowest rounded-lg">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="do_not_disturb_on">do_not_disturb_on</span>
+<span class="text-body-md font-medium">System Disturbance Suppressed</span>
+</div>
+<span class="font-label text-sm text-on-surface-variant">8</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Chart and Actions -->
+<div class="lg:col-span-5 flex flex-col gap-6">
+<!-- Breakdown Chart -->
+<div class="glass-panel p-8 rounded-xl border border-outline-variant/15 flex-1 flex flex-col">
+<h3 class="font-headline text-sm font-semibold mb-8 text-on-surface-variant uppercase tracking-widest text-center">Distraction Breakdown</h3>
+<div class="flex-1 flex items-center justify-center relative">
+<!-- SVG Circular Chart Placeholder -->
+<svg class="w-48 h-48 transform -rotate-90">
+<circle class="text-surface-container-highest" cx="96" cy="96" fill="transparent" r="80" stroke="currentColor" stroke-width="12"></circle>
+<circle class="text-primary" cx="96" cy="96" fill="transparent" r="80" stroke="currentColor" stroke-dasharray="502" stroke-dashoffset="40" stroke-width="12"></circle>
+<circle class="text-tertiary" cx="96" cy="96" fill="transparent" r="80" stroke="currentColor" stroke-dasharray="502" stroke-dashoffset="460" stroke-width="12"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-3xl font-headline font-bold">2.4k</span>
+<span class="text-xs font-label text-on-surface-variant">events</span>
+</div>
+</div>
+<div class="mt-8 grid grid-cols-2 gap-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-xs text-on-surface-variant">Blocked</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="text-xs text-on-surface-variant">Safe</span>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-col gap-3">
+<button class="bg-obsidian-gradient text-on-primary-container h-14 rounded-lg font-headline font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform duration-300">
+<span class="material-symbols-outlined" data-icon="refresh">refresh</span>
+                            Focus Again
+                        </button>
+<button class="bg-surface-container-highest/40 hover:bg-surface-container-highest transition-colors duration-300 border border-outline-variant/20 text-on-surface h-14 rounded-lg font-headline font-bold flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-icon="coffee">coffee</span>
+                            Take a Break
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Decorative Background Elements -->
+<div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px] -z-10"></div>
+<div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-tertiary/5 rounded-full blur-[100px] -z-10"></div>
+</main>
+<!-- Map/Background Reference -->
+<div class="hidden">
+<img data-alt="Abstract dark minimalist workspace background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbh_RJmAQvAfK0E3il4R929JGJc31_1pdlLzvdEobRgr3hBfdoy2GWd-BRGNIEspz_BwYEk4ye_tPr63Rta-f_htTRgDimHkZGU6f6VUQAQVDn7FvQ5dINuAE9KeyGxHN6Sc4sNdFWBHRlWMG-_9TtVexBK1jOzqgR4zfHXcfeGE1LK9N0-hacL5F6sZ_fZPgxzgCRVZDNCc1en_itj6TOGouf6E6AC1XU9K62OdHybJog7u3mZQ3ZcRpBAwkF8kRACwaSTtNX4l_t"/>
+</div>
+</body></html>

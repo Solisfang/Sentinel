@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sentinel | Resume Session</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-primary": "#6833ea",
+                        "surface": "#131313",
+                        "on-tertiary-container": "#e6ffe2",
+                        "tertiary": "#3ce36a",
+                        "on-tertiary-fixed": "#002108",
+                        "on-error-container": "#ffdad6",
+                        "on-error": "#690005",
+                        "on-surface-variant": "#cac3d8",
+                        "tertiary-container": "#008434",
+                        "outline-variant": "#494455",
+                        "surface-tint": "#cdbdff",
+                        "on-secondary-fixed": "#001e30",
+                        "tertiary-fixed-dim": "#3ce36a",
+                        "surface-container-high": "#2a2a2a",
+                        "surface-container": "#201f1f",
+                        "error": "#ffb4ab",
+                        "surface-container-highest": "#353534",
+                        "error-container": "#93000a",
+                        "on-primary-fixed-variant": "#4f00d0",
+                        "on-tertiary-fixed-variant": "#00531e",
+                        "secondary-container": "#00affe",
+                        "on-secondary-container": "#003f5f",
+                        "inverse-surface": "#e5e2e1",
+                        "on-tertiary": "#003912",
+                        "primary-fixed": "#e8deff",
+                        "on-surface": "#e5e2e1",
+                        "secondary": "#8dcdff",
+                        "on-primary": "#370096",
+                        "surface-variant": "#353534",
+                        "surface-container-low": "#1c1b1b",
+                        "surface-bright": "#393939",
+                        "primary-fixed-dim": "#cdbdff",
+                        "outline": "#948ea1",
+                        "on-primary-fixed": "#20005f",
+                        "on-primary-container": "#fcf6ff",
+                        "on-background": "#e5e2e1",
+                        "surface-dim": "#131313",
+                        "surface-container-lowest": "#0e0e0e",
+                        "primary-container": "#7c4dff",
+                        "on-secondary": "#00344f",
+                        "background": "#131313",
+                        "inverse-on-surface": "#313030",
+                        "on-secondary-fixed-variant": "#004b70",
+                        "primary": "#cdbdff",
+                        "tertiary-fixed": "#69ff87",
+                        "secondary-fixed-dim": "#8dcdff",
+                        "secondary-fixed": "#cae6ff"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-obsidian-gradient {
+            background: linear-gradient(135deg, #cdbdff 0%, #7c4dff 100%);
+        }
+        .backdrop-mica {
+            backdrop-filter: blur(20px);
+            background-color: rgba(53, 53, 52, 0.6);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary/30 min-h-screen overflow-hidden">
+<!-- Top Navigation Bar -->
+<nav class="fixed top-0 left-0 right-0 z-50 bg-[#131313] text-[#CDBDFF] font-['Manrope'] font-bold text-sm tracking-tight flex justify-between items-center w-full px-4 h-10 select-none cursor-default">
+<div class="text-lg font-extrabold text-[#E5E2E1] tracking-widest uppercase">Sentinel</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-sm">remove</span>
+<span class="material-symbols-outlined text-sm">check_box_outline_blank</span>
+<span class="material-symbols-outlined text-sm">close</span>
+</div>
+</nav>
+<!-- Side Navigation Bar -->
+<aside class="fixed left-0 top-10 h-[calc(100vh-2.5rem)] w-64 bg-[#1C1B1B] border-r border-[#494455]/15 flex flex-col py-6 space-y-8 z-40">
+<div class="px-6 space-y-1">
+<h2 class="text-[#E5E2E1] font-['Manrope'] font-semibold text-lg">The Sanctuary</h2>
+<p class="text-[0.6875rem] text-[#E5E2E1]/40 tracking-wider uppercase">Deep Work Active</p>
+</div>
+<div class="flex-1 px-4 space-y-2">
+<div class="flex items-center gap-3 px-3 py-2 text-[#E5E2E1]/40 font-['Inter'] text-[0.875rem] font-medium tracking-wide hover:bg-[#353534]/50 transition-all duration-300 rounded cursor-pointer group">
+<span class="material-symbols-outlined">timer</span>
+<span>Timer</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 text-[#E5E2E1]/40 font-['Inter'] text-[0.875rem] font-medium tracking-wide hover:bg-[#353534]/50 transition-all duration-300 rounded cursor-pointer group">
+<span class="material-symbols-outlined">bar_chart</span>
+<span>Reports</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 text-[#E5E2E1]/40 font-['Inter'] text-[0.875rem] font-medium tracking-wide hover:bg-[#353534]/50 transition-all duration-300 rounded cursor-pointer group">
+<span class="material-symbols-outlined">category</span>
+<span>Taxonomy</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 text-[#E5E2E1]/40 font-['Inter'] text-[0.875rem] font-medium tracking-wide hover:bg-[#353534]/50 transition-all duration-300 rounded cursor-pointer group">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</div>
+</div>
+<div class="px-4 py-4 border-t border-[#494455]/15">
+<div class="flex items-center gap-3 px-3 py-2 text-[#E5E2E1]/40 font-['Inter'] text-[0.875rem] font-medium tracking-wide hover:bg-[#353534]/50 transition-all duration-300 rounded cursor-pointer">
+<span class="material-symbols-outlined">account_circle</span>
+<span>Account</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas (Blurred Background Content) -->
+<main class="ml-64 mt-10 p-12 min-h-screen opacity-20 pointer-events-none select-none">
+<div class="max-w-4xl mx-auto space-y-12">
+<header class="space-y-2">
+<h1 class="font-headline text-5xl font-extrabold tracking-tight text-primary">00:42:15</h1>
+<p class="text-on-surface-variant font-body">Current focus session: Neural Network Architecture</p>
+</header>
+<div class="grid grid-cols-12 gap-6">
+<div class="col-span-8 bg-surface-container-low p-8 rounded-lg shadow-sm border border-outline-variant/10">
+<div class="h-64 bg-surface-container rounded-md mb-4"></div>
+<div class="h-4 w-3/4 bg-surface-container-highest rounded mb-2"></div>
+<div class="h-4 w-1/2 bg-surface-container-highest rounded"></div>
+</div>
+<div class="col-span-4 bg-surface-container-low p-8 rounded-lg shadow-sm border border-outline-variant/10">
+<div class="space-y-4">
+<div class="h-12 bg-surface-container-highest rounded-md"></div>
+<div class="h-12 bg-surface-container-highest rounded-md"></div>
+<div class="h-12 bg-surface-container-highest rounded-md"></div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Centered Modal Overlay -->
+<div class="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-surface/80 backdrop-blur-sm">
+<div class="max-w-lg w-full backdrop-mica rounded-xl p-1 shadow-2xl overflow-hidden ring-1 ring-white/5">
+<div class="bg-surface-container-low p-10 space-y-10 rounded-[calc(0.5rem-2px)]">
+<!-- Visual Anchor -->
+<div class="flex justify-center">
+<div class="relative">
+<div class="absolute inset-0 bg-primary blur-3xl opacity-20"></div>
+<div class="relative w-20 h-20 bg-surface-container-highest rounded-full flex items-center justify-center border border-primary/20">
+<span class="material-symbols-outlined text-4xl text-primary" data-icon="bedtime" style="font-variation-settings: 'FILL' 1;">bedtime</span>
+</div>
+</div>
+</div>
+<!-- Editorial Copy -->
+<div class="text-center space-y-4">
+<h2 class="font-headline text-3xl font-bold tracking-tight text-on-surface">Welcome back to The Sanctuary.</h2>
+<p class="font-body text-on-surface-variant text-base leading-relaxed px-4">
+                        Your session was paused while you were away. Should we continue where you left off, or would you prefer a clean slate?
+                    </p>
+</div>
+<!-- Data Ledger (Contextual Detail) -->
+<div class="bg-surface-container-lowest rounded-lg p-5 flex items-center justify-between border border-outline-variant/10">
+<div class="flex items-center gap-4">
+<div class="w-1.5 h-1.5 bg-tertiary rounded-full shadow-[0_0_8px_rgba(60,227,106,0.5)]"></div>
+<span class="text-xs font-label text-on-surface-variant uppercase tracking-widest font-semibold">Saved Session State</span>
+</div>
+<div class="text-right">
+<p class="text-sm font-body font-medium text-on-surface">Neural Network Architecture</p>
+<p class="text-[0.6875rem] font-label text-outline uppercase">42:15 Elapsed</p>
+</div>
+</div>
+<!-- Strategic Actions -->
+<div class="flex flex-col sm:flex-row gap-4">
+<button class="flex-1 py-4 bg-obsidian-gradient rounded-lg font-headline font-bold text-on-primary-container shadow-lg shadow-primary/10 hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-xl">play_arrow</span>
+                        Resume Session
+                    </button>
+<button class="flex-1 py-4 bg-transparent rounded-lg font-headline font-semibold text-on-surface border border-outline-variant/20 hover:bg-surface-container-highest/40 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-xl">refresh</span>
+                        Start Fresh
+                    </button>
+</div>
+<!-- Low Priority Exit -->
+<div class="text-center">
+<button class="text-[0.6875rem] font-label text-outline uppercase tracking-[0.2em] hover:text-primary transition-colors cursor-pointer">
+                        Dismiss to Dashboard
+                    </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Background Decorative Element -->
+<div class="fixed top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] -mr-48 -mt-48 pointer-events-none z-0"></div>
+<div class="fixed bottom-0 left-0 w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px] -ml-24 -mb-24 pointer-events-none z-0"></div>
+</body></html>

@@ -23,6 +23,7 @@ Desktop.ini
 # IDE
 .vs/
 .vscode/
+.claude/
 *.swp
 
 # Node (for Sentinel.UI later)

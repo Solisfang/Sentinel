@@ -4,25 +4,24 @@
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         Title="Sentinel"
         WindowStyle="None"
-        AllowsTransparency="True"
-        Background="Transparent"
-        Topmost="True"
-        Width="300"
-        Height="200"
-        MinWidth="240"
-        MinHeight="160"
+        Background="#1a1a1e"
+        Topmost="False"
+        Width="480"
+        Height="640"
+        MinWidth="360"
+        MinHeight="480"
         ResizeMode="CanResizeWithGrip"
-        WindowStartupLocation="Manual"
+        WindowStartupLocation="CenterScreen"
         ShowInTaskbar="True">
 
     <Window.Resources>
         <Style x:Key="WindowButton" TargetType="Button">
-            <Setter Property="Width" Value="26"/>
-            <Setter Property="Height" Value="26"/>
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#777"/>
+            <Setter Property="Foreground" Value="#888"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontSize" Value="14"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -51,25 +50,15 @@
         </Style>
     </Window.Resources>
 
-    <!-- Outer border with glassmorphism effect -->
-    <Border CornerRadius="14"
-            BorderBrush="#30ffffff"
-            BorderThickness="1">
-        <Border.Background>
-            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                <GradientStop Color="#D9141418" Offset="0"/>
-                <GradientStop Color="#D91a1a20" Offset="1"/>
-            </LinearGradientBrush>
-        </Border.Background>
-
+    <Border Background="#1a1a1e">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="30"/>
+                <RowDefinition Height="36" x:Name="TitleBarRow"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <!-- Title Bar -->
-            <Grid Grid.Row="0" Background="Transparent"
+            <Grid Grid.Row="0" Background="#1a1a1e" x:Name="TitleBarGrid"
                   MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -78,10 +67,10 @@
 
                 <TextBlock Grid.Column="0"
                            Text="Sentinel"
-                           Foreground="#555"
+                           Foreground="#666"
                            VerticalAlignment="Center"
-                           Margin="12,0,0,0"
-                           FontSize="11"
+                           Margin="14,0,0,0"
+                           FontSize="12"
                            FontWeight="Medium"/>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal"
@@ -97,7 +86,7 @@
 
             <!-- WebView Content -->
             <wv2:WebView2 x:Name="WebView" Grid.Row="1"
-                          DefaultBackgroundColor="Transparent"/>
+                          DefaultBackgroundColor="#1a1a1e"/>
         </Grid>
     </Border>
 </Window>

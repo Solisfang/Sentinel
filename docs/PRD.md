@@ -51,6 +51,32 @@ Standard Pomodoro apps assume ticking clocks equal productivity. Sentinel closes
 3. User opens the laptop an hour later. Sentinel intercepts PBT_APMRESUMEAUTOMATIC.
 4. Instead of adding 60 minutes of "idle time," the UI prompts: "System sleep detected. Resume session or start fresh?"
 
+### Workflow E: Fast Distraction Logging with Suggestions and Categories
+1. User goes idle during a focus session and the intervention modal appears.
+2. The UI shows at least 5 quick-select pills:
+   - the 2 most recent distraction labels
+   - the 3 most frequent distraction labels
+3. The user can click one of those pills to submit instantly instead of typing the same distraction again and again.
+4. If the user types a new distraction label, Sentinel should allow them to:
+   - keep it as a raw standalone distraction
+   - map it to an existing category
+   - create a new category and map it immediately
+5. Example: "twitter" and "instagram" can both map to "Social Media".
+6. Reporting should use categories while still preserving raw original entries.
+
+### Workflow F: Taxonomy Cleanup and Historical Editing
+1. User opens a distraction history or taxonomy management area.
+2. They review previously logged distractions and category mappings.
+3. They can rename a raw distraction label, move it to another category, or create a new category.
+4. They can edit mappings between distractions and categories any time after the fact.
+5. Reports become cleaner over time because similar distractions no longer stay fragmented.
+
+### Workflow G: Corner Overlay / Mini Window Mode
+1. User does not want the full Sentinel window open all the time.
+2. They switch to a small corner overlay similar in spirit to lightweight productivity pop-ups such as Microsoft To Do's smaller pop-up style.
+3. The overlay shows only the essential timer and quick controls.
+4. The full app remains available for deeper actions like settings, reports, and taxonomy editing.
+
 ---
 
 ## 4. Technical Architecture (The V2 Engine)
@@ -71,6 +97,11 @@ Standard Pomodoro apps assume ticking clocks equal productivity. Sentinel closes
 
 ### Data & Sync
 - **Local First:** Entity Framework Core + SQLite.
+- **Planned Taxonomy Layer:** Sentinel will also maintain a local distraction taxonomy made of:
+  - raw distraction labels
+  - user-defined categories
+  - editable mappings between the two
+  This improves reporting quality without losing original user-entered data.
 - **Cloud Sync:** Firebase Auth (for user identity) and Firestore (for encrypted, opt-in backup and cross-device sync). Cloud sync is strictly opt-in and encrypted—never required for core functionality.
 
 ---
@@ -92,3 +123,13 @@ To prevent feature creep, the Day 1 MVP should only include:
 - The GetLastInputInfo polling loop to trigger the Angular UI when idle.
 - Basic local JSON or SQLite saving, with optional Firebase Auth and Firestore sync (user can enable cloud sync at any time).
   - (Smart media suppression, DPI scaling, and Wacom RawInput can be pushed to V1.1).
+
+---
+
+## 7. Approved Next Enhancements (Planned, Not Yet Implemented)
+
+- Suggested distraction pills in the intervention flow using recent and top distractions
+- Distraction categories and mappings so raw entries like "twitter" and "instagram" can roll up into categories like "Social Media"
+- Editable historical taxonomy management so users can revisit past distractions and remap or rename them later
+- Category-aware reporting that preserves raw entries while improving analytics clarity
+- Corner overlay / mini-window mode for users who want Sentinel visible in a small desktop corner instead of keeping the full app open
