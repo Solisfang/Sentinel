@@ -219,7 +219,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[Sentinel] Failed to query today's sessions: {ex.Message}");
+            SentinelLog.Warn($"Failed to query today's sessions: {ex.Message}");
         }
 
         var message = JsonSerializer.Serialize(new
@@ -237,7 +237,14 @@ public partial class MainWindow : Window
                 alwaysOnTop = _settings.AlwaysOnTop,
                 suppressDuringMedia = _settings.SuppressDuringMedia,
                 dailyFocusGoalMinutes = _settings.DailyFocusGoalMinutes,
-                overlayStyle = _settings.OverlayStyle
+                overlayStyle = _settings.OverlayStyle,
+                customPresets = _settings.CustomPresets.Select(p => new
+                {
+                    name = p.Name,
+                    focus = p.Focus,
+                    shortBreak = p.ShortBreak,
+                    longBreak = p.LongBreak
+                }).ToArray()
             }
         });
         WebView.CoreWebView2?.PostWebMessageAsJson(message);
@@ -347,7 +354,8 @@ public partial class MainWindow : Window
             var json = e.WebMessageAsJson;
             using var doc = JsonDocument.Parse(json);
             var root = doc.RootElement;
-            var messageType = root.GetProperty("type").GetString();
+            if (!root.TryGetProperty("type", out var typeProp)) return;
+            var messageType = typeProp.GetString();
 
             switch (messageType)
             {
@@ -372,17 +380,23 @@ public partial class MainWindow : Window
                     break;
 
                 case "SNOOZE":
-                    var snoozeMinutes = root.GetProperty("minutes").GetInt32();
-                    _activityMonitor.Snooze(snoozeMinutes);
-                    Debug.WriteLine($"[Sentinel] Snooze activated for {snoozeMinutes} minutes");
-                    SendSnoozeStatusToReact();
+                    if (root.TryGetProperty("minutes", out var snoozeProp))
+                    {
+                        var snoozeMinutes = snoozeProp.GetInt32();
+                        _activityMonitor.Snooze(snoozeMinutes);
+                        SentinelLog.Info($"Snooze activated for {snoozeMinutes} minutes");
+                        SendSnoozeStatusToReact();
+                    }
                     break;
 
                 case "WATCHING_CONTENT":
-                    var watchMinutes = root.GetProperty("minutes").GetInt32();
-                    _activityMonitor.Snooze(watchMinutes);
-                    Debug.WriteLine($"[Sentinel] Watching content mode for {watchMinutes} minutes");
-                    SendSnoozeStatusToReact();
+                    if (root.TryGetProperty("minutes", out var watchProp))
+                    {
+                        var watchMinutes = watchProp.GetInt32();
+                        _activityMonitor.Snooze(watchMinutes);
+                        SentinelLog.Info($"Watching content mode for {watchMinutes} minutes");
+                        SendSnoozeStatusToReact();
+                    }
                     break;
 
                 case "CANCEL_SNOOZE":
@@ -432,12 +446,15 @@ public partial class MainWindow : Window
                     break;
 
                 case "TIMER_RUNNING":
-                    var running = root.GetProperty("running").GetBoolean();
-                    if (running)
-                        _activityMonitor.Start();
-                    else
-                        _activityMonitor.Stop();
-                    Debug.WriteLine($"[Sentinel] Timer running: {running} — idle monitor {(running ? "started" : "stopped")}");
+                    if (root.TryGetProperty("running", out var runProp))
+                    {
+                        var running = runProp.GetBoolean();
+                        if (running)
+                            _activityMonitor.Start();
+                        else
+                            _activityMonitor.Stop();
+                        Debug.WriteLine($"[Sentinel] Timer running: {running} — idle monitor {(running ? "started" : "stopped")}");
+                    }
                     break;
 
                 case "OVERLAY_CLOSE":
@@ -449,7 +466,7 @@ public partial class MainWindow : Window
                     break;
 
                 case "JS_ERROR":
-                    var jsMessage = root.GetProperty("message").GetString() ?? "";
+                    var jsMessage = root.TryGetProperty("message", out var msgProp) ? msgProp.GetString() ?? "" : "";
                     var jsStack = root.TryGetProperty("stack", out var stackProp) ? stackProp.GetString() ?? "" : "";
                     CrashReporter.LogCrash("JS_ERROR", new InvalidOperationException($"{jsMessage}\n{jsStack}"));
                     break;
@@ -463,7 +480,8 @@ public partial class MainWindow : Window
 
     private async Task HandleLogDistraction(JsonElement root)
     {
-        var note = root.GetProperty("note").GetString();
+        if (!root.TryGetProperty("note", out var noteProp)) return;
+        var note = noteProp.GetString();
         if (string.IsNullOrEmpty(note)) return;
         var categoryName = root.TryGetProperty("categoryName", out var categoryProp)
             ? categoryProp.GetString()
@@ -542,8 +560,10 @@ public partial class MainWindow : Window
 
     private async Task HandleUpdateDistractionGroup(JsonElement root)
     {
-        var normalizedNote = root.GetProperty("normalizedNote").GetString();
-        var note = root.GetProperty("note").GetString();
+        if (!root.TryGetProperty("normalizedNote", out var nnProp)) return;
+        if (!root.TryGetProperty("note", out var nProp)) return;
+        var normalizedNote = nnProp.GetString();
+        var note = nProp.GetString();
         var categoryName = root.TryGetProperty("categoryName", out var categoryProp)
             ? categoryProp.GetString()
             : null;
@@ -560,8 +580,10 @@ public partial class MainWindow : Window
 
     private async Task HandleRenameCategory(JsonElement root)
     {
-        var oldName = root.GetProperty("oldName").GetString();
-        var newName = root.GetProperty("newName").GetString();
+        if (!root.TryGetProperty("oldName", out var oldProp)) return;
+        if (!root.TryGetProperty("newName", out var newProp)) return;
+        var oldName = oldProp.GetString();
+        var newName = newProp.GetString();
 
         if (string.IsNullOrWhiteSpace(oldName) || string.IsNullOrWhiteSpace(newName))
         {
@@ -575,19 +597,22 @@ public partial class MainWindow : Window
 
     private async Task HandleLogSession(JsonElement root)
     {
-        var durationSeconds = root.GetProperty("durationSeconds").GetInt32();
+        if (!root.TryGetProperty("durationSeconds", out var durProp)) return;
+        var durationSeconds = durProp.GetInt32();
         var sessionName = root.TryGetProperty("sessionName", out var nameProp)
             ? nameProp.GetString()
             : null;
+        var endedEarly = root.TryGetProperty("endedEarly", out var earlyProp) && earlyProp.GetBoolean();
         var session = new Session
         {
             DurationSeconds = durationSeconds,
             StartedAt = DateTime.UtcNow.AddSeconds(-durationSeconds),
             CompletedAt = DateTime.UtcNow,
-            SessionName = sessionName
+            SessionName = sessionName,
+            EndedEarly = endedEarly
         };
         await _repository.AddSessionAsync(session);
-        Debug.WriteLine($"[Sentinel] Session saved: {durationSeconds}s{(sessionName != null ? $" ({sessionName})" : "")}");
+        Debug.WriteLine($"[Sentinel] Session saved: {durationSeconds}s{(endedEarly ? " (ended early)" : "")}{(sessionName != null ? $" ({sessionName})" : "")}");
     }
 
     private void PlayNotificationSound()
@@ -600,7 +625,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[Sentinel] Sound play failed: {ex.Message}");
+            SentinelLog.Warn($"Sound play failed: {ex.Message}");
         }
     }
 
@@ -667,7 +692,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[Sentinel] Export failed: {ex.Message}");
+            SentinelLog.Error("Export failed", ex);
             Dispatcher.Invoke(() =>
             {
                 var errMsg = JsonSerializer.Serialize(new
@@ -682,31 +707,56 @@ public partial class MainWindow : Window
 
     private void HandleSaveSettings(JsonElement root)
     {
-        var settings = root.GetProperty("settings");
+        try
+        {
+            if (!root.TryGetProperty("settings", out var settings)) return;
 
-        _settings.PomodoroMinutes = settings.GetProperty("pomodoroMinutes").GetInt32();
-        _settings.ShortBreakMinutes = settings.GetProperty("shortBreakMinutes").GetInt32();
-        _settings.LongBreakMinutes = settings.GetProperty("longBreakMinutes").GetInt32();
-        _settings.IdleThresholdSeconds = settings.GetProperty("idleThresholdSeconds").GetInt32();
-        _settings.CloudSyncEnabled = settings.GetProperty("cloudSyncEnabled").GetBoolean();
-        _settings.SoundEnabled = settings.GetProperty("soundEnabled").GetBoolean();
-        _settings.AlwaysOnTop = settings.GetProperty("alwaysOnTop").GetBoolean();
+            if (settings.TryGetProperty("pomodoroMinutes", out var pm))
+                _settings.PomodoroMinutes = pm.GetInt32();
+            if (settings.TryGetProperty("shortBreakMinutes", out var sbm))
+                _settings.ShortBreakMinutes = sbm.GetInt32();
+            if (settings.TryGetProperty("longBreakMinutes", out var lbm))
+                _settings.LongBreakMinutes = lbm.GetInt32();
+            if (settings.TryGetProperty("idleThresholdSeconds", out var its))
+                _settings.IdleThresholdSeconds = its.GetInt32();
+            if (settings.TryGetProperty("cloudSyncEnabled", out var cse))
+                _settings.CloudSyncEnabled = cse.GetBoolean();
+            if (settings.TryGetProperty("soundEnabled", out var se))
+                _settings.SoundEnabled = se.GetBoolean();
+            if (settings.TryGetProperty("alwaysOnTop", out var aot))
+                _settings.AlwaysOnTop = aot.GetBoolean();
+            if (settings.TryGetProperty("suppressDuringMedia", out var sdm))
+                _settings.SuppressDuringMedia = sdm.GetBoolean();
+            if (settings.TryGetProperty("dailyFocusGoalMinutes", out var dfg))
+                _settings.DailyFocusGoalMinutes = dfg.GetInt32();
+            if (settings.TryGetProperty("overlayStyle", out var os))
+                _settings.OverlayStyle = os.GetString() ?? "compact";
+            if (settings.TryGetProperty("customPresets", out var cp) && cp.ValueKind == JsonValueKind.Array)
+            {
+                _settings.CustomPresets = cp.EnumerateArray()
+                    .Select(p => new CustomPreset
+                    {
+                        Name = p.TryGetProperty("name", out var n) ? n.GetString() ?? "" : "",
+                        Focus = p.TryGetProperty("focus", out var f) ? f.GetInt32() : 25,
+                        ShortBreak = p.TryGetProperty("shortBreak", out var sb) ? sb.GetInt32() : 5,
+                        LongBreak = p.TryGetProperty("longBreak", out var lb) ? lb.GetInt32() : 15,
+                    })
+                    .ToList();
+            }
 
-        if (settings.TryGetProperty("suppressDuringMedia", out var sdm))
-            _settings.SuppressDuringMedia = sdm.GetBoolean();
-        if (settings.TryGetProperty("dailyFocusGoalMinutes", out var dfg))
-            _settings.DailyFocusGoalMinutes = dfg.GetInt32();
-        if (settings.TryGetProperty("overlayStyle", out var os))
-            _settings.OverlayStyle = os.GetString() ?? "compact";
+            // Apply settings immediately
+            _activityMonitor.IdleThresholdSeconds = _settings.IdleThresholdSeconds;
+            _activityMonitor.SuppressDuringMedia = _settings.SuppressDuringMedia;
+            if (!_isCompactMode)
+                Topmost = _settings.AlwaysOnTop;
 
-        // Apply settings immediately
-        _activityMonitor.IdleThresholdSeconds = _settings.IdleThresholdSeconds;
-        _activityMonitor.SuppressDuringMedia = _settings.SuppressDuringMedia;
-        if (!_isCompactMode)
-            Topmost = _settings.AlwaysOnTop;
-
-        SettingsService.Save(_settings);
-        Debug.WriteLine("[Sentinel] Settings saved");
+            SettingsService.Save(_settings);
+            Debug.WriteLine("[Sentinel] Settings saved");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[Sentinel] Failed to save settings: {ex.Message}");
+        }
     }
 
     private void HandleToggleCompact()

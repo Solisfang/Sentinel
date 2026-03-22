@@ -1,7 +1,7 @@
 import type { HTMLAttributes, ReactNode, SVGProps } from 'react';
 import { cx } from './ui-utils';
 
-export type WorkspaceViewKey = 'timer' | 'reports' | 'taxonomy' | 'settings' | 'account';
+export type WorkspaceViewKey = 'timer' | 'reports' | 'history' | 'taxonomy' | 'settings' | 'account';
 
 export type GlyphName =
   | 'timer'
@@ -25,7 +25,8 @@ export type GlyphName =
   | 'moon'
   | 'cloud'
   | 'keyboard'
-  | 'target';
+  | 'target'
+  | 'history';
 
 interface GlyphProps extends SVGProps<SVGSVGElement> {
   name: GlyphName;
@@ -206,6 +207,15 @@ function renderGlyph(name: GlyphName) {
           <path d="M5 12H2.5" />
         </>
       );
+    case 'history':
+      return (
+        <>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 7V12L15 15" />
+          <path d="M3 12H5" />
+          <path d="M19 12H21" />
+        </>
+      );
     default: {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const _exhaustive: never = name;
@@ -266,6 +276,7 @@ export function WorkspaceLayout({
   const primaryNavigation: Array<{ key: WorkspaceViewKey; label: string; icon: GlyphName }> = [
     { key: 'timer', label: 'Timer', icon: 'timer' },
     { key: 'reports', label: 'Reports', icon: 'reports' },
+    { key: 'history', label: 'History', icon: 'history' },
     { key: 'taxonomy', label: 'Taxonomy', icon: 'taxonomy' },
     { key: 'settings', label: 'Settings', icon: 'settings' },
   ];

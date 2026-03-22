@@ -25,6 +25,7 @@ public class Session
     public DateTime StartedAt { get; set; }
     public DateTime? CompletedAt { get; set; }
     public string? SessionName { get; set; }
+    public bool EndedEarly { get; set; }
 }
 
 public class TaxonomyData

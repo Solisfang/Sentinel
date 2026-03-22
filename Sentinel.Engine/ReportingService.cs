@@ -36,6 +36,11 @@ public class SessionEntry
     public DateTime StartedAt { get; set; }
     public int DurationSeconds { get; set; }
     public bool Completed { get; set; }
+    public bool EndedEarly { get; set; }
+    public string? SessionName { get; set; }
+    public DateTime? CompletedAt { get; set; }
+    public int DistractionsCount { get; set; }
+    public int FalseAlarmCount { get; set; }
 }
 
 public class ReportingService
@@ -126,11 +131,24 @@ public class ReportingService
             report.RecentSessions = sessions
                 .OrderByDescending(s => s.StartedAt)
                 .Take(20)
-                .Select(s => new SessionEntry
+                .Select(s =>
                 {
-                    StartedAt = s.StartedAt,
-                    DurationSeconds = s.DurationSeconds,
-                    Completed = s.CompletedAt.HasValue
+                    var sessionEnd = s.CompletedAt ?? s.StartedAt.AddSeconds(s.DurationSeconds);
+                    var sessionDistractions = distractions
+                        .Where(d => d.Timestamp >= s.StartedAt && d.Timestamp <= sessionEnd)
+                        .ToList();
+
+                    return new SessionEntry
+                    {
+                        StartedAt = s.StartedAt,
+                        DurationSeconds = s.DurationSeconds,
+                        Completed = s.CompletedAt.HasValue,
+                        EndedEarly = s.EndedEarly,
+                        SessionName = s.SessionName,
+                        CompletedAt = s.CompletedAt,
+                        DistractionsCount = sessionDistractions.Count(d => !d.IsFalseAlarm),
+                        FalseAlarmCount = sessionDistractions.Count(d => d.IsFalseAlarm),
+                    };
                 })
                 .ToList();
 
@@ -140,7 +158,7 @@ public class ReportingService
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[Sentinel] Report generation failed: {ex.Message}");
+            SentinelLog.Error($"Report generation failed", ex);
             return new ReportData();
         }
     }

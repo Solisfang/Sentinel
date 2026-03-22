@@ -26,6 +26,7 @@ export interface Settings {
   suppressDuringMedia: boolean;
   dailyFocusGoalMinutes: number;
   overlayStyle: OverlayStyle;
+  customPresets: TimerPreset[];
 }
 
 export const defaultSettings: Settings = {
@@ -39,6 +40,7 @@ export const defaultSettings: Settings = {
   suppressDuringMedia: true,
   dailyFocusGoalMinutes: 120,
   overlayStyle: 'compact',
+  customPresets: [],
 };
 
 export function formatTime(seconds: number): string {

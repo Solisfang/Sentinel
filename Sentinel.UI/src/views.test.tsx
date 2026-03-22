@@ -277,6 +277,7 @@ describe('TimerScreen', () => {
         onModeChange={vi.fn()}
         onStartPause={vi.fn()}
         onReset={vi.fn()}
+        onEndSession={vi.fn()}
         onCancelSnooze={vi.fn()}
         onToggleCompact={vi.fn()}
         onTogglePresets={vi.fn()}

@@ -35,6 +35,7 @@ import {
   ReportsScreen,
   ResumePromptModal,
   SessionCompleteScreen,
+  SessionHistoryScreen,
   SettingsScreen,
   TaxonomyManagerScreen,
   TimerScreen,
@@ -52,7 +53,7 @@ interface Distraction {
   timestamp: Date;
 }
 
-type View = 'timer' | 'settings' | 'auth' | 'reports' | 'taxonomy';
+type View = 'timer' | 'settings' | 'auth' | 'reports' | 'taxonomy' | 'history';
 
 function App() {
   const [settings, setSettings] = useState<Settings>(defaultSettings);
@@ -259,6 +260,13 @@ function App() {
     postMessage({ type: 'TIMER_RUNNING', running: isRunning });
   }, [isRunning]);
 
+  // Sync timer display when settings change while timer is idle
+  useEffect(() => {
+    if (!isRunning && !isComplete) {
+      setTimeLeft(getTimerDuration(timerMode, settings));
+    }
+  }, [settings.pomodoroMinutes, settings.shortBreakMinutes, settings.longBreakMinutes]);
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -449,6 +457,29 @@ function App() {
     setTimeLeft(getTimerDuration(timerMode, settings));
     setIsRunning(false);
     setIsComplete(false);
+    setIsPausedByIntervention(false);
+  };
+
+  const handleEndSession = () => {
+    if (timerMode !== 'pomodoro') return;
+    const totalDuration = getTimerDuration('pomodoro', settings);
+    const elapsed = totalDuration - timeLeft;
+    if (elapsed < 1) return;
+    if (!window.confirm(`End this session early? ${Math.floor(elapsed / 60)}m ${elapsed % 60}s of focus will be logged.`)) {
+      return;
+    }
+    setIsRunning(false);
+    timerAnchorRef.current = null;
+    setSessionsCompleted((count) => count + 1);
+    postMessage({
+      type: 'LOG_SESSION',
+      durationSeconds: elapsed,
+      sessionName: sessionName || undefined,
+      endedEarly: true,
+    });
+    postMessage({ type: 'PLAY_SOUND' });
+    setTimeLeft(getTimerDuration(timerMode, settings));
+    setIsComplete(true);
     setIsPausedByIntervention(false);
   };
 
@@ -709,6 +740,7 @@ function App() {
   const baseNavigation = {
     onOpenTimer: () => setView('timer'),
     onOpenReports: openReports,
+    onOpenHistory: () => setView('history'),
     onOpenSettings: () => setView('settings'),
     onOpenAccount: () => setView('auth'),
   };
@@ -771,6 +803,24 @@ function App() {
         navigation={{
           ...baseNavigation,
           onOpenTaxonomy: () => openTaxonomy('reports'),
+        }}
+      />
+    );
+  }
+
+  if (view === 'history') {
+    if (!reportData) {
+      requestReportData('all');
+    }
+    return (
+      <SessionHistoryScreen
+        reportData={reportData}
+        reportLoading={reportLoading}
+        onBack={() => setView('timer')}
+        onSelectRange={requestReportData}
+        navigation={{
+          ...baseNavigation,
+          onOpenTaxonomy: () => openTaxonomy('timer'),
         }}
       />
     );
@@ -884,6 +934,7 @@ function App() {
       onModeChange={handleModeChange}
       onStartPause={handleStartPause}
       onReset={handleReset}
+      onEndSession={handleEndSession}
       onCancelSnooze={handleCancelSnooze}
       onToggleCompact={toggleCompact}
       onTogglePresets={() => setShowPresets((value) => !value)}

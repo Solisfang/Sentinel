@@ -15,7 +15,18 @@ export interface ReportData {
   dailyFocus: { date: string; focusSeconds: number; sessions: number; distractions: number }[];
   topCategories: ReportBreakdownItem[];
   topDistractions: ReportBreakdownItem[];
-  recentSessions: { startedAt: string; durationSeconds: number; completed: boolean }[];
+  recentSessions: SessionHistoryEntry[];
+}
+
+export interface SessionHistoryEntry {
+  startedAt: string;
+  durationSeconds: number;
+  completed: boolean;
+  endedEarly: boolean;
+  sessionName: string | null;
+  completedAt: string | null;
+  distractionsCount: number;
+  falseAlarmCount: number;
 }
 
 export interface DistractionEntry {

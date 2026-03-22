@@ -122,6 +122,7 @@ const OVERLAY_STYLE_OPTIONS: Array<{ key: OverlayStyle; label: string; descripti
 interface WorkspaceNavigation {
   onOpenTimer: () => void;
   onOpenReports: () => void;
+  onOpenHistory: () => void;
   onOpenTaxonomy: () => void;
   onOpenSettings: () => void;
   onOpenAccount: () => void;
@@ -618,10 +619,12 @@ export function ReportsScreen({
                           <div className="flex items-center justify-between gap-4">
                             <div className="min-w-0">
                               <p className="truncate text-sm font-semibold text-(--text-primary)">
-                                {new Date(session.startedAt).toLocaleDateString()}
+                                {session.sessionName || new Date(session.startedAt).toLocaleDateString()}
                               </p>
-                              <p className="text-xs uppercase tracking-[0.18em] text-(--text-muted)">
-                                {session.completed ? 'Completed' : 'In Progress'}
+                              <p className="text-xs text-(--text-muted)">
+                                {new Date(session.startedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                {session.completedAt &&
+                                  ` — ${new Date(session.completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
                               </p>
                             </div>
                             <div className="text-right">
@@ -629,7 +632,11 @@ export function ReportsScreen({
                                 {formatDuration(session.durationSeconds)}
                               </p>
                               <p className="text-xs text-(--text-muted)">
-                                {session.completed ? 'Logged' : 'Partial'}
+                                {session.endedEarly && <span className="text-amber-400">Ended early · </span>}
+                                {session.distractionsCount > 0 && `${session.distractionsCount} distraction${session.distractionsCount !== 1 ? 's' : ''}`}
+                                {session.distractionsCount > 0 && session.falseAlarmCount > 0 && ' · '}
+                                {session.falseAlarmCount > 0 && `${session.falseAlarmCount} false alarm${session.falseAlarmCount !== 1 ? 's' : ''}`}
+                                {session.distractionsCount === 0 && session.falseAlarmCount === 0 && !session.endedEarly && (session.completed ? 'Clean session' : 'In progress')}
                               </p>
                             </div>
                           </div>
@@ -753,6 +760,143 @@ export function ReportsScreen({
     </WorkspaceLayout>
   );
 }
+
+/* ------------------------------------------------------------------ */
+/*  Session History Screen                                            */
+/* ------------------------------------------------------------------ */
+
+interface SessionHistoryScreenProps {
+  reportData: ReportData | null;
+  reportLoading: boolean;
+  onBack: () => void;
+  onSelectRange: (range: ReportRange) => void;
+  navigation: WorkspaceNavigation;
+}
+
+export function SessionHistoryScreen({
+  reportData,
+  reportLoading,
+  onBack,
+  onSelectRange,
+  navigation,
+}: SessionHistoryScreenProps) {
+  const [range, setRange] = useState<ReportRange>('all');
+
+  const handleRange = (r: ReportRange) => {
+    setRange(r);
+    onSelectRange(r);
+  };
+
+  const sessions = reportData?.recentSessions ?? [];
+
+  return (
+    <WorkspaceLayout
+      activeView="history"
+      navigation={workspaceNavigation(navigation)}
+      statusLabel="Session History"
+      statusDetail="Browse all your completed focus sessions."
+      topbarMeta={<TopbarPill label="History" icon="history" />}
+      role="main"
+      aria-label="Session History"
+    >
+      <ScreenShell wide>
+        <ScreenHeader
+          eyebrow="Sessions"
+          title="History"
+          subtitle="A detailed log of every focus session you've completed."
+          onBack={onBack}
+          backLabel="Back"
+          backAriaLabel="Back to timer"
+        />
+
+        <SectionCard
+          title="Window"
+          description="Choose the time range to view sessions from."
+          icon="history"
+        >
+          <div className="flex flex-wrap gap-2">
+            {RANGE_OPTIONS.map(({ key, label }) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => handleRange(key)}
+                className={buttonClasses.pill}
+                aria-pressed={range === key}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </SectionCard>
+
+        {reportLoading ? (
+          <SectionCard bodyClassName="min-h-48 items-center justify-center">
+            <span className="animate-pulse text-sm text-(--text-muted)">Loading sessions...</span>
+          </SectionCard>
+        ) : sessions.length > 0 ? (
+          <SectionCard
+            title={`${sessions.length} Session${sessions.length !== 1 ? 's' : ''}`}
+            description="Sorted most-recent first."
+            icon="timer"
+          >
+            <div className="space-y-3">
+              {sessions.map((session, index) => (
+                <div
+                  key={`${session.startedAt}-${index}`}
+                  className="rounded-[calc(var(--card-radius)-6px)] border border-[rgba(73,68,85,0.18)] bg-[rgba(14,14,14,0.18)] px-4 py-3"
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-(--text-primary)">
+                        {session.sessionName || new Date(session.startedAt).toLocaleDateString()}
+                      </p>
+                      <p className="text-xs text-(--text-muted)">
+                        {new Date(session.startedAt).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                        {session.completedAt &&
+                          ` — ${new Date(session.completedAt).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}`}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-semibold text-(--text-primary)">
+                        {formatDuration(session.durationSeconds)}
+                      </p>
+                      <p className="text-xs text-(--text-muted)">
+                        {session.endedEarly && <span className="text-amber-400">Ended early · </span>}
+                        {session.distractionsCount > 0 &&
+                          `${session.distractionsCount} distraction${session.distractionsCount !== 1 ? 's' : ''}`}
+                        {session.distractionsCount > 0 && session.falseAlarmCount > 0 && ' · '}
+                        {session.falseAlarmCount > 0 &&
+                          `${session.falseAlarmCount} false alarm${session.falseAlarmCount !== 1 ? 's' : ''}`}
+                        {session.distractionsCount === 0 &&
+                          session.falseAlarmCount === 0 &&
+                          !session.endedEarly &&
+                          (session.completed ? 'Clean session' : 'In progress')}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </SectionCard>
+        ) : (
+          <SectionCard bodyClassName="min-h-48 items-center justify-center">
+            <span className="text-sm text-(--text-muted)">No sessions found in this range.</span>
+          </SectionCard>
+        )}
+      </ScreenShell>
+    </WorkspaceLayout>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Taxonomy Manager Screen                                           */
+/* ------------------------------------------------------------------ */
 
 interface TaxonomyManagerScreenProps {
   taxonomyData: TaxonomyData;
@@ -1184,7 +1328,7 @@ export function SettingsScreen({
 
               <FieldBlock
                 label="Presets"
-                description="Quick starting points for classic pomodoros, deep work blocks, or short sprints."
+                description="Quick starting points. You can also save your current timer values as a custom preset."
               >
                 <div className="grid gap-3 min-[520px]:grid-cols-3">
                   {PRESETS.map((preset) => (
@@ -1195,7 +1339,49 @@ export function SettingsScreen({
                       onClick={() => onApplyPreset(preset)}
                     />
                   ))}
+                  {(settings.customPresets ?? []).map((preset, index) => (
+                    <div key={`custom-${preset.name}-${index}`} className="relative">
+                      <PresetChoice
+                        preset={preset}
+                        active={isPresetActive(settings, preset)}
+                        onClick={() => onApplyPreset(preset)}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = (settings.customPresets ?? []).filter((_, i) => i !== index);
+                          onSaveSettings({ ...settings, customPresets: updated });
+                        }}
+                        className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500/80 text-xs text-white hover:bg-red-500"
+                        aria-label={`Delete ${preset.name} preset`}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
                 </div>
+                {!isPresetActive(settings, PRESETS[0]) && !isPresetActive(settings, PRESETS[1]) && !isPresetActive(settings, PRESETS[2]) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const name = window.prompt('Name this preset:');
+                      if (!name?.trim()) return;
+                      const newPreset = {
+                        name: name.trim(),
+                        focus: settings.pomodoroMinutes,
+                        shortBreak: settings.shortBreakMinutes,
+                        longBreak: settings.longBreakMinutes,
+                      };
+                      onSaveSettings({
+                        ...settings,
+                        customPresets: [...(settings.customPresets ?? []), newPreset],
+                      });
+                    }}
+                    className={buttonClasses.inline}
+                  >
+                    Save Current as Preset
+                  </button>
+                )}
               </FieldBlock>
             </SectionCard>
 
@@ -1613,6 +1799,7 @@ interface TimerScreenProps {
   onModeChange: (mode: TimerMode) => void;
   onStartPause: () => void;
   onReset: () => void;
+  onEndSession: () => void;
   onCancelSnooze: () => void;
   onToggleCompact: () => void;
   onTogglePresets: () => void;
@@ -1643,6 +1830,7 @@ export function TimerScreen({
   onModeChange,
   onStartPause,
   onReset,
+  onEndSession,
   onCancelSnooze,
   onToggleCompact,
   onTogglePresets,
@@ -1771,6 +1959,11 @@ export function TimerScreen({
                         Reset
                       </button>
                     )}
+                    {timerMode === 'pomodoro' && timerProgress > 0 && (
+                      <button type="button" onClick={onEndSession} className={buttonClasses.inline}>
+                        End Session
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -1789,6 +1982,14 @@ export function TimerScreen({
                       {PRESETS.map((preset) => (
                         <PresetChoice
                           key={preset.name}
+                          preset={preset}
+                          active={isPresetActive(settings, preset)}
+                          onClick={() => onApplyPreset(preset)}
+                        />
+                      ))}
+                      {(settings.customPresets ?? []).map((preset, index) => (
+                        <PresetChoice
+                          key={`custom-${preset.name}-${index}`}
                           preset={preset}
                           active={isPresetActive(settings, preset)}
                           onClick={() => onApplyPreset(preset)}
@@ -1883,6 +2084,7 @@ function workspaceNavigation(navigation: WorkspaceNavigation) {
   return {
     timer: navigation.onOpenTimer,
     reports: navigation.onOpenReports,
+    history: navigation.onOpenHistory,
     taxonomy: navigation.onOpenTaxonomy,
     settings: navigation.onOpenSettings,
     account: navigation.onOpenAccount,

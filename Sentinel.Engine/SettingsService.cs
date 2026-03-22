@@ -18,6 +18,15 @@ public class AppSettings
     public double WindowLeft { get; set; } = -1;
     public double WindowTop { get; set; } = -1;
     public int DataRetentionMonths { get; set; } = 0;
+    public List<CustomPreset> CustomPresets { get; set; } = [];
+}
+
+public class CustomPreset
+{
+    public string Name { get; set; } = "";
+    public int Focus { get; set; }
+    public int ShortBreak { get; set; }
+    public int LongBreak { get; set; }
 }
 
 public class SettingsService
@@ -48,9 +57,9 @@ public class SettingsService
                 return JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
             }
         }
-        catch
+        catch (Exception ex)
         {
-            // Return defaults on any error
+            SentinelLog.Warn($"Failed to load settings from {settingsPath}: {ex.Message}");
         }
         return new AppSettings();
     }

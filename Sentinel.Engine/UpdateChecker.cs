@@ -83,7 +83,7 @@ public class UpdateChecker
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[Sentinel] Update check failed: {ex.Message}");
+            SentinelLog.Warn($"Update check failed: {ex.Message}");
         }
 
         return info;

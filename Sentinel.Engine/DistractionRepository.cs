@@ -303,6 +303,32 @@ public class DistractionRepository
             await SetSchemaVersionAsync(db, 4);
             Debug.WriteLine("[Sentinel] Migration 4 applied: SessionName column added to Sessions.");
         }
+
+        if (currentVersion < 5)
+        {
+            // Migration 5: Add IsFalseAlarm to Distractions and CompletedAt to Sessions
+            if (!await ColumnExistsAsync(db, "Distractions", "IsFalseAlarm"))
+                await db.Database.ExecuteSqlRawAsync(
+                    "ALTER TABLE Distractions ADD COLUMN IsFalseAlarm INTEGER NOT NULL DEFAULT 0;");
+
+            if (!await ColumnExistsAsync(db, "Sessions", "CompletedAt"))
+                await db.Database.ExecuteSqlRawAsync(
+                    "ALTER TABLE Sessions ADD COLUMN CompletedAt TEXT NULL;");
+
+            await SetSchemaVersionAsync(db, 5);
+            Debug.WriteLine("[Sentinel] Migration 5 applied: IsFalseAlarm + CompletedAt columns.");
+        }
+
+        if (currentVersion < 6)
+        {
+            // Migration 6: Add EndedEarly flag to Sessions
+            if (!await ColumnExistsAsync(db, "Sessions", "EndedEarly"))
+                await db.Database.ExecuteSqlRawAsync(
+                    "ALTER TABLE Sessions ADD COLUMN EndedEarly INTEGER NOT NULL DEFAULT 0;");
+
+            await SetSchemaVersionAsync(db, 6);
+            Debug.WriteLine("[Sentinel] Migration 6 applied: EndedEarly column on Sessions.");
+        }
     }
 
     private static async Task<int> GetSchemaVersionAsync(SentinelDbContext db)
@@ -318,8 +344,9 @@ public class DistractionRepository
             var result = await cmd.ExecuteScalarAsync();
             return result is DBNull or null ? 0 : Convert.ToInt32(result);
         }
-        catch
+        catch (Exception ex)
         {
+            SentinelLog.Warn($"Failed to get schema version: {ex.Message}");
             return 0;
         }
     }
