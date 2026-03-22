@@ -13,12 +13,22 @@ if ($NoBuild) {
 }
 
 dotnet @dotnetArgs
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Engine tests failed!" -ForegroundColor Red
+    exit $LASTEXITCODE
+}
 
 Write-Host "Running Sentinel UI tests..." -ForegroundColor Cyan
 Push-Location "Sentinel.UI"
 try {
     npm test
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "UI tests failed!" -ForegroundColor Red
+        exit $LASTEXITCODE
+    }
 }
 finally {
     Pop-Location
 }
+
+Write-Host "All tests passed!" -ForegroundColor Green

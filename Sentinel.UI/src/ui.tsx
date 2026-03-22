@@ -206,8 +206,10 @@ function renderGlyph(name: GlyphName) {
           <path d="M5 12H2.5" />
         </>
       );
-    default:
+    default: {
+      const _exhaustive: never = name;
       return null;
+    }
   }
 }
 

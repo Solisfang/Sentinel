@@ -3,7 +3,10 @@
 ; Build: Run build.ps1 first to generate publish/ folder, then compile this .iss file.
 
 #define AppName "Sentinel"
-#define AppVersion "1.0.0"
+; AppVersion can be overridden via ISCC command line: /DAppVersion=x.y.z
+#ifndef AppVersion
+  #define AppVersion "1.0.0"
+#endif
 #define AppPublisher "Sentinel"
 #define AppURL "https://github.com/sentinel"
 #define AppExeName "Sentinel.exe"
@@ -47,3 +50,7 @@ Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: 
 
 [Run]
 Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(AppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+
+[UninstallDelete]
+; Clean up user data directory on uninstall
+Type: filesandordirs; Name: "{localappdata}\Sentinel"

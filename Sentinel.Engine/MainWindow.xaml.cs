@@ -18,6 +18,7 @@ public partial class MainWindow : Window
 
     // Compact mode state
     private bool _isCompactMode;
+    private bool _wasCompactBeforeIntervention;
     private double _savedWidth;
     private double _savedHeight;
     private double _savedLeft;
@@ -94,6 +95,7 @@ public partial class MainWindow : Window
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
         await _repository.InitializeAsync();
+        await _repository.PruneOldDataAsync(_settings.DataRetentionMonths);
         await InitializeWebView();
         // Activity monitor starts only when timer starts (via TIMER_RUNNING message)
 
@@ -183,11 +185,11 @@ public partial class MainWindow : Window
         WebView.CoreWebView2.WebMessageReceived += OnWebMessageReceived;
 
         // Send initial settings when page loads
-        WebView.CoreWebView2.NavigationCompleted += (s, args) =>
+        WebView.CoreWebView2.NavigationCompleted += async (s, args) =>
         {
             if (args.IsSuccess)
             {
-                SendSettingsToReact();
+                await SendSettingsToReactAsync();
             }
         };
 
@@ -206,11 +208,24 @@ public partial class MainWindow : Window
         }
     }
 
-    private void SendSettingsToReact()
+    private async Task SendSettingsToReactAsync()
     {
+        var todaySessionsCompleted = 0;
+        try
+        {
+            var todayStart = DateTime.UtcNow.Date;
+            var todaySessions = await _repository.GetSessionsAsync(since: todayStart);
+            todaySessionsCompleted = todaySessions.Count;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[Sentinel] Failed to query today's sessions: {ex.Message}");
+        }
+
         var message = JsonSerializer.Serialize(new
         {
             type = "SETTINGS_LOADED",
+            todaySessionsCompleted,
             settings = new
             {
                 pomodoroMinutes = _settings.PomodoroMinutes,
@@ -269,6 +284,17 @@ public partial class MainWindow : Window
 
         Dispatcher.Invoke(() =>
         {
+            // If in compact/mini overlay mode, expand to full window so the intervention modal is usable
+            if (_isCompactMode)
+            {
+                _wasCompactBeforeIntervention = true;
+                ApplyCompactToggle();
+            }
+            else
+            {
+                _wasCompactBeforeIntervention = false;
+            }
+
             // Force window to foreground so the intervention popup is visible
             if (WindowState == WindowState.Minimized)
                 WindowState = WindowState.Normal;
@@ -334,7 +360,15 @@ public partial class MainWindow : Window
                     break;
 
                 case "INTERVENTION_DISMISSED":
-                    Dispatcher.Invoke(() => Topmost = _settings.AlwaysOnTop);
+                    Dispatcher.Invoke(() =>
+                    {
+                        Topmost = _settings.AlwaysOnTop;
+                        if (_wasCompactBeforeIntervention)
+                        {
+                            _wasCompactBeforeIntervention = false;
+                            ApplyCompactToggle();
+                        }
+                    });
                     break;
 
                 case "SNOOZE":
@@ -362,7 +396,7 @@ public partial class MainWindow : Window
                     break;
 
                 case "GET_SETTINGS":
-                    SendSettingsToReact();
+                    await SendSettingsToReactAsync();
                     break;
 
                 case "GET_REPORT_DATA":
@@ -413,11 +447,17 @@ public partial class MainWindow : Window
                 case "OVERLAY_MAXIMIZE":
                     HandleToggleCompact();
                     break;
+
+                case "JS_ERROR":
+                    var jsMessage = root.GetProperty("message").GetString() ?? "";
+                    var jsStack = root.TryGetProperty("stack", out var stackProp) ? stackProp.GetString() ?? "" : "";
+                    CrashReporter.LogCrash("JS_ERROR", new InvalidOperationException($"{jsMessage}\n{jsStack}"));
+                    break;
             }
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[Sentinel] Error processing message: {ex.Message}");
+            SentinelLog.Error("Error processing message", ex);
         }
     }
 
@@ -671,71 +711,76 @@ public partial class MainWindow : Window
 
     private void HandleToggleCompact()
     {
-        Dispatcher.Invoke(() =>
+        Dispatcher.Invoke(ApplyCompactToggle);
+    }
+
+    /// <summary>
+    /// Must be called on the UI thread. Toggles between compact overlay and full window.
+    /// </summary>
+    private void ApplyCompactToggle()
+    {
+        if (_isCompactMode)
         {
-            if (_isCompactMode)
+            // Restore full window
+            _isCompactMode = false;
+            Width = _savedWidth;
+            Height = _savedHeight;
+            Left = _savedLeft;
+            Top = _savedTop;
+            WindowState = _savedWindowState;
+            Topmost = _settings.AlwaysOnTop;
+            TitleBarGrid.Visibility = Visibility.Visible;
+            TitleBarRow.Height = new GridLength(36);
+            MinWidth = 360;
+            MinHeight = 480;
+            ResizeMode = ResizeMode.CanResizeWithGrip;
+        }
+        else
+        {
+            // Save current size/pos and shrink
+            _isCompactMode = true;
+            _savedWindowState = WindowState;
+            _savedWidth = ActualWidth;
+            _savedHeight = ActualHeight;
+            _savedLeft = Left;
+            _savedTop = Top;
+            WindowState = WindowState.Normal;
+            TitleBarGrid.Visibility = Visibility.Collapsed;
+            TitleBarRow.Height = new GridLength(0);
+
+            // Size based on overlay style
+            var style = _settings.OverlayStyle ?? "compact";
+            switch (style)
             {
-                // Restore full window
-                _isCompactMode = false;
-                Width = _savedWidth;
-                Height = _savedHeight;
-                Left = _savedLeft;
-                Top = _savedTop;
-                WindowState = _savedWindowState;
-                Topmost = _settings.AlwaysOnTop;
-                TitleBarGrid.Visibility = Visibility.Visible;
-                TitleBarRow.Height = new GridLength(36);
-                MinWidth = 360;
-                MinHeight = 480;
-                ResizeMode = ResizeMode.CanResizeWithGrip;
+                case "pill":
+                    MinWidth = 200; MinHeight = 80;
+                    Width = 220; Height = 100;
+                    break;
+                case "monitoring":
+                    MinWidth = 280; MinHeight = 120;
+                    Width = 320; Height = 160;
+                    break;
+                default: // compact
+                    MinWidth = 220; MinHeight = 100;
+                    Width = 260; Height = 140;
+                    break;
             }
-            else
-            {
-                // Save current size/pos and shrink
-                _isCompactMode = true;
-                _savedWindowState = WindowState;
-                _savedWidth = ActualWidth;
-                _savedHeight = ActualHeight;
-                _savedLeft = Left;
-                _savedTop = Top;
-                WindowState = WindowState.Normal;
-                TitleBarGrid.Visibility = Visibility.Collapsed;
-                TitleBarRow.Height = new GridLength(0);
+            ResizeMode = ResizeMode.NoResize;
+            Topmost = true;
 
-                // Size based on overlay style
-                var style = _settings.OverlayStyle ?? "compact";
-                switch (style)
-                {
-                    case "pill":
-                        MinWidth = 200; MinHeight = 80;
-                        Width = 220; Height = 100;
-                        break;
-                    case "monitoring":
-                        MinWidth = 280; MinHeight = 120;
-                        Width = 320; Height = 160;
-                        break;
-                    default: // compact
-                        MinWidth = 220; MinHeight = 100;
-                        Width = 260; Height = 140;
-                        break;
-                }
-                ResizeMode = ResizeMode.NoResize;
-                Topmost = true;
+            // Position bottom-right of screen
+            var workArea = SystemParameters.WorkArea;
+            Left = workArea.Right - Width - 20;
+            Top = workArea.Bottom - Height - 20;
+        }
 
-                // Position bottom-right of screen
-                var workArea = SystemParameters.WorkArea;
-                Left = workArea.Right - Width - 20;
-                Top = workArea.Bottom - Height - 20;
-            }
-
-            var message = JsonSerializer.Serialize(new
-            {
-                type = "COMPACT_MODE_CHANGED",
-                isCompact = _isCompactMode
-            });
-            WebView.CoreWebView2?.PostWebMessageAsJson(message);
-            Debug.WriteLine($"[Sentinel] Compact mode: {_isCompactMode}");
+        var message = JsonSerializer.Serialize(new
+        {
+            type = "COMPACT_MODE_CHANGED",
+            isCompact = _isCompactMode
         });
+        WebView.CoreWebView2?.PostWebMessageAsJson(message);
+        Debug.WriteLine($"[Sentinel] Compact mode: {_isCompactMode}");
     }
 
     private void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e)

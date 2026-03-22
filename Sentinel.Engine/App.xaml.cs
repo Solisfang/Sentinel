@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Windows;
 
 namespace Sentinel.Engine;
@@ -9,9 +8,7 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
-        Debug.WriteLine("[Sentinel] Application starting...");
-
-        // Initialize Firebase in the background — don't block the UI
-        _ = Task.Run(FirebaseService.InitializeAsync);
+        SentinelLog.Info("Application starting...");
+        SentinelLog.TrimIfNeeded();
     }
 }

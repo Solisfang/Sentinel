@@ -1,10 +1,11 @@
 # build.ps1 — Sentinel Production Build Script
-# Usage: .\build.ps1 [-Clean] [-SkipUI] [-SkipPublish] [-Installer]
+# Usage: .\build.ps1 [-Clean] [-SkipUI] [-SkipPublish] [-SkipTests] [-Installer]
 
 param(
     [switch]$Clean,
     [switch]$SkipUI,
     [switch]$SkipPublish,
+    [switch]$SkipTests,
     [switch]$Installer
 )
 
@@ -15,7 +16,7 @@ $EngineDir = Join-Path $Root "Sentinel.Engine"
 $WwwrootDir = Join-Path $EngineDir "wwwroot"
 $PublishDir = Join-Path $Root "publish"
 
-$steps = if ($Installer) { 5 } else { 4 }
+$steps = if ($Installer) { 6 } else { 5 }
 Write-Host "`n=== Sentinel Build ===" -ForegroundColor Cyan
 
 # Clean
@@ -27,6 +28,24 @@ if ($Clean) {
     Write-Host "  Cleaned." -ForegroundColor Green
 }
 
+# Run tests
+if (-not $SkipTests) {
+    Write-Host "`n[1.5/$steps] Running tests..." -ForegroundColor Yellow
+    & "$Root\test-all.ps1" -Configuration Release
+    if ($LASTEXITCODE -ne 0) { throw "Tests failed — aborting build." }
+    Write-Host "  All tests passed." -ForegroundColor Green
+} else {
+    Write-Host "`n[1.5/$steps] Skipping tests." -ForegroundColor DarkGray
+}
+# Restore dependencies
+Write-Host \"`n[1.8/$steps] Restoring dependencies...\" -ForegroundColor Yellow
+dotnet restore \"$EngineDir\" --nologo -q
+Push-Location $UIDir
+try {
+    npm ci --silent
+}
+finally { Pop-Location }
+Write-Host \"  Dependencies restored.\" -ForegroundColor Green
 # Build React UI
 if (-not $SkipUI) {
     Write-Host "`n[2/$steps] Building React UI..." -ForegroundColor Yellow
@@ -73,7 +92,12 @@ if ($Installer) {
         Write-Host "  Inno Setup not found at $iscc — skipping installer." -ForegroundColor DarkGray
         Write-Host "  Download from: https://jrsoftware.org/isdl.php" -ForegroundColor DarkGray
     } else {
-        & $iscc $issFile
+        # Read version from csproj and pass to Inno Setup
+        [xml]$csproj = Get-Content (Join-Path $EngineDir "Sentinel.Engine.csproj")
+        $version = $csproj.Project.PropertyGroup.Version | Where-Object { $_ } | Select-Object -First 1
+        if (-not $version) { $version = "1.0.0" }
+        Write-Host "  Version: $version" -ForegroundColor DarkGray
+        & $iscc "/DAppVersion=$version" $issFile
         if ($LASTEXITCODE -ne 0) { throw "Installer build failed" }
         $installerDir = Join-Path $Root "installer"
         Write-Host "  Installer built to $installerDir" -ForegroundColor Green

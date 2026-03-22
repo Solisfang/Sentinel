@@ -31,7 +31,22 @@ public class SentinelDbContext : DbContext
             return;
         }
 
-        options.UseSqlite($"Data Source={_dbPath ?? GetDefaultDatabasePath()}");
+        options.UseSqlite($"Data Source={_dbPath ?? GetDefaultDatabasePath()};Pooling=True");
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Distraction>(entity =>
+        {
+            entity.HasIndex(d => d.NormalizedNote);
+            entity.HasIndex(d => d.Timestamp);
+            entity.HasIndex(d => d.CategoryName);
+        });
+
+        modelBuilder.Entity<Session>(entity =>
+        {
+            entity.HasIndex(s => s.StartedAt);
+        });
     }
 
     private static string GetDefaultDatabasePath()

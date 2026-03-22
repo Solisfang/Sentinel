@@ -156,3 +156,61 @@ describe('PRESETS', () => {
     }
   });
 });
+
+// P3-1: Timer anchor drift-correction logic (extracted from App.tsx useEffect)
+describe('anchor-based timer calculation', () => {
+  // This mirrors the formula used in App.tsx timer useEffect:
+  // remaining = Math.max(0, anchor.startTimeLeft - Math.floor((now - anchor.startedAt) / 1000))
+  function computeRemaining(anchor: { startedAt: number; startTimeLeft: number }, now: number) {
+    const elapsed = Math.floor((now - anchor.startedAt) / 1000);
+    return Math.max(0, anchor.startTimeLeft - elapsed);
+  }
+
+  it('returns full time when no time has elapsed', () => {
+    const anchor = { startedAt: 1000000, startTimeLeft: 1500 };
+    expect(computeRemaining(anchor, 1000000)).toBe(1500);
+  });
+
+  it('decrements correctly after 10 seconds', () => {
+    const anchor = { startedAt: 1000000, startTimeLeft: 1500 };
+    expect(computeRemaining(anchor, 1000000 + 10_000)).toBe(1490);
+  });
+
+  it('reaches zero at exact duration', () => {
+    const anchor = { startedAt: 1000000, startTimeLeft: 1500 };
+    expect(computeRemaining(anchor, 1000000 + 1_500_000)).toBe(0);
+  });
+
+  it('clamps to zero when elapsed exceeds duration', () => {
+    const anchor = { startedAt: 1000000, startTimeLeft: 1500 };
+    expect(computeRemaining(anchor, 1000000 + 2_000_000)).toBe(0);
+  });
+
+  it('is immune to interval drift by using wall-clock delta', () => {
+    // Simulate setInterval running 50ms late on each tick
+    const anchor = { startedAt: 0, startTimeLeft: 100 };
+    // After "10 seconds" of wall-clock time, regardless of drift
+    expect(computeRemaining(anchor, 10_000)).toBe(90);
+    expect(computeRemaining(anchor, 10_050)).toBe(90); // Still 90 (sub-second)
+    expect(computeRemaining(anchor, 10_999)).toBe(90); // Still 90 until 11s
+    expect(computeRemaining(anchor, 11_000)).toBe(89);
+  });
+
+  it('handles pause-resume by creating new anchor', () => {
+    // First run: 10 seconds into 25-min session
+    const anchor1 = { startedAt: 0, startTimeLeft: 1500 };
+    const remaining = computeRemaining(anchor1, 10_000);
+    expect(remaining).toBe(1490);
+
+    // Pause and resume: new anchor starts at remaining time
+    const anchor2 = { startedAt: 50_000, startTimeLeft: remaining };
+    expect(computeRemaining(anchor2, 50_000)).toBe(1490);
+    expect(computeRemaining(anchor2, 60_000)).toBe(1480);
+  });
+
+  it('handles mode switch to short break', () => {
+    const breakAnchor = { startedAt: 0, startTimeLeft: 300 }; // 5 min break
+    expect(computeRemaining(breakAnchor, 150_000)).toBe(150);
+    expect(computeRemaining(breakAnchor, 300_000)).toBe(0);
+  });
+});

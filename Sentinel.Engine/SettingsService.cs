@@ -17,6 +17,7 @@ public class AppSettings
     public string OverlayStyle { get; set; } = "compact";
     public double WindowLeft { get; set; } = -1;
     public double WindowTop { get; set; } = -1;
+    public int DataRetentionMonths { get; set; } = 0;
 }
 
 public class SettingsService

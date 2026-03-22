@@ -1,11 +1,15 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import {
   AuthScreen,
+  CompactTimerScreen,
   InterventionModal,
+  OnboardingModal,
   ReportsScreen,
+  SessionCompleteScreen,
   SettingsScreen,
   TaxonomyManagerScreen,
+  TimerScreen,
 } from './views';
 import { defaultSettings } from './utils';
 
@@ -166,5 +170,243 @@ describe('AuthScreen', () => {
     expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Sign Up' })).toBeInTheDocument();
+  });
+});
+
+// P3-4: InterventionModal interaction tests
+describe('InterventionModal interactions', () => {
+  const baseProps = {
+    distractionInput: '',
+    categorySelection: '__auto__',
+    newCategoryName: '',
+    inferredCategoryName: null as string | null,
+    categoryOptions: ['Social Media', 'Messaging'],
+    quickSuggestions: [
+      { note: 'twitter', categoryName: 'Social Media' as string | null, source: 'Recent' as const },
+      { note: 'instagram', categoryName: 'Social Media' as string | null, source: 'Frequent' as const },
+    ],
+    onDistractionChange: vi.fn(),
+    onCategorySelectionChange: vi.fn(),
+    onNewCategoryChange: vi.fn(),
+    onSubmit: vi.fn(),
+    onQuickLog: vi.fn(),
+    onFalseAlarm: vi.fn(),
+    onSnooze: vi.fn(),
+    onWatchingContent: vi.fn(),
+  };
+
+  it('calls onSubmit when form is submitted', () => {
+    const onSubmit = vi.fn((e) => e.preventDefault());
+    render(
+      <InterventionModal {...baseProps} distractionInput="YouTube" onSubmit={onSubmit} />,
+    );
+
+    fireEvent.submit(screen.getByRole('button', { name: 'Log Distraction' }).closest('form')!);
+    expect(onSubmit).toHaveBeenCalledOnce();
+  });
+
+  it('calls onQuickLog when a quick suggestion is clicked', () => {
+    const onQuickLog = vi.fn();
+    render(
+      <InterventionModal {...baseProps} onQuickLog={onQuickLog} />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /twitter/i }));
+    expect(onQuickLog).toHaveBeenCalledWith('twitter', 'Social Media');
+  });
+
+  it('calls onFalseAlarm when False Alarm is clicked', () => {
+    const onFalseAlarm = vi.fn();
+    render(
+      <InterventionModal {...baseProps} onFalseAlarm={onFalseAlarm} />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'False Alarm' }));
+    expect(onFalseAlarm).toHaveBeenCalledOnce();
+  });
+
+  it('calls onSnooze with correct duration', () => {
+    const onSnooze = vi.fn();
+    render(
+      <InterventionModal {...baseProps} onSnooze={onSnooze} />,
+    );
+
+    fireEvent.click(screen.getByLabelText('Snooze for 10 minutes'));
+    expect(onSnooze).toHaveBeenCalledWith(10);
+  });
+
+  it('calls onWatchingContent with correct duration', () => {
+    const onWatchingContent = vi.fn();
+    render(
+      <InterventionModal {...baseProps} onWatchingContent={onWatchingContent} />,
+    );
+
+    fireEvent.click(screen.getByLabelText('Watch content for 60 minutes'));
+    expect(onWatchingContent).toHaveBeenCalledWith(60);
+  });
+
+  it('disables Log Distraction button when input is empty', () => {
+    render(<InterventionModal {...baseProps} distractionInput="" />);
+
+    expect(screen.getByRole('button', { name: 'Log Distraction' })).toBeDisabled();
+  });
+});
+
+// P3-7: Render tests for TimerScreen, CompactTimerScreen, SessionCompleteScreen, OnboardingModal
+describe('TimerScreen', () => {
+  it('renders timer controls and session name input', () => {
+    render(
+      <TimerScreen
+        sessionName=""
+        onSessionNameChange={vi.fn()}
+        timerMode="pomodoro"
+        timeLabel="25:00"
+        isRunning={false}
+        isPausedByIntervention={false}
+        showIntervention={false}
+        sessionsCompleted={0}
+        distractionCount={0}
+        isSynced={false}
+        dailyGoalMinutes={120}
+        goalProgress={0}
+        timerProgress={0}
+        isSnoozed={false}
+        snoozeText="0s"
+        showPresets={false}
+        settings={defaultSettings}
+        onModeChange={vi.fn()}
+        onStartPause={vi.fn()}
+        onReset={vi.fn()}
+        onCancelSnooze={vi.fn()}
+        onToggleCompact={vi.fn()}
+        onTogglePresets={vi.fn()}
+        onOpenReports={vi.fn()}
+        onOpenSettings={vi.fn()}
+        onApplyPreset={vi.fn()}
+        navigation={navigation}
+      />,
+    );
+
+    expect(screen.getByLabelText('Session name')).toBeInTheDocument();
+    expect(screen.getByLabelText('Focus timer')).toBeInTheDocument();
+    expect(screen.getByRole('tablist', { name: 'Timer mode' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Focus/i })).toBeInTheDocument();
+  });
+});
+
+describe('CompactTimerScreen', () => {
+  const compactProps = {
+    timerMode: 'pomodoro' as const,
+    timeLabel: '24:30',
+    isRunning: true,
+    progressPercent: 2,
+    overlayStyle: 'compact' as const,
+    distractionCount: 1,
+    onStartPause: vi.fn(),
+    onReset: vi.fn(),
+    onExpand: vi.fn(),
+    onClose: vi.fn(),
+  };
+
+  it('renders compact overlay with timer', () => {
+    render(<CompactTimerScreen {...compactProps} />);
+
+    expect(screen.getByLabelText('Mini overlay timer')).toBeInTheDocument();
+    expect(screen.getByText('24:30')).toBeInTheDocument();
+  });
+
+  it('renders pill overlay style', () => {
+    render(<CompactTimerScreen {...compactProps} overlayStyle="pill" />);
+
+    expect(screen.getByLabelText('Mini overlay timer')).toBeInTheDocument();
+    expect(screen.getByLabelText(/remaining/)).toBeInTheDocument();
+  });
+
+  it('renders monitoring overlay style', () => {
+    render(<CompactTimerScreen {...compactProps} overlayStyle="monitoring" />);
+
+    expect(screen.getByLabelText('Mini overlay timer')).toBeInTheDocument();
+    expect(screen.getByText(/1 drift/)).toBeInTheDocument();
+  });
+});
+
+describe('SessionCompleteScreen', () => {
+  it('renders completion message and action buttons', () => {
+    const onTakeBreak = vi.fn();
+    const onAgain = vi.fn();
+
+    render(
+      <SessionCompleteScreen
+        sessionName="Deep Work"
+        chartData={[{ name: 'Focus', value: 25 }]}
+        onTakeBreak={onTakeBreak}
+        onAgain={onAgain}
+      />,
+    );
+
+    expect(screen.getByText('Session Complete')).toBeInTheDocument();
+    expect(screen.getByText('Focus block finished')).toBeInTheDocument();
+    expect(screen.getByText('Deep Work')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Take Break' }));
+    expect(onTakeBreak).toHaveBeenCalledOnce();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Start Again' }));
+    expect(onAgain).toHaveBeenCalledOnce();
+  });
+});
+
+describe('OnboardingModal', () => {
+  const steps = [
+    { title: 'Welcome', body: 'Welcome to Sentinel' },
+    { title: 'Timer', body: 'Start your first session' },
+    { title: 'Done', body: 'You are all set' },
+  ];
+
+  it('renders the current step and navigation', () => {
+    render(
+      <OnboardingModal
+        steps={steps}
+        stepIndex={0}
+        onBack={vi.fn()}
+        onAdvance={vi.fn()}
+        onSkip={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole('heading', { name: 'Welcome' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Skip intro' })).toBeInTheDocument();
+  });
+
+  it('calls onAdvance when Continue is clicked', () => {
+    const onAdvance = vi.fn();
+    render(
+      <OnboardingModal
+        steps={steps}
+        stepIndex={0}
+        onBack={vi.fn()}
+        onAdvance={onAdvance}
+        onSkip={vi.fn()}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Next step' }));
+    expect(onAdvance).toHaveBeenCalledOnce();
+  });
+
+  it('calls onSkip when Skip intro is clicked', () => {
+    const onSkip = vi.fn();
+    render(
+      <OnboardingModal
+        steps={steps}
+        stepIndex={1}
+        onBack={vi.fn()}
+        onAdvance={vi.fn()}
+        onSkip={onSkip}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Skip intro' }));
+    expect(onSkip).toHaveBeenCalledOnce();
   });
 });

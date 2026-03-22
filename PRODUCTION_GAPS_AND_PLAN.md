@@ -199,16 +199,16 @@ Schema migration for `NormalizedNote` and `CategoryName` is handled by `EnsureSc
 
 ### Priority 5 — Polish & Improvements (Nice to Have)
 
-- [ ] **P5-1**: Add a confirmation dialog before `handleReset` to prevent accidental timer resets.
-- [ ] **P5-2**: Cache the update check result for 24 hours to avoid GitHub API rate limiting.
-- [ ] **P5-3**: Add data retention settings (auto-prune entries older than N months).
-- [ ] **P5-4**: Add exhaustive `never` check in `renderGlyph` switch default to catch missing glyph implementations at compile time.
-- [ ] **P5-5**: Make `fetchFirestoreHistory` daily goal progress query the actual database for today's sessions instead of using the in-memory session counter.
-- [ ] **P5-6**: Remove the `SummaryStat` wrapper component in `views.tsx` — it's a zero-logic passthrough over `MetricCard`.
-- [ ] **P5-7**: Add `npm install` and `dotnet restore` steps to `build.ps1` for reproducible builds from a clean checkout.
-- [ ] **P5-8**: Validate `updateInfo.downloadUrl` against a known domain pattern before rendering it as a clickable link.
-- [ ] **P5-9**: Add uninstall cleanup option in `installer.iss` to remove `%LocalAppData%\Sentinel` user data.
-- [ ] **P5-10**: Consider connection pooling or a scoped `SentinelDbContext` lifetime to reduce SQLite connection churn.
+- [x] **P5-1**: Add a confirmation dialog before `handleReset` to prevent accidental timer resets.
+- [x] **P5-2**: Cache the update check result for 24 hours to avoid GitHub API rate limiting.
+- [x] **P5-3**: Add data retention settings (auto-prune entries older than N months).
+- [x] **P5-4**: Add exhaustive `never` check in `renderGlyph` switch default to catch missing glyph implementations at compile time.
+- [x] **P5-5**: Make `fetchFirestoreHistory` daily goal progress query the actual database for today's sessions instead of using the in-memory session counter.
+- [x] **P5-6**: Remove the `SummaryStat` wrapper component in `views.tsx` — it's a zero-logic passthrough over `MetricCard`.
+- [x] **P5-7**: Add `npm install` and `dotnet restore` steps to `build.ps1` for reproducible builds from a clean checkout.
+- [x] **P5-8**: Validate `updateInfo.downloadUrl` against a known domain pattern before rendering it as a clickable link.
+- [x] **P5-9**: Add uninstall cleanup option in `installer.iss` to remove `%LocalAppData%\Sentinel` user data.
+- [x] **P5-10**: Consider connection pooling or a scoped `SentinelDbContext` lifetime to reduce SQLite connection churn.
 
 ---
 

@@ -179,29 +179,6 @@ public class DistractionRepositoryTests
     }
 
     [Fact]
-    public async Task Unsynced_distractions_can_be_marked_as_synced()
-    {
-        using var workspace = new TestWorkspace();
-        var repository = workspace.CreateRepository();
-        await repository.InitializeAsync();
-
-        await repository.AddDistractionAsync(new Distraction
-        {
-            Note = "YouTube",
-            Timestamp = DateTime.UtcNow,
-            SyncedToCloud = false,
-        });
-
-        var unsynced = await repository.GetUnsyncedDistractionsAsync();
-        var distraction = Assert.Single(unsynced);
-
-        await repository.MarkAsSyncedAsync(distraction.Id);
-
-        var remaining = await repository.GetUnsyncedDistractionsAsync();
-        Assert.Empty(remaining);
-    }
-
-    [Fact]
     public async Task Sessions_can_be_saved_and_filtered_by_since_date()
     {
         using var workspace = new TestWorkspace();
@@ -227,5 +204,59 @@ public class DistractionRepositoryTests
 
         var session = Assert.Single(recentSessions);
         Assert.Equal(3000, session.DurationSeconds);
+    }
+
+    [Fact]
+    public async Task GetDistractionsAsync_filters_by_since_date()
+    {
+        using var workspace = new TestWorkspace();
+        var repository = workspace.CreateRepository();
+        await repository.InitializeAsync();
+        var now = DateTime.UtcNow;
+
+        await repository.AddDistractionAsync(new Distraction
+        {
+            Note = "old",
+            Timestamp = now.AddDays(-5),
+        });
+        await repository.AddDistractionAsync(new Distraction
+        {
+            Note = "recent",
+            Timestamp = now.AddDays(-1),
+        });
+        await repository.AddDistractionAsync(new Distraction
+        {
+            Note = "today",
+            Timestamp = now,
+        });
+
+        var since = now.AddDays(-2);
+        var filtered = await repository.GetDistractionsAsync(since);
+
+        Assert.Equal(2, filtered.Count);
+        Assert.All(filtered, d => Assert.True(d.Timestamp >= since));
+    }
+
+    [Fact]
+    public async Task GetDistractionsAsync_returns_all_when_no_since()
+    {
+        using var workspace = new TestWorkspace();
+        var repository = workspace.CreateRepository();
+        await repository.InitializeAsync();
+        var now = DateTime.UtcNow;
+
+        await repository.AddDistractionAsync(new Distraction
+        {
+            Note = "old",
+            Timestamp = now.AddDays(-30),
+        });
+        await repository.AddDistractionAsync(new Distraction
+        {
+            Note = "new",
+            Timestamp = now,
+        });
+
+        var all = await repository.GetDistractionsAsync();
+        Assert.Equal(2, all.Count);
     }
 }

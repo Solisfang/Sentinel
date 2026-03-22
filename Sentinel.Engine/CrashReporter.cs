@@ -29,7 +29,16 @@ public static class CrashReporter
         System.Windows.Application.Current.DispatcherUnhandledException += (_, args) =>
         {
             LogCrash("DispatcherUnhandledException", args.Exception);
-            args.Handled = true; // Prevent app crash for recoverable errors
+
+            // Only suppress known recoverable exceptions. Let fatal ones crash the app
+            // so the user knows something went seriously wrong.
+            if (args.Exception is InvalidOperationException
+                or TimeoutException
+                or System.Net.Http.HttpRequestException
+                or System.IO.IOException)
+            {
+                args.Handled = true;
+            }
         };
 
         TaskScheduler.UnobservedTaskException += (_, args) =>
@@ -43,6 +52,11 @@ public static class CrashReporter
 
     public static void LogCrash(string source, Exception ex)
     {
+        LogCrash(LogPath, source, ex);
+    }
+
+    internal static void LogCrash(string path, string source, Exception ex)
+    {
         try
         {
             var entry = $"""
@@ -54,7 +68,7 @@ public static class CrashReporter
             ---
             """;
 
-            File.AppendAllText(LogPath, entry + Environment.NewLine);
+            File.AppendAllText(path, entry + Environment.NewLine);
             Debug.WriteLine($"[Sentinel] Crash logged: {source} — {ex.Message}");
         }
         catch
@@ -67,16 +81,21 @@ public static class CrashReporter
 
     public static void TrimLog()
     {
+        TrimLog(LogPath);
+    }
+
+    internal static void TrimLog(string path)
+    {
         try
         {
-            if (!File.Exists(LogPath)) return;
-            var info = new FileInfo(LogPath);
+            if (!File.Exists(path)) return;
+            var info = new FileInfo(path);
             // Trim if log exceeds 1MB
             if (info.Length > 1_048_576)
             {
-                var lines = File.ReadAllLines(LogPath);
+                var lines = File.ReadAllLines(path);
                 var half = lines.Length / 2;
-                File.WriteAllLines(LogPath, lines.Skip(half));
+                File.WriteAllLines(path, lines.Skip(half));
                 Debug.WriteLine("[Sentinel] Crash log trimmed.");
             }
         }

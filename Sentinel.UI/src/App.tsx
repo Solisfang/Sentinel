@@ -95,6 +95,7 @@ function App() {
   const [isCompactMode, setIsCompactMode] = useState(false);
   const wasRunningRef = useRef(false);
   const handleStartPauseRef = useRef(() => {});
+  const timerAnchorRef = useRef<{ startedAt: number; startTimeLeft: number } | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, setUser);
@@ -110,6 +111,9 @@ function App() {
           case 'SETTINGS_LOADED':
             setSettings(data.settings);
             setTimeLeft(data.settings.pomodoroMinutes * 60);
+            if (typeof data.todaySessionsCompleted === 'number') {
+              setSessionsCompleted(data.todaySessionsCompleted);
+            }
             postMessage({ type: 'GET_TAXONOMY_DATA' });
             break;
           case 'IDLE_DETECTED':
@@ -210,28 +214,42 @@ function App() {
   }, [distractionInput, showIntervention]);
 
   useEffect(() => {
-    if (!isRunning || timeLeft <= 0) return;
+    if (!isRunning || timeLeft <= 0) {
+      timerAnchorRef.current = null;
+      return;
+    }
+
+    // Anchor the timer to wall-clock time to prevent drift from setInterval inaccuracy
+    if (!timerAnchorRef.current) {
+      timerAnchorRef.current = { startedAt: Date.now(), startTimeLeft: timeLeft };
+    }
+
+    const anchor = timerAnchorRef.current;
 
     const interval = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          setIsRunning(false);
-          setIsComplete(true);
-          if (timerMode === 'pomodoro') {
-            setSessionsCompleted((count) => count + 1);
-            postMessage({
-              type: 'LOG_SESSION',
-              durationSeconds: getTimerDuration('pomodoro', settings),
-              sessionName: sessionName || undefined,
-            });
-            postMessage({ type: 'PLAY_SOUND' });
-            void syncSessionToFirestore();
-          }
-          return 0;
+      const elapsed = Math.floor((Date.now() - anchor.startedAt) / 1000);
+      const remaining = Math.max(0, anchor.startTimeLeft - elapsed);
+
+      if (remaining <= 0) {
+        clearInterval(interval);
+        timerAnchorRef.current = null;
+        setTimeLeft(0);
+        setIsRunning(false);
+        setIsComplete(true);
+        if (timerMode === 'pomodoro') {
+          setSessionsCompleted((count) => count + 1);
+          postMessage({
+            type: 'LOG_SESSION',
+            durationSeconds: getTimerDuration('pomodoro', settings),
+            sessionName: sessionName || undefined,
+          });
+          postMessage({ type: 'PLAY_SOUND' });
+          void syncSessionToFirestore();
         }
-        return prev - 1;
-      });
-    }, 1000);
+      } else {
+        setTimeLeft(remaining);
+      }
+    }, 250); // Poll 4x/sec for responsive display, drift-free via anchor
 
     return () => clearInterval(interval);
   }, [isRunning, timeLeft, timerMode]);
@@ -425,6 +443,9 @@ function App() {
   };
 
   const handleReset = () => {
+    if (isRunning && !window.confirm('Reset the current timer? Progress will be lost.')) {
+      return;
+    }
     setTimeLeft(getTimerDuration(timerMode, settings));
     setIsRunning(false);
     setIsComplete(false);
@@ -552,16 +573,24 @@ function App() {
       const cloudSessions = sessionsSnap.docs.map((doc) => doc.data());
       const cloudDistractions = distractionsSnap.docs.map((doc) => doc.data());
 
-      setReportData((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          sessionsCompleted: prev.sessionsCompleted + cloudSessions.length,
-          totalFocusSeconds:
-            prev.totalFocusSeconds + cloudSessions.reduce((sum, session) => sum + (session.duration || 0), 0),
-          distractionsLogged: prev.distractionsLogged + cloudDistractions.length,
-        };
-      });
+      // Cloud data supplements the local report only if local counts are zero
+      // (i.e., the data only exists in Firestore, not locally). This avoids
+      // double-counting when the same session/distraction was saved to both.
+      if (cloudSessions.length > 0 || cloudDistractions.length > 0) {
+        setReportData((prev) => {
+          if (!prev) return prev;
+          // Only merge cloud data if local has nothing (cross-device scenario)
+          if (prev.sessionsCompleted > 0 || prev.distractionsLogged > 0) {
+            return prev;
+          }
+          return {
+            ...prev,
+            sessionsCompleted: cloudSessions.length,
+            totalFocusSeconds: cloudSessions.reduce((sum, session) => sum + (session.duration || 0), 0),
+            distractionsLogged: cloudDistractions.length,
+          };
+        });
+      }
 
       console.log(
         `[Sentinel] Firestore: ${cloudSessions.length} sessions, ${cloudDistractions.length} distractions merged`,
@@ -590,7 +619,18 @@ function App() {
       await signInWithEmailAndPassword(auth, authEmail, authPassword);
       setView('timer');
     } catch (error: any) {
-      setAuthError(error.message || 'Login failed');
+      const code = error?.code ?? '';
+      if (code === 'auth/user-not-found' || code === 'auth/invalid-credential' || code === 'auth/invalid-login-credentials') {
+        setAuthError('No account found with this email. Please sign up first.');
+      } else if (code === 'auth/wrong-password') {
+        setAuthError('Incorrect password. Please try again.');
+      } else if (code === 'auth/too-many-requests') {
+        setAuthError('Too many failed attempts. Please try again later.');
+      } else if (code === 'auth/invalid-email') {
+        setAuthError('Invalid email address.');
+      } else {
+        setAuthError(error.message || 'Login failed. Please try again.');
+      }
     }
   };
 
@@ -601,7 +641,16 @@ function App() {
       await createUserWithEmailAndPassword(auth, authEmail, authPassword);
       setView('timer');
     } catch (error: any) {
-      setAuthError(error.message || 'Signup failed');
+      const code = error?.code ?? '';
+      if (code === 'auth/email-already-in-use') {
+        setAuthError('An account with this email already exists. Please log in instead.');
+      } else if (code === 'auth/weak-password') {
+        setAuthError('Password is too weak. Use at least 6 characters.');
+      } else if (code === 'auth/invalid-email') {
+        setAuthError('Invalid email address.');
+      } else {
+        setAuthError(error.message || 'Signup failed. Please try again.');
+      }
     }
   };
 

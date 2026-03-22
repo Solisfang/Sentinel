@@ -16,7 +16,6 @@ public class Distraction
     public string? CategoryName { get; set; }
     public DateTime Timestamp { get; set; }
     public bool IsFalseAlarm { get; set; }
-    public bool SyncedToCloud { get; set; }
 }
 
 public class Session
@@ -26,7 +25,6 @@ public class Session
     public DateTime StartedAt { get; set; }
     public DateTime? CompletedAt { get; set; }
     public string? SessionName { get; set; }
-    public bool SyncedToCloud { get; set; }
 }
 
 public class TaxonomyData

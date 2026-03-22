@@ -529,27 +529,27 @@ export function ReportsScreen({
         ) : reportData ? (
           <>
             <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-              <SummaryStat
+              <MetricCard
                 icon="target"
                 label="Focus Time"
                 value={formatDuration(reportData.totalFocusSeconds)}
                 detail="Total completed focus duration"
                 accent="#3ce36a"
               />
-              <SummaryStat
+              <MetricCard
                 icon="bolt"
                 label="Sessions"
                 value={String(reportData.sessionsCompleted)}
                 detail={`Avg ${formatDuration(Math.round(reportData.avgSessionSeconds))}`}
               />
-              <SummaryStat
+              <MetricCard
                 icon="reports"
                 label="Distractions"
                 value={String(reportData.distractionsLogged)}
                 detail="Logged interruptions in this range"
                 accent="#00affe"
               />
-              <SummaryStat
+              <MetricCard
                 icon="spark"
                 label="Accuracy"
                 value={`${interventionAccuracy(reportData)}%`}
@@ -1295,7 +1295,7 @@ export function SettingsScreen({
               description="Manage optional sign-in and keep the most useful keyboard actions close."
               icon="account"
             >
-              {updateInfo && (
+              {updateInfo && updateInfo.downloadUrl && /^https:\/\/github\.com\//.test(updateInfo.downloadUrl) && (
                 <div className="rounded-[calc(var(--card-radius)-6px)] border border-[rgba(124,77,255,0.26)] bg-[rgba(124,77,255,0.12)] px-4 py-4">
                   <p className="text-sm font-semibold text-(--primary)">
                     Update available: v{updateInfo.latestVersion}
@@ -1895,8 +1895,8 @@ function labelForRange(range: ReportRange) {
 
 function interventionAccuracy(reportData: ReportData) {
   const total = reportData.distractionsLogged + reportData.falseAlarms;
-  if (!total) return 0;
-  return Math.round((reportData.falseAlarms / total) * 100);
+  if (!total) return 100;
+  return Math.round(((total - reportData.falseAlarms) / total) * 100);
 }
 
 function TopbarPill({
@@ -2174,22 +2174,6 @@ function CategoryRenameRow({
   );
 }
 
-function SummaryStat({
-  label,
-  value,
-  detail,
-  icon,
-  accent = '#cdbdff',
-}: {
-  label: string;
-  value: string;
-  detail: string;
-  icon: Parameters<typeof Glyph>[0]['name'];
-  accent?: string;
-}) {
-  return <MetricCard label={label} value={value} detail={detail} icon={icon} accent={accent} />;
-}
-
 function NumberField({
   label,
   value,
@@ -2213,7 +2197,11 @@ function NumberField({
         value={value}
         min={min}
         max={max}
-        onChange={(event) => onChange(Number(event.target.value))}
+        onChange={(event) => {
+          const raw = Number(event.target.value);
+          if (Number.isNaN(raw)) return;
+          onChange(Math.min(max, Math.max(min, raw)));
+        }}
         className={cx(inputClasses.base, 'min-h-0 border-0 bg-transparent px-0 py-0 text-3xl font-extrabold tracking-tight shadow-none')}
       />
     </label>

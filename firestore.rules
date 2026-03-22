@@ -1,0 +1,29 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default: deny all access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Sessions: users can only read/write their own data
+    match /sessions/{sessionId} {
+      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
+    }
+
+    // Distractions: users can only read/write their own data
+    match /distractions/{distractionId} {
+      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
+    }
+
+    // Health check document (used by admin SDK connectivity test)
+    match /_sentinel_health/{docId} {
+      allow read: if request.auth != null;
+    }
+  }
+}

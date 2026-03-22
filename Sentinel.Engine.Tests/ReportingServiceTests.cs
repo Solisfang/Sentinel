@@ -78,4 +78,25 @@ public class ReportingServiceTests
         Assert.Equal(3, report.RecentSessions.Count);
         Assert.False(report.RecentSessions.First().Completed);
     }
+
+    [Fact]
+    public async Task GetReportDataAsync_returns_zeroes_with_empty_database()
+    {
+        using var workspace = new TestWorkspace();
+        var repository = workspace.CreateRepository();
+        var reporting = workspace.CreateReportingService();
+        await repository.InitializeAsync();
+
+        var report = await reporting.GetReportDataAsync(DateTime.UtcNow.AddDays(-7));
+
+        Assert.Equal(0, report.TotalFocusSeconds);
+        Assert.Equal(0, report.SessionsCompleted);
+        Assert.Equal(0, report.DistractionsLogged);
+        Assert.Equal(0, report.FalseAlarms);
+        Assert.Equal(0, report.AvgSessionSeconds);
+        Assert.Equal(7, report.DailyFocus.Count);
+        Assert.Empty(report.TopCategories);
+        Assert.Empty(report.TopDistractions);
+        Assert.Empty(report.RecentSessions);
+    }
 }

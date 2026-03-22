@@ -1,11 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap');
+/* Self-hosted fonts — no external requests (GDPR compliant) */
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/manrope";
 @import "tailwindcss";
 
 :root {
   color-scheme: dark;
-  font-family: 'Inter', sans-serif;
-  --font-display: 'Manrope', sans-serif;
-  --font-body: 'Inter', sans-serif;
+  font-family: 'Inter Variable', 'Inter', sans-serif;
+  --font-display: 'Manrope Variable', 'Manrope', sans-serif;
+  --font-body: 'Inter Variable', 'Inter', sans-serif;
   --app-bg: #131313;
   --surface-lowest: #0e0e0e;
   --surface-low: #1c1b1b;

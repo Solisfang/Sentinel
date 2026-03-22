@@ -21,8 +21,8 @@ start "Sentinel-React" cmd /k "cd /d %~dp0Sentinel.UI && npm run dev"
 timeout /t 4 /nobreak >nul
 
 :: Start C# WPF app in a new window
-echo [2/2] Starting C# WPF app...
-start "Sentinel-Engine" cmd /k "cd /d %~dp0Sentinel.Engine && dotnet run"
+echo [2/2] Building and starting C# WPF app...
+start "Sentinel-Engine" cmd /k "cd /d %~dp0Sentinel.Engine && dotnet build && dotnet run --no-build"
 
 echo.
 echo Dev environment started!
