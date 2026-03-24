@@ -21,6 +21,8 @@ public class UserActivityMonitor
         ? (int)(_snoozeUntil!.Value - DateTime.UtcNow).TotalSeconds
         : 0;
 
+    public bool IsRunning { get; private set; }
+
     public int IdleThresholdSeconds
     {
         get => _idleThresholdMs / 1000;
@@ -41,12 +43,14 @@ public class UserActivityMonitor
     {
         _wasIdle = false;
         _timer.Start();
+        IsRunning = true;
         Debug.WriteLine($"[Sentinel] UserActivityMonitor started. Idle threshold: {IdleThresholdSeconds}s.");
     }
 
     public void Stop()
     {
         _timer.Stop();
+        IsRunning = false;
         Debug.WriteLine("[Sentinel] UserActivityMonitor stopped.");
     }
 

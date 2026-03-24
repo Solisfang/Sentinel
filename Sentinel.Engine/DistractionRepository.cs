@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO;
 using Microsoft.EntityFrameworkCore;
 
 namespace Sentinel.Engine;
@@ -14,17 +15,64 @@ public class DistractionRepository
 
     public async Task InitializeAsync()
     {
+        // Attempt normal init; if migrations fail (e.g. stale schema from an older build),
+        // back up the corrupt file and start fresh — no user intervention required.
+        if (!await TryInitializeAsync())
+        {
+            SentinelLog.Warn("DB init failed — backing up and recreating database.");
+            BackupAndDeleteDatabase();
+            if (!await TryInitializeAsync())
+                SentinelLog.Error("DB init failed even after reset — app may be unstable", null);
+        }
+    }
+
+    private async Task<bool> TryInitializeAsync()
+    {
         try
         {
             await using var db = _contextFactory();
-            await db.Database.EnsureCreatedAsync();
+            var isNewDatabase = await db.Database.EnsureCreatedAsync();
             await db.Database.ExecuteSqlRawAsync("PRAGMA journal_mode=WAL;");
-            await RunMigrationsAsync(db);
-            Debug.WriteLine("[Sentinel] SQLite database initialized.");
+
+            if (isNewDatabase)
+            {
+                // Fresh DB: EF already created all tables + columns from the current model.
+                // Create the version-tracking table and jump straight to the latest version
+                // so none of the ALTER TABLE migrations run unnecessarily.
+                await db.Database.ExecuteSqlRawAsync(
+                    "CREATE TABLE IF NOT EXISTS _schema_version (version INTEGER PRIMARY KEY);");
+                await SetSchemaVersionAsync(db, 6);
+                SentinelLog.Info("New database created at schema version 6.");
+            }
+            else
+            {
+                await RunMigrationsAsync(db);
+            }
+
+            SentinelLog.Info("SQLite database initialised successfully.");
+            return true;
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[Sentinel] Failed to initialize database: {ex.Message}");
+            SentinelLog.Error("Database initialisation attempt failed", ex);
+            return false;
+        }
+    }
+
+    private static void BackupAndDeleteDatabase()
+    {
+        var dbPath = SentinelDbContext.DefaultDatabasePath;
+        if (!File.Exists(dbPath)) return;
+        try
+        {
+            var backupPath = dbPath + ".bak-" + DateTime.UtcNow.ToString("yyyyMMdd-HHmmss");
+            File.Move(dbPath, backupPath);
+            SentinelLog.Info($"Corrupt DB backed up to {backupPath}");
+        }
+        catch (Exception ex)
+        {
+            SentinelLog.Error("Could not back up database file", ex);
+            try { File.Delete(dbPath); } catch { /* best effort */ }
         }
     }
 
@@ -54,12 +102,12 @@ public class DistractionRepository
             if (oldDistractions.Count > 0 || oldSessions.Count > 0)
             {
                 await db.SaveChangesAsync();
-                Debug.WriteLine($"[Sentinel] Pruned {oldDistractions.Count} distractions and {oldSessions.Count} sessions older than {retentionMonths} months.");
+                SentinelLog.Info($"Pruned {oldDistractions.Count} distractions and {oldSessions.Count} sessions older than {retentionMonths} months.");
             }
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[Sentinel] Data pruning failed: {ex.Message}");
+            SentinelLog.Error("Data pruning failed", ex);
         }
     }
 
@@ -172,29 +220,37 @@ public class DistractionRepository
         await db.SaveChangesAsync();
     }
 
-    public async Task RenameCategoryAsync(string oldName, string newName)
+    public async Task<bool> RenameCategoryAsync(string oldName, string newName)
     {
         var cleanOld = CleanCategory(oldName);
         var cleanNew = CleanCategory(newName);
 
         if (string.IsNullOrWhiteSpace(cleanOld) || string.IsNullOrWhiteSpace(cleanNew))
         {
-            return;
+            return false;
         }
 
         await using var db = _contextFactory();
 
+        // PO-012: Check if target category already exists — caller should warn the user
+        var targetExists = await db.Distractions
+            .AnyAsync(d => d.CategoryName != null &&
+                           EF.Functions.Like(d.CategoryName, cleanNew));
+
         var matches = await db.Distractions
-            .Where(d => d.CategoryName != null)
+            .Where(d => d.CategoryName != null &&
+                        EF.Functions.Like(d.CategoryName, cleanOld))
             .ToListAsync();
 
-        foreach (var match in matches.Where(d =>
-                     string.Equals(d.CategoryName, cleanOld, StringComparison.OrdinalIgnoreCase)))
+        foreach (var match in matches)
         {
             match.CategoryName = cleanNew;
         }
 
         await db.SaveChangesAsync();
+
+        // Return true if data was merged into an existing category
+        return targetExists;
     }
 
     public async Task AddSessionAsync(Session session)
@@ -243,26 +299,48 @@ public class DistractionRepository
                 await db.Database.ExecuteSqlRawAsync(
                     "ALTER TABLE Distractions ADD COLUMN CategoryName TEXT NULL;");
 
-            // Backfill NormalizedNote and clean categories for any existing rows
-            var distractions = await db.Distractions.ToListAsync();
-            var changed = false;
-            foreach (var d in distractions)
-            {
-                var normalized = DistractionNormalizer.Normalize(d.Note);
-                if (!string.Equals(d.NormalizedNote, normalized, StringComparison.Ordinal))
-                {
-                    d.NormalizedNote = normalized;
-                    changed = true;
-                }
+            // Backfill NormalizedNote and clean categories using raw SQL to avoid EF model
+            // mismatch — at this point columns added in later migrations (e.g. IsFalseAlarm)
+            // may not exist yet, so we must not let EF generate a SELECT * that includes them.
+            var connection = db.Database.GetDbConnection();
+            if (connection.State != System.Data.ConnectionState.Open)
+                await connection.OpenAsync();
 
-                var cleanCat = CleanCategory(d.CategoryName);
-                if (!string.Equals(d.CategoryName, cleanCat, StringComparison.Ordinal))
+            var rawRows = new List<(int Id, string Note, string NormalizedNote, string? CategoryName)>();
+            await using (var selectCmd = connection.CreateCommand())
+            {
+                selectCmd.CommandText = "SELECT Id, Note, NormalizedNote, CategoryName FROM Distractions;";
+                await using var reader = await selectCmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
-                    d.CategoryName = cleanCat;
-                    changed = true;
+                    rawRows.Add((
+                        reader.GetInt32(0),
+                        reader.GetString(1),
+                        reader.GetString(2),
+                        reader.IsDBNull(3) ? null : reader.GetString(3)));
                 }
             }
-            if (changed) await db.SaveChangesAsync();
+
+            await using (var tx = connection.BeginTransaction())
+            {
+                foreach (var (id, note, existingNorm, existingCat) in rawRows)
+                {
+                    var normalized = DistractionNormalizer.Normalize(note);
+                    var cleanCat   = CleanCategory(existingCat);
+                    if (normalized != existingNorm || cleanCat != existingCat)
+                    {
+                        await using var updateCmd = connection.CreateCommand();
+                        updateCmd.Transaction = tx as System.Data.Common.DbTransaction;
+                        updateCmd.CommandText =
+                            "UPDATE Distractions SET NormalizedNote = @n, CategoryName = @c WHERE Id = @id;";
+                        var pN = updateCmd.CreateParameter(); pN.ParameterName = "@n"; pN.Value = normalized; updateCmd.Parameters.Add(pN);
+                        var pC = updateCmd.CreateParameter(); pC.ParameterName = "@c"; pC.Value = (object?)cleanCat ?? DBNull.Value; updateCmd.Parameters.Add(pC);
+                        var pI = updateCmd.CreateParameter(); pI.ParameterName = "@id"; pI.Value = id; updateCmd.Parameters.Add(pI);
+                        await updateCmd.ExecuteNonQueryAsync();
+                    }
+                }
+                tx.Commit();
+            }
 
             await SetSchemaVersionAsync(db, 1);
             Debug.WriteLine("[Sentinel] Migration 1 applied: NormalizedNote + CategoryName + backfill.");
@@ -286,9 +364,8 @@ public class DistractionRepository
 
         if (currentVersion < 3)
         {
-            // Migration 3: Drop the unused SyncedToCloud column
-            // SQLite doesn't support DROP COLUMN before 3.35.0, so we just leave it and ignore it.
-            // The column is no longer in the EF model, so EF won't read/write it.
+            // Migration 3: (Originally marked SyncedToCloud as deprecated.
+            // Actual DROP COLUMN now handled in migration 7.)
             await SetSchemaVersionAsync(db, 3);
             Debug.WriteLine("[Sentinel] Migration 3 applied: SyncedToCloud deprecated (ignored by EF).");
         }
@@ -328,6 +405,24 @@ public class DistractionRepository
 
             await SetSchemaVersionAsync(db, 6);
             Debug.WriteLine("[Sentinel] Migration 6 applied: EndedEarly column on Sessions.");
+        }
+
+        if (currentVersion < 7)
+        {
+            // Migration 7: Drop the legacy SyncedToCloud column.
+            // It's NOT NULL with no DEFAULT, which causes EF inserts to fail
+            // because EF no longer includes it in INSERT statements.
+            // SQLite 3.35.0+ supports ALTER TABLE DROP COLUMN.
+            if (await ColumnExistsAsync(db, "Sessions", "SyncedToCloud"))
+                await db.Database.ExecuteSqlRawAsync(
+                    "ALTER TABLE Sessions DROP COLUMN SyncedToCloud;");
+
+            if (await ColumnExistsAsync(db, "Distractions", "SyncedToCloud"))
+                await db.Database.ExecuteSqlRawAsync(
+                    "ALTER TABLE Distractions DROP COLUMN SyncedToCloud;");
+
+            await SetSchemaVersionAsync(db, 7);
+            SentinelLog.Info("Migration 7 applied: dropped SyncedToCloud columns.");
         }
     }
 

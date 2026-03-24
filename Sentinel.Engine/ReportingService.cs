@@ -82,17 +82,26 @@ public class ReportingService
                     : 0,
             };
 
-            var startDate = DateTime.UtcNow.Date.AddDays(-6);
+            // Use local calendar days so each bar on the chart matches what the user
+            // considers a day, regardless of their UTC offset.
+            var startDate = DateTime.Today.AddDays(-6);
             for (var i = 0; i < 7; i++)
             {
-                var day = startDate.AddDays(i);
-                var nextDay = day.AddDays(1);
-                var daySessions = completedSessions.Where(s => s.StartedAt >= day && s.StartedAt < nextDay).ToList();
-                var dayDistractions = actualDistractions.Count(d => d.Timestamp >= day && d.Timestamp < nextDay);
+                var localDay = startDate.AddDays(i);
+                var localNextDay = localDay.AddDays(1);
+                // Convert local midnight boundaries to UTC for comparison with stored UTC timestamps.
+                var dayUtc = localDay.ToUniversalTime();
+                var nextDayUtc = localNextDay.ToUniversalTime();
+
+                var daySessions = completedSessions
+                    .Where(s => s.StartedAt >= dayUtc && s.StartedAt < nextDayUtc)
+                    .ToList();
+                var dayDistractions = actualDistractions
+                    .Count(d => d.Timestamp >= dayUtc && d.Timestamp < nextDayUtc);
 
                 report.DailyFocus.Add(new DailyFocus
                 {
-                    Date = day.ToString("MM/dd"),
+                    Date = localDay.ToString("MM/dd"),
                     FocusSeconds = daySessions.Sum(s => s.DurationSeconds),
                     Sessions = daySessions.Count,
                     Distractions = dayDistractions

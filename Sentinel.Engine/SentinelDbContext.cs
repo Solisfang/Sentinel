@@ -31,7 +31,7 @@ public class SentinelDbContext : DbContext
             return;
         }
 
-        options.UseSqlite($"Data Source={_dbPath ?? GetDefaultDatabasePath()};Pooling=True");
+        options.UseSqlite($"Data Source={_dbPath ?? GetDefaultDatabasePath()}");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -56,6 +56,9 @@ public class SentinelDbContext : DbContext
         Directory.CreateDirectory(sentinelFolder);
         return Path.Combine(sentinelFolder, "sentinel.db");
     }
+
+    /// <summary>Returns the path to the active database file.</summary>
+    public static string DefaultDatabasePath => GetDefaultDatabasePath();
 
     private static string EnsureDatabaseDirectory(string dbPath)
     {

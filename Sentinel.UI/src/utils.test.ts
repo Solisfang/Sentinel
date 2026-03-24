@@ -96,29 +96,29 @@ describe('getTimerDuration', () => {
 });
 
 describe('calculateGoalProgress', () => {
-  it('returns 0 when no sessions completed', () => {
+  it('returns 0 when no focus time', () => {
     expect(calculateGoalProgress(0, defaultSettings)).toBe(0);
   });
 
   it('calculates progress correctly', () => {
-    // 2 sessions * 25 min = 50 min of 120 min goal = 42%
-    expect(calculateGoalProgress(2, defaultSettings)).toBe(42);
+    // 50 min (3000s) of 120 min goal = 42%
+    expect(calculateGoalProgress(3000, defaultSettings)).toBe(42);
   });
 
   it('caps at 100%', () => {
-    // 10 sessions * 25 min = 250 min of 120 min goal = 208% → capped at 100
-    expect(calculateGoalProgress(10, defaultSettings)).toBe(100);
+    // 250 min (15000s) of 120 min goal = 208% → capped at 100
+    expect(calculateGoalProgress(15000, defaultSettings)).toBe(100);
   });
 
   it('returns 0 when goal is 0', () => {
     const s = { ...defaultSettings, dailyFocusGoalMinutes: 0 };
-    expect(calculateGoalProgress(5, s)).toBe(0);
+    expect(calculateGoalProgress(5000, s)).toBe(0);
   });
 
   it('handles exact goal completion', () => {
-    // dailyFocusGoalMinutes=50, pomodoroMinutes=25, 2 sessions = 50 min = 100%
+    // dailyFocusGoalMinutes=50, 50 min (3000s) = 100%
     const s = { ...defaultSettings, dailyFocusGoalMinutes: 50 };
-    expect(calculateGoalProgress(2, s)).toBe(100);
+    expect(calculateGoalProgress(3000, s)).toBe(100);
   });
 });
 

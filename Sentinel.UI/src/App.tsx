@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useLayoutEffect } from 'react';
 import type { FormEvent } from 'react';
 import { db, auth } from './firebase';
 import {
@@ -55,6 +55,16 @@ interface Distraction {
 
 type View = 'timer' | 'settings' | 'auth' | 'reports' | 'taxonomy' | 'history';
 
+type WebViewHost = Window & {
+  chrome?: {
+    webview?: {
+      addEventListener(event: string, handler: (e: MessageEvent) => void): void;
+      removeEventListener(event: string, handler: (e: MessageEvent) => void): void;
+      postMessage(message: unknown): void;
+    };
+  };
+};
+
 function App() {
   const [settings, setSettings] = useState<Settings>(defaultSettings);
   const [view, setView] = useState<View>('timer');
@@ -71,6 +81,7 @@ function App() {
   const [authPassword, setAuthPassword] = useState('');
   const [authError, setAuthError] = useState('');
   const [sessionsCompleted, setSessionsCompleted] = useState(0);
+  const [todayFocusSeconds, setTodayFocusSeconds] = useState(0);
   const [isSnoozed, setIsSnoozed] = useState(false);
   const [snoozeSecondsRemaining, setSnoozeSecondsRemaining] = useState(0);
   const [reportData, setReportData] = useState<ReportData | null>(null);
@@ -97,6 +108,52 @@ function App() {
   const wasRunningRef = useRef(false);
   const handleStartPauseRef = useRef(() => {});
   const timerAnchorRef = useRef<{ startedAt: number; startTimeLeft: number } | null>(null);
+  // Tracks the actual wall-clock start of the current pomodoro session (survives pauses).
+  const sessionStartedAtRef = useRef<number | null>(null);
+  // Live mirrors of settings/sessionName so the stale-closure interval always sees current values.
+  const settingsRef = useRef(settings);
+  const sessionNameRef = useRef(sessionName);
+
+  const postMessage = useCallback((message: object) => {
+    const webview = (window as WebViewHost).chrome?.webview;
+    if (webview) {
+      webview.postMessage(message);
+    }
+  }, []);
+
+  // PO-016: Track pending syncs so failed uploads are retried on next session.
+  const pendingSyncsRef = useRef<Array<{ duration: number; distractions: string[]; completedAt: Date }>>([]);
+
+  const syncSessionToFirestore = useCallback(async () => {
+    if (!user || !settings.cloudSyncEnabled) return;
+
+    // Add the current session to the pending queue
+    pendingSyncsRef.current.push({
+      duration: settings.pomodoroMinutes * 60,
+      distractions: distractions.map((item) => item.note),
+      completedAt: new Date(),
+    });
+
+    // Try to flush all pending syncs
+    const pending = [...pendingSyncsRef.current];
+    const failed: typeof pending = [];
+
+    for (const session of pending) {
+      try {
+        await addDoc(collection(db, 'sessions'), {
+          userId: user.uid,
+          duration: session.duration,
+          distractions: session.distractions,
+          completedAt: serverTimestamp(),
+        });
+      } catch (error) {
+        console.error('[Sentinel] Sync failed, will retry:', error);
+        failed.push(session);
+      }
+    }
+
+    pendingSyncsRef.current = failed;
+  }, [user, settings, distractions]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, setUser);
@@ -115,6 +172,9 @@ function App() {
             if (typeof data.todaySessionsCompleted === 'number') {
               setSessionsCompleted(data.todaySessionsCompleted);
             }
+            if (typeof data.todayFocusSeconds === 'number') {
+              setTodayFocusSeconds(data.todayFocusSeconds);
+            }
             postMessage({ type: 'GET_TAXONOMY_DATA' });
             break;
           case 'IDLE_DETECTED':
@@ -124,6 +184,13 @@ function App() {
               setIsPausedByIntervention(true);
               setShowIntervention(true);
               postMessage({ type: 'GET_TAXONOMY_DATA' });
+            }
+            break;
+          case 'USER_ACTIVE':
+            // PO-008: Auto-dismiss intervention when user resumes activity
+            if (showIntervention) {
+              // Don't auto-dismiss — but could be used for future UX hint.
+              // For now, this prevents the monitor from re-firing while modal is open.
             }
             break;
           case 'SNOOZE_STATUS':
@@ -168,6 +235,14 @@ function App() {
             }
             setTimeout(() => setExportStatus(null), 5000);
             break;
+          case 'SEED_COMPLETE':
+            if (data.alreadySeeded) {
+              setExportStatus('Demo data already loaded.');
+            } else {
+              setExportStatus(`Demo data loaded: ${data.sessionsAdded} sessions, ${data.distractionsAdded} distractions.`);
+            }
+            setTimeout(() => setExportStatus(null), 6000);
+            break;
           case 'UPDATE_AVAILABLE':
             setUpdateInfo({ latestVersion: data.latestVersion, downloadUrl: data.downloadUrl });
             break;
@@ -180,7 +255,7 @@ function App() {
       }
     };
 
-    const webview = (window as any).chrome?.webview;
+    const webview = (window as WebViewHost).chrome?.webview;
     if (webview) {
       webview.addEventListener('message', handleMessage);
       return () => webview.removeEventListener('message', handleMessage);
@@ -188,7 +263,7 @@ function App() {
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [isRunning]);
+  }, [isRunning, postMessage]);
 
   useEffect(() => {
     if (!isSnoozed || snoozeSecondsRemaining <= 0) return;
@@ -207,22 +282,20 @@ function App() {
   }, [isSnoozed, snoozeSecondsRemaining]);
 
   useEffect(() => {
-    if (!showIntervention) return;
-    if (!distractionInput.trim()) {
-      setCategorySelection('__auto__');
-      setNewCategoryName('');
-    }
-  }, [distractionInput, showIntervention]);
-
-  useEffect(() => {
     if (!isRunning || timeLeft <= 0) {
       timerAnchorRef.current = null;
       return;
     }
 
-    // Anchor the timer to wall-clock time to prevent drift from setInterval inaccuracy
     if (!timerAnchorRef.current) {
-      timerAnchorRef.current = { startedAt: Date.now(), startTimeLeft: timeLeft };
+      const now = Date.now();
+      timerAnchorRef.current = { startedAt: now, startTimeLeft: timeLeft };
+      // On first resume of this session, back-calculate the actual session start
+      // (timeLeft may be less than full duration if session was paused before).
+      if (sessionStartedAtRef.current === null) {
+        const alreadyElapsed = getTimerDuration(timerMode, settings) - timeLeft;
+        sessionStartedAtRef.current = now - alreadyElapsed * 1000;
+      }
     }
 
     const anchor = timerAnchorRef.current;
@@ -234,15 +307,20 @@ function App() {
       if (remaining <= 0) {
         clearInterval(interval);
         timerAnchorRef.current = null;
+        const startedAt = new Date(sessionStartedAtRef.current ?? Date.now()).toISOString();
+        sessionStartedAtRef.current = null;
         setTimeLeft(0);
         setIsRunning(false);
         setIsComplete(true);
         if (timerMode === 'pomodoro') {
+          const duration = getTimerDuration('pomodoro', settingsRef.current);
           setSessionsCompleted((count) => count + 1);
+          setTodayFocusSeconds((prev) => prev + duration);
           postMessage({
             type: 'LOG_SESSION',
-            durationSeconds: getTimerDuration('pomodoro', settings),
-            sessionName: sessionName || undefined,
+            durationSeconds: duration,
+            sessionName: sessionNameRef.current || undefined,
+            startedAt,
           });
           postMessage({ type: 'PLAY_SOUND' });
           void syncSessionToFirestore();
@@ -253,19 +331,46 @@ function App() {
     }, 250); // Poll 4x/sec for responsive display, drift-free via anchor
 
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRunning, timeLeft, timerMode]);
 
   // Notify C# when timer starts/stops so idle monitor only runs during active sessions
   useEffect(() => {
     postMessage({ type: 'TIMER_RUNNING', running: isRunning });
-  }, [isRunning]);
+  }, [isRunning, postMessage]);
 
-  // Sync timer display when settings change while timer is idle
-  useEffect(() => {
-    if (!isRunning && !isComplete) {
-      setTimeLeft(getTimerDuration(timerMode, settings));
+  const resetDistractionDraft = () => {
+    setDistractionInput('');
+    setCategorySelection('__auto__');
+    setNewCategoryName('');
+  };
+
+  const handleDistractionChange = (value: string) => {
+    setDistractionInput(value);
+    if (!value.trim()) {
+      setCategorySelection('__auto__');
+      setNewCategoryName('');
     }
-  }, [settings.pomodoroMinutes, settings.shortBreakMinutes, settings.longBreakMinutes]);
+  };
+
+  const handleResumeAfterSleep = (resume: boolean) => {
+    setShowResumePrompt(false);
+    if (resume) {
+      setIsRunning(true);
+    }
+    wasRunningRef.current = false;
+  };
+
+  const dismissIntervention = useCallback(() => {
+    setShowIntervention(false);
+    setIsPausedByIntervention(false);
+    resetDistractionDraft();
+    postMessage({ type: 'INTERVENTION_DISMISSED' });
+    if (wasRunningRef.current) {
+      setIsRunning(true);
+      wasRunningRef.current = false;
+    }
+  }, [postMessage]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -284,8 +389,12 @@ function App() {
 
       if (event.key === 'Enter' && !event.ctrlKey && !event.shiftKey) {
         if (showResumePrompt) {
-          event.preventDefault();
-          handleResumeAfterSleep(true);
+          // PO-019: Only fire if no interactive element is focused
+          const tag = (event.target as HTMLElement).tagName;
+          if (tag !== 'BUTTON' && tag !== 'A') {
+            event.preventDefault();
+            handleResumeAfterSleep(true);
+          }
         }
       }
 
@@ -300,43 +409,15 @@ function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [view, showIntervention, showResumePrompt, showOnboarding, showPresets]);
+  }, [view, showIntervention, showResumePrompt, showOnboarding, showPresets, dismissIntervention]);
 
   const completeOnboarding = () => {
     localStorage.setItem('sentinel_onboarded', 'true');
     setShowOnboarding(false);
   };
 
-  const syncSessionToFirestore = useCallback(async () => {
-    if (!user || !settings.cloudSyncEnabled) return;
-
-    try {
-      await addDoc(collection(db, 'sessions'), {
-        userId: user.uid,
-        duration: settings.pomodoroMinutes * 60,
-        distractions: distractions.map((item) => item.note),
-        completedAt: serverTimestamp(),
-      });
-    } catch (error) {
-      console.error('[Sentinel] Sync failed:', error);
-    }
-  }, [user, settings, distractions]);
-
-  const postMessage = (message: object) => {
-    const webview = (window as any).chrome?.webview;
-    if (webview) {
-      webview.postMessage(message);
-    }
-  };
-
   const requestTaxonomyData = () => {
     postMessage({ type: 'GET_TAXONOMY_DATA' });
-  };
-
-  const resetDistractionDraft = () => {
-    setDistractionInput('');
-    setCategorySelection('__auto__');
-    setNewCategoryName('');
   };
 
   const getResolvedCategoryName = (note: string) => {
@@ -401,6 +482,9 @@ function App() {
   const saveSettings = (newSettings: Settings) => {
     setSettings(newSettings);
     postMessage({ type: 'SAVE_SETTINGS', settings: newSettings });
+    if (!isRunning && !isComplete) {
+      setTimeLeft(getTimerDuration(timerMode, newSettings));
+    }
   };
 
   const handleModeChange = (mode: TimerMode) => {
@@ -409,6 +493,7 @@ function App() {
     setIsRunning(false);
     setIsComplete(false);
     setIsPausedByIntervention(false);
+    sessionStartedAtRef.current = null;
   };
 
   const applyPreset = (preset: TimerPreset) => {
@@ -431,19 +516,16 @@ function App() {
       setTimeLeft(getTimerDuration(timerMode, settings));
       setIsComplete(false);
       setDistractions([]);
+      sessionStartedAtRef.current = null;
     }
     setIsPausedByIntervention(false);
     setIsRunning(!isRunning);
   };
-  handleStartPauseRef.current = handleStartPause;
-
-  const handleResumeAfterSleep = (resume: boolean) => {
-    setShowResumePrompt(false);
-    if (resume) {
-      setIsRunning(true);
-    }
-    wasRunningRef.current = false;
-  };
+  useLayoutEffect(() => {
+    handleStartPauseRef.current = handleStartPause;
+    settingsRef.current = settings;
+    sessionNameRef.current = sessionName;
+  });
 
   const handleExport = (format: 'csv' | 'json') => {
     postMessage({ type: 'EXPORT_DATA', format });
@@ -458,6 +540,8 @@ function App() {
     setIsRunning(false);
     setIsComplete(false);
     setIsPausedByIntervention(false);
+    timerAnchorRef.current = null;
+    sessionStartedAtRef.current = null;
   };
 
   const handleEndSession = () => {
@@ -470,28 +554,21 @@ function App() {
     }
     setIsRunning(false);
     timerAnchorRef.current = null;
+    const startedAt = new Date(sessionStartedAtRef.current ?? Date.now()).toISOString();
+    sessionStartedAtRef.current = null;
     setSessionsCompleted((count) => count + 1);
+    setTodayFocusSeconds((prev) => prev + elapsed);
     postMessage({
       type: 'LOG_SESSION',
       durationSeconds: elapsed,
       sessionName: sessionName || undefined,
+      startedAt,
       endedEarly: true,
     });
     postMessage({ type: 'PLAY_SOUND' });
     setTimeLeft(getTimerDuration(timerMode, settings));
     setIsComplete(true);
     setIsPausedByIntervention(false);
-  };
-
-  const dismissIntervention = () => {
-    setShowIntervention(false);
-    setIsPausedByIntervention(false);
-    resetDistractionDraft();
-    postMessage({ type: 'INTERVENTION_DISMISSED' });
-    if (wasRunningRef.current) {
-      setIsRunning(true);
-      wasRunningRef.current = false;
-    }
   };
 
   const handleDistractionSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -604,21 +681,18 @@ function App() {
       const cloudSessions = sessionsSnap.docs.map((doc) => doc.data());
       const cloudDistractions = distractionsSnap.docs.map((doc) => doc.data());
 
-      // Cloud data supplements the local report only if local counts are zero
-      // (i.e., the data only exists in Firestore, not locally). This avoids
-      // double-counting when the same session/distraction was saved to both.
+      // PO-017: Merge cloud data by taking the larger count — local data includes
+      // what was synced, but cloud may have data from other devices. Using max()
+      // avoids double-counting while ensuring cross-device sessions aren't lost.
       if (cloudSessions.length > 0 || cloudDistractions.length > 0) {
         setReportData((prev) => {
           if (!prev) return prev;
-          // Only merge cloud data if local has nothing (cross-device scenario)
-          if (prev.sessionsCompleted > 0 || prev.distractionsLogged > 0) {
-            return prev;
-          }
+          const cloudFocusSeconds = cloudSessions.reduce((sum, session) => sum + (session.duration || 0), 0);
           return {
             ...prev,
-            sessionsCompleted: cloudSessions.length,
-            totalFocusSeconds: cloudSessions.reduce((sum, session) => sum + (session.duration || 0), 0),
-            distractionsLogged: cloudDistractions.length,
+            sessionsCompleted: Math.max(prev.sessionsCompleted, cloudSessions.length),
+            totalFocusSeconds: Math.max(prev.totalFocusSeconds, cloudFocusSeconds),
+            distractionsLogged: Math.max(prev.distractionsLogged, cloudDistractions.length),
           };
         });
       }
@@ -649,8 +723,9 @@ function App() {
     try {
       await signInWithEmailAndPassword(auth, authEmail, authPassword);
       setView('timer');
-    } catch (error: any) {
-      const code = error?.code ?? '';
+    } catch (error: unknown) {
+      const firebaseError = error as { code?: string; message?: string };
+      const code = firebaseError?.code ?? '';
       if (code === 'auth/user-not-found' || code === 'auth/invalid-credential' || code === 'auth/invalid-login-credentials') {
         setAuthError('No account found with this email. Please sign up first.');
       } else if (code === 'auth/wrong-password') {
@@ -660,7 +735,7 @@ function App() {
       } else if (code === 'auth/invalid-email') {
         setAuthError('Invalid email address.');
       } else {
-        setAuthError(error.message || 'Login failed. Please try again.');
+        setAuthError(firebaseError?.message || 'Login failed. Please try again.');
       }
     }
   };
@@ -671,8 +746,9 @@ function App() {
     try {
       await createUserWithEmailAndPassword(auth, authEmail, authPassword);
       setView('timer');
-    } catch (error: any) {
-      const code = error?.code ?? '';
+    } catch (error: unknown) {
+      const firebaseError = error as { code?: string; message?: string };
+      const code = firebaseError?.code ?? '';
       if (code === 'auth/email-already-in-use') {
         setAuthError('An account with this email already exists. Please log in instead.');
       } else if (code === 'auth/weak-password') {
@@ -680,7 +756,7 @@ function App() {
       } else if (code === 'auth/invalid-email') {
         setAuthError('Invalid email address.');
       } else {
-        setAuthError(error.message || 'Signup failed. Please try again.');
+        setAuthError(firebaseError?.message || 'Signup failed. Please try again.');
       }
     }
   };
@@ -698,7 +774,7 @@ function App() {
     return Object.entries(counts).map(([name, value]) => ({ name, value }));
   };
 
-  const goalProgress = calculateGoalProgress(sessionsCompleted, settings);
+  const goalProgress = calculateGoalProgress(todayFocusSeconds, settings);
   const onboardingSteps = [
     {
       title: 'Welcome to Sentinel',
@@ -737,10 +813,15 @@ function App() {
           normalizeDistractionNote(candidate) === normalizeDistractionNote(category),
       ) === index,
   );
+  const openHistory = () => {
+    setView('history');
+    requestReportData('all');
+  };
+
   const baseNavigation = {
     onOpenTimer: () => setView('timer'),
     onOpenReports: openReports,
-    onOpenHistory: () => setView('history'),
+    onOpenHistory: openHistory,
     onOpenSettings: () => setView('settings'),
     onOpenAccount: () => setView('auth'),
   };
@@ -779,7 +860,7 @@ function App() {
         inferredCategoryName={inferredCategoryName}
         categoryOptions={categoryOptions}
         quickSuggestions={quickSuggestions}
-        onDistractionChange={setDistractionInput}
+        onDistractionChange={handleDistractionChange}
         onCategorySelectionChange={setCategorySelection}
         onNewCategoryChange={setNewCategoryName}
         onSubmit={handleDistractionSubmit}
@@ -809,9 +890,6 @@ function App() {
   }
 
   if (view === 'history') {
-    if (!reportData) {
-      requestReportData('all');
-    }
     return (
       <SessionHistoryScreen
         reportData={reportData}
@@ -876,6 +954,10 @@ function App() {
         onOpenAuth={() => setView('auth')}
         onOpenTaxonomy={() => openTaxonomy('settings')}
         onDismissUpdate={() => setUpdateInfo(null)}
+        onSeedDatabase={() => {
+          setExportStatus('Loading demo data…');
+          postMessage({ type: 'SEED_DATABASE' });
+        }}
         navigation={{
           ...baseNavigation,
           onOpenTaxonomy: () => openTaxonomy('settings'),

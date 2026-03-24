@@ -72,8 +72,7 @@ export function getTimerDuration(mode: TimerMode, settings: Settings): number {
   }
 }
 
-export function calculateGoalProgress(sessionsCompleted: number, settings: Settings): number {
-  const todayFocusSeconds = sessionsCompleted * settings.pomodoroMinutes * 60;
+export function calculateGoalProgress(todayFocusSeconds: number, settings: Settings): number {
   if (settings.dailyFocusGoalMinutes <= 0) return 0;
   return Math.min(100, Math.round((todayFocusSeconds / (settings.dailyFocusGoalMinutes * 60)) * 100));
 }

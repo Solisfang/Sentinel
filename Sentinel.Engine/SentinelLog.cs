@@ -32,7 +32,10 @@ public static class SentinelLog
 
     public static void Error(string message, Exception? ex = null)
     {
-        var text = ex != null ? $"{message} — {ex.GetType().Name}: {ex.Message}" : message;
+        var detail = ex?.InnerException != null
+            ? $"{ex.GetType().Name}: {ex.Message} → {ex.InnerException.GetType().Name}: {ex.InnerException.Message}"
+            : ex != null ? $"{ex.GetType().Name}: {ex.Message}" : "";
+        var text = detail.Length > 0 ? $"{message} — {detail}" : message;
         Write("ERROR", text);
     }
 

@@ -384,6 +384,7 @@ export function InterventionModal({
                       value={newCategoryName}
                       onChange={(event) => onNewCategoryChange(event.target.value)}
                       placeholder="New category name"
+                      maxLength={50}
                       className={inputClasses.base}
                       aria-label="New category name"
                     />
@@ -1249,6 +1250,7 @@ interface SettingsScreenProps {
   onOpenAuth: () => void;
   onOpenTaxonomy: () => void;
   onDismissUpdate: () => void;
+  onSeedDatabase: () => void;
   navigation: WorkspaceNavigation;
 }
 
@@ -1264,6 +1266,7 @@ export function SettingsScreen({
   onOpenAuth,
   onOpenTaxonomy,
   onDismissUpdate,
+  onSeedDatabase,
   navigation,
 }: SettingsScreenProps) {
   const updateSetting = <K extends keyof Settings>(key: K, value: Settings[K]) => {
@@ -1349,6 +1352,7 @@ export function SettingsScreen({
                       <button
                         type="button"
                         onClick={() => {
+                          if (!window.confirm(`Delete preset "${preset.name}"?`)) return;
                           const updated = (settings.customPresets ?? []).filter((_, i) => i !== index);
                           onSaveSettings({ ...settings, customPresets: updated });
                         }}
@@ -1471,6 +1475,14 @@ export function SettingsScreen({
                   </button>
                 </ActionGrid>
                 {exportStatus && <p className="text-sm text-(--text-muted)">{exportStatus}</p>}
+              </FieldBlock>
+              <FieldBlock
+                label="Demo Data"
+                description="Load sample sessions and distractions to explore all features. Safe to run once — ignored if data already exists."
+              >
+                <button type="button" onClick={onSeedDatabase} className={buttonClasses.secondary}>
+                  Load Demo Data
+                </button>
               </FieldBlock>
             </SectionCard>
           </div>
@@ -1652,7 +1664,7 @@ export function CompactTimerScreen({
             </span>
           </div>
           <div className="sentinel-overlay-nodrag flex items-center gap-1">
-            <button type="button" onClick={onExpand} className="sentinel-overlay-btn" aria-label="Expand" title="Expand">
+            <button type="button" onClick={onExpand} className="sentinel-overlay-btn" aria-label="Expand" title="Double-click anywhere or click here to expand">
               <Glyph name="overlay" className="h-3 w-3" />
             </button>
             <button type="button" onClick={onClose} className="sentinel-overlay-btn sentinel-overlay-btn--close" aria-label="Close" title="Close">
@@ -1695,7 +1707,7 @@ export function CompactTimerScreen({
             </span>
           </div>
           <div className="sentinel-overlay-nodrag flex items-center gap-1">
-            <button type="button" onClick={onExpand} className="sentinel-overlay-btn" aria-label="Expand" title="Expand">
+            <button type="button" onClick={onExpand} className="sentinel-overlay-btn" aria-label="Expand" title="Double-click anywhere or click here to expand">
               <Glyph name="overlay" className="h-3 w-3" />
             </button>
             <button type="button" onClick={onClose} className="sentinel-overlay-btn sentinel-overlay-btn--close" aria-label="Close" title="Close">
@@ -1745,7 +1757,7 @@ export function CompactTimerScreen({
           </span>
         </div>
         <div className="sentinel-overlay-nodrag flex items-center gap-1">
-          <button type="button" onClick={onExpand} className="sentinel-overlay-btn" aria-label="Expand" title="Expand">
+          <button type="button" onClick={onExpand} className="sentinel-overlay-btn" aria-label="Expand" title="Double-click anywhere or click here to expand">
             <Glyph name="overlay" className="h-3 w-3" />
           </button>
           <button type="button" onClick={onClose} className="sentinel-overlay-btn sentinel-overlay-btn--close" aria-label="Close" title="Close">
@@ -2241,7 +2253,7 @@ function PresetChoice({
     <button
       type="button"
       onClick={onClick}
-      className="rounded-[calc(var(--card-radius)-6px)] border px-4 py-4 text-left transition-colors"
+      className="w-full h-full rounded-[calc(var(--card-radius)-6px)] border px-4 py-4 text-left transition-colors"
       style={
         active
           ? {

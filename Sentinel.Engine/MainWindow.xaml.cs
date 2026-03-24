@@ -13,6 +13,7 @@ public partial class MainWindow : Window
     private readonly UserActivityMonitor _activityMonitor;
     private readonly DistractionRepository _repository;
     private readonly ReportingService _reportingService;
+    private readonly DatabaseSeeder _seeder;
     private AppSettings _settings;
     private HwndSource? _hwndSource;
 
@@ -79,6 +80,7 @@ public partial class MainWindow : Window
 
         _repository = new DistractionRepository();
         _reportingService = new ReportingService();
+        _seeder = new DatabaseSeeder();
         _activityMonitor.SuppressDuringMedia = _settings.SuppressDuringMedia;
 
         // Restore window position if saved
@@ -94,9 +96,31 @@ public partial class MainWindow : Window
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
-        await _repository.InitializeAsync();
-        await _repository.PruneOldDataAsync(_settings.DataRetentionMonths);
-        await InitializeWebView();
+        try
+        {
+            await _repository.InitializeAsync();
+            await _repository.PruneOldDataAsync(_settings.DataRetentionMonths);
+
+            try
+            {
+                await _seeder.SeedAsync();
+            }
+            catch (Exception seedEx)
+            {
+                SentinelLog.Error("Demo data seeding failed (non-fatal)", seedEx);
+            }
+
+            await InitializeWebView();
+        }
+        catch (Exception ex)
+        {
+            SentinelLog.Error("Fatal error during startup", ex);
+            CrashReporter.LogCrash("OnLoaded", ex);
+            MessageBox.Show($"Sentinel failed to start:\n\n{ex.Message}", "Sentinel", MessageBoxButton.OK, MessageBoxImage.Error);
+            Close();
+            return;
+        }
+
         // Activity monitor starts only when timer starts (via TIMER_RUNNING message)
 
         // Hook WndProc for power broadcast and global hotkeys
@@ -211,11 +235,16 @@ public partial class MainWindow : Window
     private async Task SendSettingsToReactAsync()
     {
         var todaySessionsCompleted = 0;
+        var todayFocusSeconds = 0;
         try
         {
-            var todayStart = DateTime.UtcNow.Date;
+            // Use local midnight converted to UTC so the count matches what the user
+            // considers "today" regardless of their timezone offset.
+            var todayStart = DateTime.Today.ToUniversalTime();
             var todaySessions = await _repository.GetSessionsAsync(since: todayStart);
-            todaySessionsCompleted = todaySessions.Count;
+            var completed = todaySessions.Where(s => s.CompletedAt.HasValue).ToList();
+            todaySessionsCompleted = completed.Count;
+            todayFocusSeconds = completed.Sum(s => s.DurationSeconds);
         }
         catch (Exception ex)
         {
@@ -226,6 +255,7 @@ public partial class MainWindow : Window
         {
             type = "SETTINGS_LOADED",
             todaySessionsCompleted,
+            todayFocusSeconds,
             settings = new
             {
                 pomodoroMinutes = _settings.PomodoroMinutes,
@@ -287,6 +317,10 @@ public partial class MainWindow : Window
 
     private void OnIdleDetected(object? sender, EventArgs e)
     {
+        // PO-009: Don't show intervention if the activity monitor was stopped
+        // between the idle timer firing and this handler running.
+        if (!_activityMonitor.IsRunning) return;
+
         Debug.WriteLine("[Sentinel] Idle Detected - Sending message to React");
 
         Dispatcher.Invoke(() =>
@@ -437,6 +471,10 @@ public partial class MainWindow : Window
                     await HandleExportData(root);
                     break;
 
+                case "SEED_DATABASE":
+                    await HandleSeedDatabaseAsync();
+                    break;
+
                 case "PLAY_SOUND":
                     PlayNotificationSound();
                     break;
@@ -523,11 +561,12 @@ public partial class MainWindow : Window
 
         var since = range switch
         {
-            "today" => DateTime.UtcNow.Date,
-            "week" => DateTime.UtcNow.Date.AddDays(-7),
-            "month" => DateTime.UtcNow.Date.AddDays(-30),
-            "all" => DateTime.MinValue,
-            _ => DateTime.UtcNow.Date.AddDays(-7)
+            // Use local midnight → UTC so date boundaries respect the user's timezone.
+            "today" => DateTime.Today.ToUniversalTime(),
+            "week" => DateTime.Today.AddDays(-7).ToUniversalTime(),
+            "month" => DateTime.Today.AddDays(-30).ToUniversalTime(),
+            "all" => DateTime.Today.AddDays(-365).ToUniversalTime(),
+            _ => DateTime.Today.AddDays(-7).ToUniversalTime()
         };
 
         var report = await _reportingService.GetReportDataAsync(since);
@@ -603,16 +642,33 @@ public partial class MainWindow : Window
             ? nameProp.GetString()
             : null;
         var endedEarly = root.TryGetProperty("endedEarly", out var earlyProp) && earlyProp.GetBoolean();
+
+        // React sends the actual wall-clock start time; fall back to approximation if absent.
+        DateTime startedAt;
+        if (root.TryGetProperty("startedAt", out var startedAtProp)
+            && startedAtProp.GetString() is string startedAtStr
+            && DateTime.TryParse(startedAtStr, null,
+                System.Globalization.DateTimeStyles.RoundtripKind, out var parsedStart))
+        {
+            startedAt = parsedStart.ToUniversalTime();
+        }
+        else
+        {
+            startedAt = DateTime.UtcNow.AddSeconds(-durationSeconds);
+        }
+
         var session = new Session
         {
             DurationSeconds = durationSeconds,
-            StartedAt = DateTime.UtcNow.AddSeconds(-durationSeconds),
+            StartedAt = startedAt,
             CompletedAt = DateTime.UtcNow,
             SessionName = sessionName,
             EndedEarly = endedEarly
         };
         await _repository.AddSessionAsync(session);
-        Debug.WriteLine($"[Sentinel] Session saved: {durationSeconds}s{(endedEarly ? " (ended early)" : "")}{(sessionName != null ? $" ({sessionName})" : "")}");
+        Debug.WriteLine($"[Sentinel] Session saved: {durationSeconds}s" +
+            $"{(endedEarly ? " (ended early)" : "")}" +
+            $"{(sessionName != null ? $" ({sessionName})" : "")}");
     }
 
     private void PlayNotificationSound()
@@ -649,9 +705,13 @@ public partial class MainWindow : Window
             if (format == "csv")
             {
                 filePath = Path.Combine(exportDir, $"sentinel_sessions_{timestamp}.csv");
-                var lines = new List<string> { "StartedAt,DurationSeconds,Completed" };
+                var lines = new List<string> { "StartedAt,CompletedAt,DurationSeconds,SessionName,EndedEarly" };
                 lines.AddRange(sessions.Select(s =>
-                    $"{s.StartedAt:yyyy-MM-dd HH:mm:ss},{s.DurationSeconds},{s.CompletedAt.HasValue}"));
+                    $"{s.StartedAt:yyyy-MM-dd HH:mm:ss}," +
+                    $"{(s.CompletedAt.HasValue ? s.CompletedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : "")}," +
+                    $"{s.DurationSeconds}," +
+                    $"\"{(s.SessionName ?? string.Empty).Replace("\"", "\"\"")}\"," +
+                    $"{s.EndedEarly}"));
                 await File.WriteAllLinesAsync(filePath, lines);
 
                 var dFilePath = Path.Combine(exportDir, $"sentinel_distractions_{timestamp}.csv");
@@ -666,7 +726,14 @@ public partial class MainWindow : Window
                 var data = new
                 {
                     exportedAt = DateTime.UtcNow,
-                    sessions = sessions.Select(s => new { s.StartedAt, s.DurationSeconds, s.CompletedAt }),
+                    sessions = sessions.Select(s => new
+                    {
+                        s.StartedAt,
+                        s.DurationSeconds,
+                        s.CompletedAt,
+                        s.SessionName,
+                        s.EndedEarly
+                    }),
                     distractions = distractions.Select(d => new { d.Timestamp, d.Note, d.CategoryName, d.IsFalseAlarm })
                 };
                 var json = JsonSerializer.Serialize(data, new JsonSerializerOptions
@@ -702,6 +769,24 @@ public partial class MainWindow : Window
                 });
                 WebView.CoreWebView2?.PostWebMessageAsJson(errMsg);
             });
+        }
+    }
+
+    private async Task HandleSeedDatabaseAsync()
+    {
+        try
+        {
+            var result = await _seeder.SeedAsync();
+            var payload = result.AlreadySeeded
+                ? JsonSerializer.Serialize(new { type = "SEED_COMPLETE", alreadySeeded = true, sessionsAdded = 0, distractionsAdded = 0 })
+                : JsonSerializer.Serialize(new { type = "SEED_COMPLETE", alreadySeeded = false, sessionsAdded = result.SessionsAdded, distractionsAdded = result.DistractionsAdded });
+            Dispatcher.Invoke(() => WebView.CoreWebView2?.PostWebMessageAsJson(payload));
+            // Refresh the UI with fresh data
+            await SendSettingsToReactAsync();
+        }
+        catch (Exception ex)
+        {
+            SentinelLog.Error("Database seeding failed", ex);
         }
     }
 
@@ -751,11 +836,11 @@ public partial class MainWindow : Window
                 Topmost = _settings.AlwaysOnTop;
 
             SettingsService.Save(_settings);
-            Debug.WriteLine("[Sentinel] Settings saved");
+            SentinelLog.Info("Settings saved.");
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"[Sentinel] Failed to save settings: {ex.Message}");
+            SentinelLog.Error("Failed to save settings", ex);
         }
     }
 
@@ -835,9 +920,10 @@ public partial class MainWindow : Window
 
     private void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
-        // Save window position
-        _settings.WindowLeft = Left;
-        _settings.WindowTop = Top;
+        // When in compact mode the window position is the widget position, not the
+        // full-window position. Save the full-window position so it restores correctly.
+        _settings.WindowLeft = _isCompactMode ? _savedLeft : Left;
+        _settings.WindowTop  = _isCompactMode ? _savedTop  : Top;
         SettingsService.Save(_settings);
     }
 
