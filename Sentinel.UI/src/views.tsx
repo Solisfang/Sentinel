@@ -313,7 +313,7 @@ export function ConfirmModal({
 }: ConfirmModalProps) {
   return (
     <ModalLayout role="dialog" aria-label={title}>
-      <ModalCard className="w-full max-w-112">
+      <ModalCard className="w-full max-w-md">
         <div className="space-y-5">
           <div className="space-y-2">
             <h1 className="text-xl font-bold tracking-tight text-(--text-primary)">{title}</h1>
@@ -523,10 +523,12 @@ export function ReportsScreen({
   onOpenTaxonomy,
   navigation,
 }: ReportsScreenProps) {
-  const sessions = useMemo(() => reportData?.recentSessions ?? [], [reportData]);
-  const distractions = useMemo(() => reportData?.topDistractions ?? [], [reportData]);
-  const sessionPager = usePagination(sessions, 6);
-  const labelPager = usePagination(distractions, 8);
+  // Pagination for Recent Sessions
+  const SESSIONS_PER_PAGE = 10;
+  const [sessionPage, setSessionPage] = useState<number>(0);
+  const sessions = reportData?.recentSessions ?? [];
+  const totalSessionPages = Math.max(1, Math.ceil(sessions.length / SESSIONS_PER_PAGE));
+  const pagedSessions = sessions.slice(sessionPage * SESSIONS_PER_PAGE, (sessionPage + 1) * SESSIONS_PER_PAGE);
   return (
     <WorkspaceLayout
       activeView="reports"
@@ -578,6 +580,7 @@ export function ReportsScreen({
           </SectionCard>
         ) : reportData ? (
           <>
+            {/* Metrics Row */}
             <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
               <MetricCard
                 icon="target"
@@ -589,33 +592,36 @@ export function ReportsScreen({
               <MetricCard
                 icon="bolt"
                 label="Sessions"
-                value={String(reportData.sessionsCompleted)}
-                detail={`Avg ${formatDuration(Math.round(reportData.avgSessionSeconds))}`}
+                value={String(reportData.recentSessions?.length ?? 0)}
+                detail="Recent sessions"
+                accent="#7c4dff"
+              />
+              <MetricCard
+                icon="taxonomy"
+                label="Categories"
+                value={String(reportData.topCategories?.length ?? 0)}
+                detail="Active categories"
+                accent="#00affe"
               />
               <MetricCard
                 icon="reports"
                 label="Distractions"
-                value={String(reportData.distractionsLogged)}
-                detail="Logged interruptions in this range"
-                accent="#00affe"
-              />
-              <MetricCard
-                icon="spark"
-                label="Accuracy"
-                value={`${interventionAccuracy(reportData)}%`}
-                detail={`${reportData.falseAlarms} false alarms`}
-                accent="#cdbdff"
+                value={String(reportData.topDistractions?.length ?? 0)}
+                detail="Top distractions"
+                accent="#ef4444"
               />
             </div>
 
-            <div className="grid gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,0.95fr)]">
-              <div className="space-y-8">
+            {/* Restored detailed report sections */}
+            <div className="grid gap-8 grid-cols-1 md:grid-cols-2 w-full">
+              <div className="flex flex-col gap-8 min-h-0 min-w-0 flex-1">
                 <SectionCard
                   title="Focus Intensity"
                   description="Minutes of focused work completed each day in the selected range."
                   icon="reports"
                 >
-                  {reportData.dailyFocus.length > 0 ? (
+                  {/* ...existing Focus Intensity chart code... */}
+                  {reportData.dailyFocus && reportData.dailyFocus.length > 0 ? (
                     <div className="h-72 w-full">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart
@@ -661,7 +667,7 @@ export function ReportsScreen({
                   {sessions.length > 0 ? (
                     <>
                       <div className="space-y-3">
-                        {sessionPager.slice.map((session, index) => (
+                        {pagedSessions.map((session, index) => (
                           <div
                             key={`${session.startedAt}-${index}`}
                             className="rounded-[calc(var(--card-radius)-6px)] border border-[rgba(73,68,85,0.18)] bg-[rgba(14,14,14,0.18)] px-4 py-3"
@@ -674,46 +680,64 @@ export function ReportsScreen({
                                 <p className="text-xs text-(--text-muted)">
                                   {new Date(session.startedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                   {session.completedAt &&
-                                  ` — ${new Date(session.completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-sm font-semibold text-(--text-primary)">
-                                {formatDuration(session.durationSeconds)}
-                              </p>
-                              <p className="text-xs text-(--text-muted)">
-                                {session.endedEarly && <span className="text-amber-400">Ended early · </span>}
-                                {session.distractionsCount > 0 && `${session.distractionsCount} distraction${session.distractionsCount !== 1 ? 's' : ''}`}
-                                {session.distractionsCount > 0 && session.falseAlarmCount > 0 && ' · '}
-                                {session.falseAlarmCount > 0 && `${session.falseAlarmCount} false alarm${session.falseAlarmCount !== 1 ? 's' : ''}`}
-                                {session.distractionsCount === 0 && session.falseAlarmCount === 0 && !session.endedEarly && (session.completed ? 'Clean session' : 'In progress')}
-                              </p>
+                                    ` — ${new Date(session.completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-sm font-semibold text-(--text-primary)">
+                                  {formatDuration(session.durationSeconds)}
+                                </p>
+                                <p className="text-xs text-(--text-muted)">
+                                  {session.endedEarly && <span className="text-amber-400">Ended early · </span>}
+                                  {session.distractionsCount > 0 && `${session.distractionsCount} distraction${session.distractionsCount !== 1 ? 's' : ''}`}
+                                  {session.distractionsCount > 0 && session.falseAlarmCount > 0 && ' · '}
+                                  {session.falseAlarmCount > 0 && `${session.falseAlarmCount} false alarm${session.falseAlarmCount !== 1 ? 's' : ''}`}
+                                  {session.distractionsCount === 0 && session.falseAlarmCount === 0 && !session.endedEarly && (session.completed ? 'Clean session' : 'In progress')}
+                                </p>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
                       </div>
-                      <PaginationBar
-                        rangeLabel={sessionPager.rangeLabel}
-                        hasPrev={sessionPager.hasPrev}
-                        hasNext={sessionPager.hasNext}
-                        onPrev={sessionPager.prev}
-                        onNext={sessionPager.next}
-                      />
+                      <div className="flex flex-col items-center gap-2 mt-6">
+                        <div className="flex gap-4">
+                          <button
+                            type="button"
+                            className={buttonClasses.inline}
+                            onClick={() => setSessionPage((p) => Math.max(0, p - 1))}
+                            disabled={sessionPage === 0}
+                          >
+                            Previous
+                          </button>
+                          <span className="text-xs text-(--text-muted) px-2 py-1 rounded bg-[rgba(73,68,85,0.10)]">
+                            Page {sessionPage + 1} of {totalSessionPages}
+                          </span>
+                          <button
+                            type="button"
+                            className={buttonClasses.inline}
+                            onClick={() => setSessionPage((p) => Math.min(totalSessionPages - 1, p + 1))}
+                            disabled={sessionPage >= totalSessionPages - 1}
+                          >
+                            Next
+                          </button>
+                        </div>
+                      </div>
                     </>
                   ) : (
                     <div className="sentinel-empty-state text-sm">Completed sessions will appear here as you work.</div>
                   )}
                 </SectionCard>
+
               </div>
 
-              <div className="space-y-8">
+              <div className="flex flex-col gap-8 min-h-0 min-w-0 flex-1">
                 <SectionCard
                   title="Top Categories"
                   description="Grouped interruptions so repeat habits are easier to understand at a glance."
                   icon="taxonomy"
                 >
-                  {reportData.topCategories.length > 0 ? (
+                  {/* ...existing Top Categories code... */}
+                  {reportData.topCategories && reportData.topCategories.length > 0 ? (
                     <div className="flex flex-col gap-5 md:flex-row xl:flex-col">
                       <div className="mx-auto h-44 w-44 shrink-0">
                         <ResponsiveContainer width="100%" height="100%">
@@ -754,12 +778,13 @@ export function ReportsScreen({
                     </div>
                   )}
                 </SectionCard>
-                {reportData.dailyFocus.length > 0 && (
+                {reportData.dailyFocus && reportData.dailyFocus.length > 0 && (
                   <SectionCard
                     title="Daily Breakdown"
                     description="Focus time, sessions, and distractions per day."
                     icon="reports"
                   >
+                    {/* ...existing Daily Breakdown code... */}
                     <div className="space-y-2">
                       {reportData.dailyFocus.slice(-10).map((day) => {
                         const focusMin = Math.round(day.focusSeconds / 60);
@@ -795,9 +820,27 @@ export function ReportsScreen({
                     </div>
                   </SectionCard>
                 )}
-              </div>
-
-              <div className="space-y-8">
+                <SectionCard
+                  title="Intervention Accuracy"
+                  description="How often a pause ended up being a false alarm instead of a real distraction."
+                  icon="spark"
+                >
+                  {/* ...existing Intervention Accuracy code... */}
+                  <div className="space-y-2">
+                    <p className="text-4xl font-extrabold tracking-tight text-(--text-primary)">
+                      {(() => {
+                        const total = (reportData.distractionsLogged ?? 0) + (reportData.falseAlarms ?? 0);
+                        if (!total) return '100';
+                        return Math.round(((total - (reportData.falseAlarms ?? 0)) / total) * 100);
+                      })()}%
+                    </p>
+                    <p className="text-sm leading-7 text-(--text-secondary)">
+                      {(reportData.falseAlarms ?? 0)} false alarms out of{' '}
+                      {(reportData.distractionsLogged ?? 0) + (reportData.falseAlarms ?? 0)} interventions.
+                    </p>
+                  </div>
+                </SectionCard>
+                
                 <SectionCard
                   title="Raw Labels"
                   description="The original distraction notes you logged, along with their current category."
@@ -808,55 +851,27 @@ export function ReportsScreen({
                     </button>
                   }
                 >
-                  {distractions.length > 0 ? (
-                    <>
-                      <div className="space-y-3">
-                        {labelPager.slice.map((item) => (
-                          <div
-                            key={item.name}
-                            className="rounded-[calc(var(--card-radius)-6px)] border border-[rgba(73,68,85,0.18)] bg-[rgba(14,14,14,0.18)] px-4 py-3"
-                          >
-                            <div className="flex items-center justify-between gap-4">
-                              <div className="min-w-0">
-                                <p className="truncate text-sm font-semibold text-(--text-primary)">
-                                  {item.name}
-                                </p>
-                                <p className="truncate text-xs text-(--text-muted)">
-                                  {item.categoryName ?? 'Uncategorized'}
-                                </p>
-                              </div>
-                              <span className="text-sm text-(--text-secondary)">{item.count}</span>
+                  {/* ...existing Raw Labels code... */}
+                  {reportData.topDistractions && reportData.topDistractions.length > 0 ? (
+                    <div className="space-y-3">
+                      {reportData.topDistractions.map((item) => (
+                        <div
+                          key={item.name}
+                          className="rounded-[calc(var(--card-radius)-6px)] border border-[rgba(73,68,85,0.18)] bg-[rgba(14,14,14,0.18)] px-4 py-3"
+                        >
+                          <div className="flex items-center justify-between gap-4">
+                            <div className="min-w-0">
+                              <p className="truncate text-sm font-semibold text-(--text-primary)">{item.name}</p>
+                              <p className="truncate text-xs text-(--text-muted)">{item.categoryName ?? 'Uncategorized'}</p>
                             </div>
+                            <span className="text-sm text-(--text-secondary)">{item.count}</span>
                           </div>
-                        ))}
-                      </div>
-                      <PaginationBar
-                        rangeLabel={labelPager.rangeLabel}
-                        hasPrev={labelPager.hasPrev}
-                        hasNext={labelPager.hasNext}
-                        onPrev={labelPager.prev}
-                        onNext={labelPager.next}
-                      />
-                    </>
+                        </div>
+                      ))}
+                    </div>
                   ) : (
                     <div className="sentinel-empty-state text-sm">No distractions logged in this range yet.</div>
                   )}
-                </SectionCard>
-
-                <SectionCard
-                  title="Intervention Accuracy"
-                  description="How often a pause ended up being a false alarm instead of a real distraction."
-                  icon="spark"
-                >
-                  <div className="space-y-2">
-                    <p className="text-4xl font-extrabold tracking-tight text-(--text-primary)">
-                      {interventionAccuracy(reportData)}%
-                    </p>
-                    <p className="text-sm leading-7 text-(--text-secondary)">
-                      {reportData.falseAlarms} false alarms out of{' '}
-                      {reportData.distractionsLogged + reportData.falseAlarms} interventions.
-                    </p>
-                  </div>
                 </SectionCard>
               </div>
             </div>
@@ -1060,7 +1075,7 @@ interface TaxonomyManagerScreenProps {
   taxonomyData: TaxonomyData;
   onBack: () => void;
   onSaveGroup: (normalizedNote: string, note: string, categoryName: string | null) => void;
-  onRenameCategory: (oldName: string, newName: string) => void;
+  // onRenameCategory: (oldName: string, newName: string) => void;
   navigation: WorkspaceNavigation;
 }
 
@@ -1068,9 +1083,8 @@ export function TaxonomyManagerScreen({
   taxonomyData,
   onBack,
   onSaveGroup,
-  onRenameCategory,
   navigation,
-}: TaxonomyManagerScreenProps) {
+}: Omit<TaxonomyManagerScreenProps, 'onRenameCategory'>) {
   const [search, setSearch] = useState('');
   const [onlyUncategorized, setOnlyUncategorized] = useState(false);
 
@@ -1235,7 +1249,7 @@ export function TaxonomyManagerScreen({
           </SectionCard>
 
           {/* ── Right column: Categories + Recent Logs ─────────── */}
-          <div className="space-y-8">
+              <div className="flex flex-col gap-8 min-h-0 min-w-0 flex-1">
             <SectionCard
               title="Categories"
               description="Rename categories globally whenever you want cleaner reporting language."
@@ -1244,7 +1258,9 @@ export function TaxonomyManagerScreen({
               {taxonomyData.categories.length > 0 ? (
                 <div className="space-y-3">
                   {taxonomyData.categories.map((category) => (
-                    <CategoryRenameRow key={category} category={category} onRename={onRenameCategory} />
+                    <div key={category} className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-(--text-primary)">{category}</span>
+                    </div>
                   ))}
                 </div>
               ) : (
@@ -1252,6 +1268,7 @@ export function TaxonomyManagerScreen({
                   Categories appear here after you start mapping distractions.
                 </div>
               )}
+              {/* No Save/Cancel row here */}
             </SectionCard>
 
             <SectionCard
@@ -1610,7 +1627,7 @@ export function SettingsScreen({
                 </div>
                 {!isPresetActive(settings, PRESETS[0]) && !isPresetActive(settings, PRESETS[1]) && !isPresetActive(settings, PRESETS[2]) && (
                   showPresetNameInput ? (
-                    <div className="flex gap-2 items-center">
+                    <div className="flex gap-2 items-center w-full max-w-md mx-auto mt-2">
                       <input
                         type="text"
                         value={newPresetNameInput}
@@ -1618,7 +1635,7 @@ export function SettingsScreen({
                         placeholder="Preset name"
                         maxLength={40}
                         autoFocus
-                        className={cx(inputClasses.base, 'flex-1')}
+                        className={cx(inputClasses.base, 'flex-1 min-w-0')}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && newPresetNameInput.trim()) {
                             onSaveSettings({ ...settings, customPresets: [...(settings.customPresets ?? []), { name: newPresetNameInput.trim(), focus: settings.pomodoroMinutes, shortBreak: settings.shortBreakMinutes, longBreak: settings.longBreakMinutes }] });
@@ -1630,7 +1647,7 @@ export function SettingsScreen({
                       />
                       <button
                         type="button"
-                        disabled={!newPresetNameInput.trim()}
+                        disabled={!newPresetNameInput.trim() || (settings.customPresets ?? []).some(p => p.name.toLowerCase() === newPresetNameInput.trim().toLowerCase())}
                         onClick={() => {
                           if (!newPresetNameInput.trim()) return;
                           onSaveSettings({ ...settings, customPresets: [...(settings.customPresets ?? []), { name: newPresetNameInput.trim(), focus: settings.pomodoroMinutes, shortBreak: settings.shortBreakMinutes, longBreak: settings.longBreakMinutes }] });
@@ -1858,6 +1875,7 @@ interface SessionCompleteScreenProps {
   chartData: { name: string; value: number }[];
   onTakeBreak: () => void;
   onAgain: () => void;
+  onExit: () => void;
 }
 
 export function SessionCompleteScreen({
@@ -1865,6 +1883,7 @@ export function SessionCompleteScreen({
   chartData,
   onTakeBreak,
   onAgain,
+  onExit,
 }: SessionCompleteScreenProps) {
   return (
     <ModalLayout>
@@ -1902,6 +1921,9 @@ export function SessionCompleteScreen({
             </button>
             <button type="button" onClick={onAgain} className={buttonClasses.primary}>
               Start Again
+            </button>
+            <button type="button" onClick={onExit} className={buttonClasses.secondary}>
+              Exit
             </button>
           </ActionGrid>
         </div>
@@ -2137,8 +2159,8 @@ export function TimerScreen({
   onCancelSnooze,
   onToggleCompact,
   onTogglePresets,
-  onOpenReports,
-  onOpenSettings,
+  // onOpenReports,
+  // onOpenSettings,
   onApplyPreset,
   navigation,
 }: TimerScreenProps) {
@@ -2265,7 +2287,7 @@ export function TimerScreen({
                         Reset
                       </button>
                     )}
-                    {timerMode === 'pomodoro' && timerProgress > 0 && (
+                    {timerMode === 'pomodoro' && (isRunning || timerProgress > 0) && (
                       <button type="button" onClick={onEndSession} className={buttonClasses.inline}>
                         End Session
                       </button>
@@ -2321,7 +2343,7 @@ export function TimerScreen({
               <InsightRow label="Interventions" value={isSnoozed ? `Snoozed ${snoozeText}` : 'Watching for drift'} accent={isSnoozed ? '#3ce36a' : '#00affe'} />
             </SectionCard>
 
-            <SectionCard
+            {/* <SectionCard
               title="Workspace Actions"
               description="Jump into the full dashboard without losing timer context."
               icon="dashboard"
@@ -2337,7 +2359,7 @@ export function TimerScreen({
                   Open Settings
                 </button>
               </div>
-            </SectionCard>
+            </SectionCard> */}
 
             <SectionCard
               title="Progress Today"
@@ -2372,11 +2394,11 @@ function labelForRange(range: ReportRange) {
   return RANGE_OPTIONS.find((option) => option.key === range)?.label ?? 'Custom';
 }
 
-function interventionAccuracy(reportData: ReportData) {
-  const total = reportData.distractionsLogged + reportData.falseAlarms;
-  if (!total) return 100;
-  return Math.round(((total - reportData.falseAlarms) / total) * 100);
-}
+// function interventionAccuracy(reportData: ReportData) {
+//   const total = reportData.distractionsLogged + reportData.falseAlarms;
+//   if (!total) return 100;
+//   return Math.round(((total - reportData.falseAlarms) / total) * 100);
+// }
 
 function TopbarPill({
   label,
@@ -2649,68 +2671,68 @@ function TaxonomyGroupEditor({
   );
 }
 
-function CategoryRenameRow({
-  category,
-  onRename,
-}: {
-  category: string;
-  onRename: (oldName: string, newName: string) => void;
-}) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [nextName, setNextName] = useState(category);
-
-  if (isEditing) {
-    return (
-      <div className="flex items-center gap-2 rounded-[calc(var(--card-radius)-6px)] border border-[rgba(124,77,255,0.3)] bg-[rgba(14,14,14,0.18)] px-3 py-2.5">
-        <input
-          type="text"
-          value={nextName}
-          onChange={(event) => setNextName(event.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && nextName.trim() && nextName.trim() !== category) {
-              onRename(category, nextName.trim());
-              setIsEditing(false);
-            }
-            if (e.key === 'Escape') {
-              setNextName(category);
-              setIsEditing(false);
-            }
-          }}
-          autoFocus
-          aria-label={`Rename ${category}`}
-          className={cx(inputClasses.base, 'flex-1')}
-        />
-        <button
-          type="button"
-          onClick={() => { onRename(category, nextName.trim()); setIsEditing(false); }}
-          disabled={!nextName.trim() || nextName.trim() === category}
-          className={cx(buttonClasses.secondary, 'shrink-0 px-3 py-1.5 text-sm')}
-        >
-          Save
-        </button>
-        <button
-          type="button"
-          onClick={() => { setNextName(category); setIsEditing(false); }}
-          className={cx(buttonClasses.ghost, 'shrink-0 px-3 py-1.5 text-sm')}
-        >
-          Cancel
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <button
-      type="button"
-      onClick={() => setIsEditing(true)}
-      className="flex w-full items-center justify-between rounded-[calc(var(--card-radius)-6px)] border border-[rgba(73,68,85,0.18)] bg-[rgba(14,14,14,0.18)] px-4 py-2.5 text-left transition-colors hover:border-[rgba(124,77,255,0.3)] hover:bg-[rgba(124,77,255,0.05)]"
-      aria-label={`Edit category ${category}`}
-    >
-      <span className="text-sm font-medium text-(--text-primary)">{category}</span>
-      <Glyph name="spark" className="h-3.5 w-3.5 text-(--text-muted)" />
-    </button>
-  );
-}
+// function CategoryRenameRow({
+//   category,
+//   onRename,
+// }: {
+//   category: string;
+//   onRename: (oldName: string, newName: string) => void;
+// }) {
+//   const [isEditing, setIsEditing] = useState(false);
+//   const [nextName, setNextName] = useState(category);
+//
+//   if (isEditing) {
+//     return (
+//       <div className="flex items-center gap-2 rounded border border-[rgba(124,77,255,0.3)] bg-[rgba(14,14,14,0.18)] px-2 py-1.5 w-full max-w-md mx-auto">
+//         <input
+//           type="text"
+//           value={nextName}
+//           onChange={(event) => setNextName(event.target.value)}
+//           onKeyDown={(e) => {
+//             if (e.key === 'Enter' && nextName.trim() && nextName.trim() !== category) {
+//               onRename(category, nextName.trim());
+//               setIsEditing(false);
+//             }
+//             if (e.key === 'Escape') {
+//               setNextName(category);
+//               setIsEditing(false);
+//             }
+//           }}
+//           autoFocus
+//           aria-label={`Rename ${category}`}
+//           className={cx(inputClasses.base, 'flex-1 min-w-0')}
+//         />
+//         <button
+//           type="button"
+//           onClick={() => { onRename(category, nextName.trim()); setIsEditing(false); }}
+//           disabled={!nextName.trim() || nextName.trim() === category}
+//           className={cx(buttonClasses.primary, 'px-3 py-1.5 text-sm')}
+//         >
+//           Save
+//         </button>
+//         <button
+//           type="button"
+//           onClick={() => { setNextName(category); setIsEditing(false); }}
+//           className={cx(buttonClasses.secondary, 'px-3 py-1.5 text-sm')}
+//         >
+//           Cancel
+//         </button>
+//       </div>
+//     );
+//   }
+//
+//   return (
+//     <button
+//       type="button"
+//       onClick={() => setIsEditing(true)}
+//       className="flex w-full items-center justify-between rounded-[calc(var(--card-radius)-6px)] border border-[rgba(73,68,85,0.18)] bg-[rgba(14,14,14,0.18)] px-4 py-2.5 text-left transition-colors hover:border-[rgba(124,77,255,0.3)] hover:bg-[rgba(124,77,255,0.05)]"
+//       aria-label={`Edit category ${category}`}
+//     >
+//       <span className="text-sm font-medium text-(--text-primary)">{category}</span>
+//       <Glyph name="spark" className="h-3.5 w-3.5 text-(--text-muted)" />
+//     </button>
+//   );
+// }
 
 function NumberField({
   label,

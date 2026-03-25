@@ -1018,6 +1018,10 @@ function App() {
         chartData={chartData}
         onTakeBreak={() => handleModeChange('shortBreak')}
         onAgain={handleStartPause}
+        onExit={() => {
+          setIsComplete(false);
+          setView('timer');
+        }}
       />
     );
   }

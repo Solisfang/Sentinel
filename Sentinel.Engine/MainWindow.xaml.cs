@@ -8,7 +8,9 @@ using Microsoft.Web.WebView2.Core;
 
 namespace Sentinel.Engine;
 
-public partial class MainWindow : Window
+using System.ComponentModel;
+
+public partial class MainWindow : Window, INotifyPropertyChanged
 {
     private readonly UserActivityMonitor _activityMonitor;
     private readonly DistractionRepository _repository;
@@ -64,14 +66,27 @@ public partial class MainWindow : Window
     private const uint FLASHW_ALL = 3;
     private const uint FLASHW_TIMERNOFG = 12;
 
+    private string _maximizeIcon = "□";
+    public string MaximizeIcon
+    {
+        get => _maximizeIcon;
+        set { if (_maximizeIcon != value) { _maximizeIcon = value; OnPropertyChanged(nameof(MaximizeIcon)); } }
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+    protected void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
     public MainWindow()
     {
         CrashReporter.Initialize();
         CrashReporter.TrimLog();
 
+        DataContext = this;
         InitializeComponent();
         Loaded += OnLoaded;
         Closing += OnClosing;
+        StateChanged += MainWindow_StateChanged;
+        UpdateMaximizeIcon();
 
         _settings = SettingsService.Load();
         _activityMonitor = new UserActivityMonitor(_settings.IdleThresholdSeconds);
@@ -303,9 +318,21 @@ public partial class MainWindow : Window
 
     private void ToggleMaximize()
     {
-        WindowState = WindowState == WindowState.Maximized
-            ? WindowState.Normal
-            : WindowState.Maximized;
+        if (WindowState == WindowState.Maximized)
+            WindowState = WindowState.Normal;
+        else
+            WindowState = WindowState.Maximized;
+        // Icon will update via StateChanged event
+    }
+
+    private void MainWindow_StateChanged(object? sender, EventArgs e)
+    {
+        UpdateMaximizeIcon();
+    }
+
+    private void UpdateMaximizeIcon()
+    {
+        MaximizeIcon = WindowState == WindowState.Maximized ? "❐" : "□";
     }
 
     private void CloseBtn_Click(object sender, RoutedEventArgs e)

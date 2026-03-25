@@ -527,9 +527,10 @@ interface ModalLayoutProps extends HTMLAttributes<HTMLDivElement> {
 
 export function ModalLayout({ children, className, ...props }: ModalLayoutProps) {
   return (
-    <AppSurface className={cx('flex min-h-full items-center justify-center overflow-y-auto p-(--page-padding)', className)} {...props}>
-      {children}
-    </AppSurface>
+    <div className={cx('sentinel-modal-overlay', 'fixed inset-0 z-50 flex min-h-full items-center justify-center overflow-y-auto p-(--page-padding)', className)} {...props}>
+      <div className="absolute inset-0 bg-[rgba(20,20,30,0.45)] backdrop-blur-[2px] pointer-events-none" />
+      <div className="relative z-10 w-full flex items-center justify-center">{children}</div>
+    </div>
   );
 }
 
