@@ -841,7 +841,7 @@ export function ReportsScreen({
                   </div>
                 </SectionCard>
                 
-                <SectionCard
+                {/* <SectionCard
                   title="Raw Labels"
                   description="The original distraction notes you logged, along with their current category."
                   icon="taxonomy"
@@ -851,7 +851,7 @@ export function ReportsScreen({
                     </button>
                   }
                 >
-                  {/* ...existing Raw Labels code... */}
+                  
                   {reportData.topDistractions && reportData.topDistractions.length > 0 ? (
                     <div className="space-y-3">
                       {reportData.topDistractions.map((item) => (
@@ -872,7 +872,7 @@ export function ReportsScreen({
                   ) : (
                     <div className="sentinel-empty-state text-sm">No distractions logged in this range yet.</div>
                   )}
-                </SectionCard>
+                </SectionCard>         */}
               </div>
             </div>
           </>
