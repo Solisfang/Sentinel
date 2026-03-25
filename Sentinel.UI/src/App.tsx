@@ -30,6 +30,7 @@ import type { ReportData, ReportRange, TaxonomyData } from './app-types';
 import {
   AuthScreen,
   CompactTimerScreen,
+  ConfirmModal,
   InterventionModal,
   OnboardingModal,
   ReportsScreen,
@@ -105,6 +106,13 @@ function App() {
   const [showPresets, setShowPresets] = useState(false);
   const [updateInfo, setUpdateInfo] = useState<{ latestVersion: string; downloadUrl: string } | null>(null);
   const [isCompactMode, setIsCompactMode] = useState(false);
+  const [confirmModal, setConfirmModal] = useState<{
+    title: string;
+    message: string;
+    confirmLabel?: string;
+    danger?: boolean;
+    onConfirm: () => void;
+  } | null>(null);
   const wasRunningRef = useRef(false);
   const handleStartPauseRef = useRef(() => {});
   const timerAnchorRef = useRef<{ startedAt: number; startTimeLeft: number } | null>(null);
@@ -488,6 +496,7 @@ function App() {
   };
 
   const handleModeChange = (mode: TimerMode) => {
+    if (isRunning) return;
     setTimerMode(mode);
     setTimeLeft(getTimerDuration(mode, settings));
     setIsRunning(false);
@@ -533,7 +542,22 @@ function App() {
   };
 
   const handleReset = () => {
-    if (isRunning && !window.confirm('Reset the current timer? Progress will be lost.')) {
+    if (isRunning) {
+      setConfirmModal({
+        title: 'Reset Timer',
+        message: 'The current timer will be reset and progress will be lost.',
+        confirmLabel: 'Reset',
+        danger: true,
+        onConfirm: () => {
+          setTimeLeft(getTimerDuration(timerMode, settings));
+          setIsRunning(false);
+          setIsComplete(false);
+          setIsPausedByIntervention(false);
+          timerAnchorRef.current = null;
+          sessionStartedAtRef.current = null;
+          setConfirmModal(null);
+        },
+      });
       return;
     }
     setTimeLeft(getTimerDuration(timerMode, settings));
@@ -549,26 +573,34 @@ function App() {
     const totalDuration = getTimerDuration('pomodoro', settings);
     const elapsed = totalDuration - timeLeft;
     if (elapsed < 1) return;
-    if (!window.confirm(`End this session early? ${Math.floor(elapsed / 60)}m ${elapsed % 60}s of focus will be logged.`)) {
-      return;
-    }
-    setIsRunning(false);
-    timerAnchorRef.current = null;
-    const startedAt = new Date(sessionStartedAtRef.current ?? Date.now()).toISOString();
-    sessionStartedAtRef.current = null;
-    setSessionsCompleted((count) => count + 1);
-    setTodayFocusSeconds((prev) => prev + elapsed);
-    postMessage({
-      type: 'LOG_SESSION',
-      durationSeconds: elapsed,
-      sessionName: sessionName || undefined,
-      startedAt,
-      endedEarly: true,
+    const mins = Math.floor(elapsed / 60);
+    const secs = elapsed % 60;
+    const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+    setConfirmModal({
+      title: 'End Session Early',
+      message: `${timeStr} of focus will be logged.`,
+      confirmLabel: 'End Session',
+      onConfirm: () => {
+        setIsRunning(false);
+        timerAnchorRef.current = null;
+        const startedAt = new Date(sessionStartedAtRef.current ?? Date.now()).toISOString();
+        sessionStartedAtRef.current = null;
+        setSessionsCompleted((count) => count + 1);
+        setTodayFocusSeconds((prev) => prev + elapsed);
+        postMessage({
+          type: 'LOG_SESSION',
+          durationSeconds: elapsed,
+          sessionName: sessionName || undefined,
+          startedAt,
+          endedEarly: true,
+        });
+        postMessage({ type: 'PLAY_SOUND' });
+        setTimeLeft(getTimerDuration(timerMode, settings));
+        setIsComplete(true);
+        setIsPausedByIntervention(false);
+        setConfirmModal(null);
+      },
     });
-    postMessage({ type: 'PLAY_SOUND' });
-    setTimeLeft(getTimerDuration(timerMode, settings));
-    setIsComplete(true);
-    setIsPausedByIntervention(false);
   };
 
   const handleDistractionSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -868,6 +900,19 @@ function App() {
         onFalseAlarm={handleFalseAlarm}
         onSnooze={handleSnooze}
         onWatchingContent={handleWatchingContent}
+      />
+    );
+  }
+
+  if (confirmModal) {
+    return (
+      <ConfirmModal
+        title={confirmModal.title}
+        message={confirmModal.message}
+        confirmLabel={confirmModal.confirmLabel}
+        danger={confirmModal.danger}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal(null)}
       />
     );
   }

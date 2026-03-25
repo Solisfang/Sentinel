@@ -140,6 +140,9 @@ describe('TaxonomyManagerScreen', () => {
 
     expect(screen.getByRole('heading', { name: 'Distraction Taxonomy' })).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Search distraction labels or categories')).toBeInTheDocument();
+    // Group editor starts collapsed — expand to reveal Save button
+    const expandBtn = screen.getByText('twitter').closest('button')!;
+    fireEvent.click(expandBtn);
     expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Rename' })).toBeInTheDocument();
   });

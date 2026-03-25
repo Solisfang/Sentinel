@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useMemo, useState, type FormEvent } from 'react';
 import {
   Bar,
   BarChart,
@@ -29,7 +29,6 @@ import {
   ScreenHeader,
   ScreenShell,
   SectionCard,
-  ToggleRow,
   WorkspaceLayout,
 } from './ui';
 import { buttonClasses, cx, inputClasses } from './ui-utils';
@@ -76,36 +75,6 @@ const RANGE_OPTIONS: { key: ReportRange; label: string }[] = [
   { key: 'all', label: 'All' },
 ];
 
-const SETTINGS_TOGGLES: Array<{
-  label: string;
-  description: string;
-  key: keyof Pick<
-    Settings,
-    'cloudSyncEnabled' | 'alwaysOnTop' | 'soundEnabled' | 'suppressDuringMedia'
-  >;
-}> = [
-  {
-    label: 'Cloud Sync',
-    description: 'Back up sessions and distractions to Firestore only when you explicitly opt in.',
-    key: 'cloudSyncEnabled',
-  },
-  {
-    label: 'Always on Top',
-    description: 'Keep Sentinel visible above your other windows while a session is running.',
-    key: 'alwaysOnTop',
-  },
-  {
-    label: 'Sound',
-    description: 'Play a quiet completion tone when a session finishes.',
-    key: 'soundEnabled',
-  },
-  {
-    label: 'Media Suppress',
-    description: 'Reduce false interventions while audio or video is actively playing.',
-    key: 'suppressDuringMedia',
-  },
-];
-
 const SHORTCUTS = [
   'Ctrl+Shift+S - Start or pause the timer',
   'Ctrl+Shift+D - Log a distraction immediately',
@@ -113,11 +82,74 @@ const SHORTCUTS = [
   'Esc - Go back or dismiss the current surface',
 ];
 
-const OVERLAY_STYLE_OPTIONS: Array<{ key: OverlayStyle; label: string; description: string }> = [
-  { key: 'pill', label: 'Minimalist Pill', description: 'Pure focus, zero friction.' },
-  { key: 'compact', label: 'Functional Compact', description: 'Essential controls at hand.' },
-  { key: 'monitoring', label: 'Active Monitoring', description: 'Contextual depth for long sessions.' },
-];
+/* ------------------------------------------------------------------ */
+/*  Pagination                                                        */
+/* ------------------------------------------------------------------ */
+
+const PAGE_SIZE = 10;
+
+function usePagination<T>(items: T[], pageSize = PAGE_SIZE) {
+  const [page, setPage] = useState(0);
+  const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+  const safePage = Math.min(page, totalPages - 1);
+  const slice = items.slice(safePage * pageSize, safePage * pageSize + pageSize);
+
+  return {
+    page: safePage,
+    totalPages,
+    slice,
+    setPage,
+    hasPrev: safePage > 0,
+    hasNext: safePage < totalPages - 1,
+    prev: () => setPage((p) => Math.max(0, p - 1)),
+    next: () => setPage((p) => Math.min(totalPages - 1, p + 1)),
+    total: items.length,
+    rangeLabel: items.length
+      ? `${safePage * pageSize + 1}–${Math.min((safePage + 1) * pageSize, items.length)} of ${items.length}`
+      : '',
+  };
+}
+
+function PaginationBar({
+  rangeLabel,
+  hasPrev,
+  hasNext,
+  onPrev,
+  onNext,
+}: {
+  rangeLabel: string;
+  hasPrev: boolean;
+  hasNext: boolean;
+  onPrev: () => void;
+  onNext: () => void;
+}) {
+  if (!rangeLabel) return null;
+  return (
+    <div className="flex items-center justify-between gap-4 pt-1">
+      <span className="text-xs text-(--text-muted)">{rangeLabel}</span>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={onPrev}
+          disabled={!hasPrev}
+          className={cx(buttonClasses.ghost, 'min-w-0 px-2.5 py-1 text-xs')}
+          aria-label="Previous page"
+        >
+          ← Prev
+        </button>
+        <button
+          type="button"
+          onClick={onNext}
+          disabled={!hasNext}
+          className={cx(buttonClasses.ghost, 'min-w-0 px-2.5 py-1 text-xs')}
+          aria-label="Next page"
+        >
+          Next →
+        </button>
+      </div>
+    </div>
+  );
+}
 
 interface WorkspaceNavigation {
   onOpenTimer: () => void;
@@ -256,6 +288,56 @@ export function ResumePromptModal({ onResume, onStartFresh }: ResumePromptModalP
   );
 }
 
+/* ------------------------------------------------------------------ */
+/*  Confirm Modal                                                     */
+/* ------------------------------------------------------------------ */
+
+interface ConfirmModalProps {
+  title: string;
+  message: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  danger?: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+export function ConfirmModal({
+  title,
+  message,
+  confirmLabel = 'Confirm',
+  cancelLabel = 'Cancel',
+  danger = false,
+  onConfirm,
+  onCancel,
+}: ConfirmModalProps) {
+  return (
+    <ModalLayout role="dialog" aria-label={title}>
+      <ModalCard className="w-full max-w-112">
+        <div className="space-y-5">
+          <div className="space-y-2">
+            <h1 className="text-xl font-bold tracking-tight text-(--text-primary)">{title}</h1>
+            <p className="text-sm leading-6 text-(--text-secondary)">{message}</p>
+          </div>
+          <ActionGrid>
+            <button
+              type="button"
+              onClick={onConfirm}
+              autoFocus
+              className={danger ? buttonClasses.danger : buttonClasses.primary}
+            >
+              {confirmLabel}
+            </button>
+            <button type="button" onClick={onCancel} className={buttonClasses.secondary}>
+              {cancelLabel}
+            </button>
+          </ActionGrid>
+        </div>
+      </ModalCard>
+    </ModalLayout>
+  );
+}
+
 interface InterventionModalProps {
   distractionInput: string;
   categorySelection: string;
@@ -289,119 +371,89 @@ export function InterventionModal({
   onSnooze,
   onWatchingContent,
 }: InterventionModalProps) {
-  const effectiveCategoryLabel =
-    categorySelection === '__auto__'
-      ? inferredCategoryName ?? 'Uncategorized'
-      : categorySelection === '__none__'
-        ? 'Uncategorized'
-        : categorySelection === '__new__'
-          ? newCategoryName.trim() || 'New category'
-          : categorySelection;
-
   return (
     <ModalLayout role="dialog" aria-label="Distraction intervention">
-      <ModalCard className="w-full max-w-152">
-        <div className="space-y-6">
-          <div className="space-y-3 text-center">
+      <ModalCard className="w-full max-w-136">
+        <div className="space-y-5">
+          {/* Header */}
+          <div className="space-y-1">
             <p className="sentinel-eyebrow">Attention Check</p>
-            <h1 className="text-3xl font-extrabold tracking-tight text-(--text-primary)">
-              Still in the flow?
-            </h1>
-            <p className="text-sm leading-7 text-(--text-secondary)">
-              Sentinel paused the timer because input stopped. Capture the distraction quickly, or dismiss
-              the interruption if you are still focused.
-            </p>
+            <h1 className="text-2xl font-bold tracking-tight text-(--text-primary)">Drift detected?</h1>
           </div>
 
-          <form onSubmit={onSubmit} className="space-y-4">
-            <FieldBlock
-              label="Distraction"
-              description="Type a fresh label or reuse something you already log often."
-            >
-              <input
-                type="text"
-                value={distractionInput}
-                onChange={(event) => onDistractionChange(event.target.value)}
-                placeholder="What pulled you away?"
-                autoFocus
-                aria-label="Distraction note"
-                className={inputClasses.base}
-              />
-            </FieldBlock>
+          {/* Form */}
+          <form onSubmit={onSubmit} className="space-y-3">
+            <input
+              type="text"
+              value={distractionInput}
+              onChange={(event) => onDistractionChange(event.target.value)}
+              placeholder="What pulled you away?"
+              autoFocus
+              aria-label="Distraction note"
+              className={inputClasses.base}
+            />
 
             {quickSuggestions.length > 0 && (
-              <FieldBlock
-                label="Quick reuse"
-                description="Tap a recent or frequent distraction to submit it instantly."
-              >
-                <div className="flex flex-wrap gap-2" role="group" aria-label="Quick distraction suggestions">
-                  {quickSuggestions.map((suggestion) => (
-                    <button
-                      key={`${suggestion.source}-${suggestion.note}`}
-                      type="button"
-                      onClick={() => onQuickLog(suggestion.note, suggestion.categoryName)}
-                      className={buttonClasses.chip}
-                    >
-                      <span>{suggestion.note}</span>
-                      <span className="text-[0.64rem] uppercase tracking-[0.18em] text-(--text-muted)">
-                        {suggestion.source}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </FieldBlock>
+              <div className="flex flex-wrap gap-2" role="group" aria-label="Quick distraction suggestions">
+                {quickSuggestions.map((suggestion) => (
+                  <button
+                    key={`${suggestion.source}-${suggestion.note}`}
+                    type="button"
+                    onClick={() => onQuickLog(suggestion.note, suggestion.categoryName)}
+                    className={buttonClasses.chip}
+                  >
+                    <span>{suggestion.note}</span>
+                    <span className="text-[0.64rem] uppercase tracking-[0.18em] text-(--text-muted)">
+                      {suggestion.source}
+                    </span>
+                  </button>
+                ))}
+              </div>
             )}
 
             {distractionInput.trim() && (
-              <FieldBlock
-                label="Category"
-                description="Map repeat distractions to a reporting bucket without losing the original note."
-              >
-                <div className="space-y-3">
-                  <select
-                    value={categorySelection}
-                    onChange={(event) => onCategorySelectionChange(event.target.value)}
-                    className={inputClasses.base}
-                    aria-label="Distraction category"
-                  >
-                    <option value="__auto__">
-                      {inferredCategoryName ? `Suggested: ${inferredCategoryName}` : 'No category (default)'}
-                    </option>
-                    <option value="__none__">Keep uncategorized</option>
-                    {categoryOptions
-                      .filter((category) => category !== inferredCategoryName)
-                      .map((category) => (
-                        <option key={category} value={category}>
-                          {category}
-                        </option>
-                      ))}
-                    <option value="__new__">Create new category</option>
-                  </select>
+              <div className="space-y-2">
+                <select
+                  value={categorySelection}
+                  onChange={(event) => onCategorySelectionChange(event.target.value)}
+                  className={inputClasses.base}
+                  aria-label="Distraction category"
+                >
+                  <option value="__auto__">
+                    {inferredCategoryName ? `Suggested: ${inferredCategoryName}` : 'No category'}
+                  </option>
+                  <option value="__none__">Keep uncategorized</option>
+                  {categoryOptions
+                    .filter((category) => category !== inferredCategoryName)
+                    .map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  <option value="__new__">Create new category</option>
+                </select>
 
-                  {categorySelection === '__new__' ? (
-                    <input
-                      type="text"
-                      value={newCategoryName}
-                      onChange={(event) => onNewCategoryChange(event.target.value)}
-                      placeholder="New category name"
-                      maxLength={50}
-                      className={inputClasses.base}
-                      aria-label="New category name"
-                    />
-                  ) : (
-                    <p className="text-sm text-(--text-muted)">Current category: {effectiveCategoryLabel}</p>
-                  )}
-                </div>
-              </FieldBlock>
+                {categorySelection === '__new__' && (
+                  <input
+                    type="text"
+                    value={newCategoryName}
+                    onChange={(event) => onNewCategoryChange(event.target.value)}
+                    placeholder="New category name"
+                    maxLength={50}
+                    className={inputClasses.base}
+                    aria-label="New category name"
+                  />
+                )}
+              </div>
             )}
 
-            <ActionGrid className="items-stretch">
+            <ActionGrid>
               <button
                 type="submit"
                 disabled={!distractionInput.trim() || (categorySelection === '__new__' && !newCategoryName.trim())}
                 className={buttonClasses.primary}
               >
-                Log Distraction
+                Log it
               </button>
               <button type="button" onClick={onFalseAlarm} className={buttonClasses.secondary}>
                 False Alarm
@@ -409,50 +461,42 @@ export function InterventionModal({
             </ActionGrid>
           </form>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <SectionCard
-              title="Snooze Detection"
-              description="Stay in control while you intentionally work away from the keyboard."
-              icon="moon"
-              className="h-full"
-              bodyClassName="gap-3"
-            >
-              <div className="grid grid-cols-3 gap-2" role="group" aria-label="Snooze duration">
+          {/* Snooze + Watch row */}
+          <div className="sentinel-panel rounded-[calc(var(--card-radius)-4px)] divide-y divide-(--border)">
+            <div className="flex items-center gap-3 px-4 py-3">
+              <Glyph name="moon" className="h-4 w-4 shrink-0 text-(--text-muted)" />
+              <span className="flex-1 text-sm font-medium text-(--text-secondary)">Snooze</span>
+              <div className="flex gap-2" role="group" aria-label="Snooze duration">
                 {[5, 10, 30].map((minutes) => (
                   <button
                     key={minutes}
                     type="button"
                     onClick={() => onSnooze(minutes)}
-                    aria-label={`Snooze for ${minutes} minutes`}
-                    className={buttonClasses.secondary}
+                    aria-label={`Snooze ${minutes} minutes`}
+                    className={cx(buttonClasses.secondary, 'min-w-0 px-3 py-1.5 text-sm')}
                   >
                     {minutes}m
                   </button>
                 ))}
               </div>
-            </SectionCard>
-
-            <SectionCard
-              title="Watching Content"
-              description="Suppress interruptions during tutorials, talks, or passive learning sessions."
-              icon="play"
-              className="h-full"
-              bodyClassName="gap-3"
-            >
-              <div className="grid grid-cols-3 gap-2" role="group" aria-label="Watch duration">
+            </div>
+            <div className="flex items-center gap-3 px-4 py-3">
+              <Glyph name="play" className="h-4 w-4 shrink-0 text-(--text-muted)" />
+              <span className="flex-1 text-sm font-medium text-(--text-secondary)">Watching</span>
+              <div className="flex gap-2" role="group" aria-label="Watch duration">
                 {[30, 60, 90].map((minutes) => (
                   <button
                     key={minutes}
                     type="button"
                     onClick={() => onWatchingContent(minutes)}
-                    aria-label={`Watch content for ${minutes} minutes`}
-                    className={buttonClasses.secondary}
+                    aria-label={`Watch ${minutes} minutes`}
+                    className={cx(buttonClasses.secondary, 'min-w-0 px-3 py-1.5 text-sm')}
                   >
                     {minutes}m
                   </button>
                 ))}
               </div>
-            </SectionCard>
+            </div>
           </div>
         </div>
       </ModalCard>
@@ -479,6 +523,10 @@ export function ReportsScreen({
   onOpenTaxonomy,
   navigation,
 }: ReportsScreenProps) {
+  const sessions = useMemo(() => reportData?.recentSessions ?? [], [reportData]);
+  const distractions = useMemo(() => reportData?.topDistractions ?? [], [reportData]);
+  const sessionPager = usePagination(sessions, 6);
+  const labelPager = usePagination(distractions, 8);
   return (
     <WorkspaceLayout
       activeView="reports"
@@ -610,21 +658,22 @@ export function ReportsScreen({
                   description="Your latest completed and in-progress sessions."
                   icon="timer"
                 >
-                  {reportData.recentSessions.length > 0 ? (
-                    <div className="space-y-3">
-                      {reportData.recentSessions.slice(0, 6).map((session, index) => (
-                        <div
-                          key={`${session.startedAt}-${index}`}
-                          className="rounded-[calc(var(--card-radius)-6px)] border border-[rgba(73,68,85,0.18)] bg-[rgba(14,14,14,0.18)] px-4 py-3"
-                        >
-                          <div className="flex items-center justify-between gap-4">
-                            <div className="min-w-0">
-                              <p className="truncate text-sm font-semibold text-(--text-primary)">
-                                {session.sessionName || new Date(session.startedAt).toLocaleDateString()}
-                              </p>
-                              <p className="text-xs text-(--text-muted)">
-                                {new Date(session.startedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                {session.completedAt &&
+                  {sessions.length > 0 ? (
+                    <>
+                      <div className="space-y-3">
+                        {sessionPager.slice.map((session, index) => (
+                          <div
+                            key={`${session.startedAt}-${index}`}
+                            className="rounded-[calc(var(--card-radius)-6px)] border border-[rgba(73,68,85,0.18)] bg-[rgba(14,14,14,0.18)] px-4 py-3"
+                          >
+                            <div className="flex items-center justify-between gap-4">
+                              <div className="min-w-0">
+                                <p className="truncate text-sm font-semibold text-(--text-primary)">
+                                  {session.sessionName || new Date(session.startedAt).toLocaleDateString()}
+                                </p>
+                                <p className="text-xs text-(--text-muted)">
+                                  {new Date(session.startedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                  {session.completedAt &&
                                   ` — ${new Date(session.completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
                               </p>
                             </div>
@@ -643,7 +692,15 @@ export function ReportsScreen({
                           </div>
                         </div>
                       ))}
-                    </div>
+                      </div>
+                      <PaginationBar
+                        rangeLabel={sessionPager.rangeLabel}
+                        hasPrev={sessionPager.hasPrev}
+                        hasNext={sessionPager.hasNext}
+                        onPrev={sessionPager.prev}
+                        onNext={sessionPager.next}
+                      />
+                    </>
                   ) : (
                     <div className="sentinel-empty-state text-sm">Completed sessions will appear here as you work.</div>
                   )}
@@ -697,7 +754,50 @@ export function ReportsScreen({
                     </div>
                   )}
                 </SectionCard>
+                {reportData.dailyFocus.length > 0 && (
+                  <SectionCard
+                    title="Daily Breakdown"
+                    description="Focus time, sessions, and distractions per day."
+                    icon="reports"
+                  >
+                    <div className="space-y-2">
+                      {reportData.dailyFocus.slice(-10).map((day) => {
+                        const focusMin = Math.round(day.focusSeconds / 60);
+                        const barPct = Math.min(100, Math.round((focusMin / 120) * 100));
+                        return (
+                          <div
+                            key={day.date}
+                            className="flex items-center gap-3 rounded-[calc(var(--card-radius)-6px)] border border-[rgba(73,68,85,0.18)] bg-[rgba(14,14,14,0.18)] px-4 py-2.5"
+                          >
+                            <span className="w-16 shrink-0 text-xs font-medium text-(--text-muted)">{day.date}</span>
+                            <div className="flex flex-1 items-center gap-4 text-sm text-(--text-secondary)">
+                              <span className="flex items-center gap-1.5">
+                                <Glyph name="timer" className="h-3 w-3 text-(--text-muted)" />
+                                {focusMin}m
+                              </span>
+                              <span className="flex items-center gap-1.5">
+                                <Glyph name="bolt" className="h-3 w-3 text-(--text-muted)" />
+                                {day.sessions}
+                              </span>
+                              {day.distractions > 0 && (
+                                <span className="flex items-center gap-1.5 text-amber-400">
+                                  <Glyph name="spark" className="h-3 w-3" />
+                                  {day.distractions}
+                                </span>
+                              )}
+                            </div>
+                            <div className="h-1.5 w-16 shrink-0 overflow-hidden rounded-full bg-[rgba(73,68,85,0.25)]">
+                              <div className="h-full rounded-full bg-[#7c4dff]" style={{ width: `${barPct}%` }} />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </SectionCard>
+                )}
+              </div>
 
+              <div className="space-y-8">
                 <SectionCard
                   title="Raw Labels"
                   description="The original distraction notes you logged, along with their current category."
@@ -708,27 +808,36 @@ export function ReportsScreen({
                     </button>
                   }
                 >
-                  {reportData.topDistractions.length > 0 ? (
-                    <div className="space-y-3">
-                      {reportData.topDistractions.slice(0, 6).map((item) => (
-                        <div
-                          key={item.name}
-                          className="rounded-[calc(var(--card-radius)-6px)] border border-[rgba(73,68,85,0.18)] bg-[rgba(14,14,14,0.18)] px-4 py-3"
-                        >
-                          <div className="flex items-center justify-between gap-4">
-                            <div className="min-w-0">
-                              <p className="truncate text-sm font-semibold text-(--text-primary)">
-                                {item.name}
-                              </p>
-                              <p className="truncate text-xs text-(--text-muted)">
-                                {item.categoryName ?? 'Uncategorized'}
-                              </p>
+                  {distractions.length > 0 ? (
+                    <>
+                      <div className="space-y-3">
+                        {labelPager.slice.map((item) => (
+                          <div
+                            key={item.name}
+                            className="rounded-[calc(var(--card-radius)-6px)] border border-[rgba(73,68,85,0.18)] bg-[rgba(14,14,14,0.18)] px-4 py-3"
+                          >
+                            <div className="flex items-center justify-between gap-4">
+                              <div className="min-w-0">
+                                <p className="truncate text-sm font-semibold text-(--text-primary)">
+                                  {item.name}
+                                </p>
+                                <p className="truncate text-xs text-(--text-muted)">
+                                  {item.categoryName ?? 'Uncategorized'}
+                                </p>
+                              </div>
+                              <span className="text-sm text-(--text-secondary)">{item.count}</span>
                             </div>
-                            <span className="text-sm text-(--text-secondary)">{item.count}</span>
                           </div>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                      <PaginationBar
+                        rangeLabel={labelPager.rangeLabel}
+                        hasPrev={labelPager.hasPrev}
+                        hasNext={labelPager.hasNext}
+                        onPrev={labelPager.prev}
+                        onNext={labelPager.next}
+                      />
+                    </>
                   ) : (
                     <div className="sentinel-empty-state text-sm">No distractions logged in this range yet.</div>
                   )}
@@ -788,7 +897,23 @@ export function SessionHistoryScreen({
     onSelectRange(r);
   };
 
-  const sessions = reportData?.recentSessions ?? [];
+  const sessions = useMemo(() => reportData?.recentSessions ?? [], [reportData]);
+  const pager = usePagination(sessions);
+
+  // Reset to page 0 when range changes
+  const handleRangeWithReset = (r: ReportRange) => {
+    pager.setPage(0);
+    handleRange(r);
+  };
+
+  const totalFocus = useMemo(
+    () => sessions.reduce((sum, s) => sum + s.durationSeconds, 0),
+    [sessions],
+  );
+  const totalDistractions = useMemo(
+    () => sessions.reduce((sum, s) => sum + s.distractionsCount, 0),
+    [sessions],
+  );
 
   return (
     <WorkspaceLayout
@@ -820,7 +945,7 @@ export function SessionHistoryScreen({
               <button
                 key={key}
                 type="button"
-                onClick={() => handleRange(key)}
+                onClick={() => handleRangeWithReset(key)}
                 className={buttonClasses.pill}
                 aria-pressed={range === key}
               >
@@ -829,6 +954,31 @@ export function SessionHistoryScreen({
             ))}
           </div>
         </SectionCard>
+
+        {!reportLoading && sessions.length > 0 && (
+          <div className="grid gap-6 sm:grid-cols-3">
+            <MetricCard
+              icon="target"
+              label="Total Focus"
+              value={formatDuration(totalFocus)}
+              detail={`Across ${sessions.length} session${sessions.length !== 1 ? 's' : ''}`}
+              accent="#3ce36a"
+            />
+            <MetricCard
+              icon="bolt"
+              label="Sessions"
+              value={String(sessions.length)}
+              detail={`Avg ${formatDuration(Math.round(totalFocus / sessions.length))}`}
+            />
+            <MetricCard
+              icon="reports"
+              label="Distractions"
+              value={String(totalDistractions)}
+              detail="Total interruptions"
+              accent="#00affe"
+            />
+          </div>
+        )}
 
         {reportLoading ? (
           <SectionCard bodyClassName="min-h-48 items-center justify-center">
@@ -841,7 +991,7 @@ export function SessionHistoryScreen({
             icon="timer"
           >
             <div className="space-y-3">
-              {sessions.map((session, index) => (
+              {pager.slice.map((session, index) => (
                 <div
                   key={`${session.startedAt}-${index}`}
                   className="rounded-[calc(var(--card-radius)-6px)] border border-[rgba(73,68,85,0.18)] bg-[rgba(14,14,14,0.18)] px-4 py-3"
@@ -884,6 +1034,13 @@ export function SessionHistoryScreen({
                 </div>
               ))}
             </div>
+            <PaginationBar
+              rangeLabel={pager.rangeLabel}
+              hasPrev={pager.hasPrev}
+              hasNext={pager.hasNext}
+              onPrev={pager.prev}
+              onNext={pager.next}
+            />
           </SectionCard>
         ) : (
           <SectionCard bodyClassName="min-h-48 items-center justify-center">
@@ -917,15 +1074,34 @@ export function TaxonomyManagerScreen({
   const [search, setSearch] = useState('');
   const [onlyUncategorized, setOnlyUncategorized] = useState(false);
 
-  const filteredGroups = taxonomyData.groups.filter((group) => {
-    const matchesSearch =
-      !search.trim() ||
-      group.note.toLowerCase().includes(search.trim().toLowerCase()) ||
-      (group.categoryName ?? '').toLowerCase().includes(search.trim().toLowerCase());
+  const filteredGroups = useMemo(
+    () =>
+      taxonomyData.groups.filter((group) => {
+        const matchesSearch =
+          !search.trim() ||
+          group.note.toLowerCase().includes(search.trim().toLowerCase()) ||
+          (group.categoryName ?? '').toLowerCase().includes(search.trim().toLowerCase());
+        const matchesCategory = !onlyUncategorized || !group.categoryName;
+        return matchesSearch && matchesCategory;
+      }),
+    [taxonomyData.groups, search, onlyUncategorized],
+  );
 
-    const matchesCategory = !onlyUncategorized || !group.categoryName;
-    return matchesSearch && matchesCategory;
-  });
+  const groupPager = usePagination(filteredGroups);
+  const logPager = usePagination(taxonomyData.recentEntries, 8);
+
+  // Reset group page when filters change
+  const uncategorizedCount = useMemo(
+    () => taxonomyData.groups.filter((g) => !g.categoryName).length,
+    [taxonomyData.groups],
+  );
+  const categorizedPct = taxonomyData.groups.length
+    ? Math.round(((taxonomyData.groups.length - uncategorizedCount) / taxonomyData.groups.length) * 100)
+    : 0;
+  const totalLogs = useMemo(
+    () => taxonomyData.groups.reduce((sum, g) => sum + g.count, 0),
+    [taxonomyData.groups],
+  );
 
   return (
     <WorkspaceLayout
@@ -947,7 +1123,42 @@ export function TaxonomyManagerScreen({
           backAriaLabel="Back to timer"
         />
 
+        {/* ── Summary strip ────────────────────────────────────── */}
+        {taxonomyData.groups.length > 0 && (
+          <div className="grid gap-6 sm:grid-cols-4">
+            <MetricCard
+              icon="taxonomy"
+              label="Labels"
+              value={String(taxonomyData.groups.length)}
+              detail="Unique distraction labels"
+              accent="#7c4dff"
+            />
+            <MetricCard
+              icon="target"
+              label="Categorized"
+              value={`${categorizedPct}%`}
+              detail={`${uncategorizedCount} still unmapped`}
+              accent={categorizedPct >= 80 ? '#3ce36a' : '#f59e0b'}
+            />
+            <MetricCard
+              icon="bolt"
+              label="Categories"
+              value={String(taxonomyData.categories.length)}
+              detail="Active reporting buckets"
+              accent="#00affe"
+            />
+            <MetricCard
+              icon="reports"
+              label="Total Logs"
+              value={String(totalLogs)}
+              detail="Distractions recorded"
+              accent="#cdbdff"
+            />
+          </div>
+        )}
+
         <div className="grid gap-8 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,0.9fr)]">
+          {/* ── Left column: Manage Labels ─────────────────────── */}
           <SectionCard
             title="Manage Labels"
             description="These grouped labels drive quick suggestions and category-aware reporting."
@@ -961,38 +1172,61 @@ export function TaxonomyManagerScreen({
                 <input
                   type="text"
                   value={search}
-                  onChange={(event) => setSearch(event.target.value)}
+                  onChange={(event) => {
+                    setSearch(event.target.value);
+                    groupPager.setPage(0);
+                  }}
                   placeholder="Search distraction labels or categories"
                   className={inputClasses.search}
                   aria-label="Search distraction taxonomy"
                 />
               </div>
               <div className="flex flex-wrap gap-2">
-                <button type="button" className={buttonClasses.pill} aria-pressed={!onlyUncategorized}>
-                  All Items
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOnlyUncategorized(false);
+                    groupPager.setPage(0);
+                  }}
+                  className={buttonClasses.pill}
+                  aria-pressed={!onlyUncategorized}
+                >
+                  All ({taxonomyData.groups.length})
                 </button>
                 <button
                   type="button"
-                  onClick={() => setOnlyUncategorized((value) => !value)}
+                  onClick={() => {
+                    setOnlyUncategorized((v) => !v);
+                    groupPager.setPage(0);
+                  }}
                   className={buttonClasses.pill}
                   aria-pressed={onlyUncategorized}
                 >
-                  Only uncategorized
+                  Uncategorized ({uncategorizedCount})
                 </button>
               </div>
             </div>
 
             {filteredGroups.length > 0 ? (
-              <div className="space-y-3">
-                {filteredGroups.map((group) => (
-                  <TaxonomyGroupEditor
-                    key={`${group.normalizedNote}-${group.note}-${group.categoryName ?? 'none'}-${group.count}`}
-                    group={group}
-                    categories={taxonomyData.categories}
-                    onSave={onSaveGroup}
-                  />
-                ))}
-              </div>
+              <>
+                <div className="space-y-3">
+                  {groupPager.slice.map((group) => (
+                    <TaxonomyGroupEditor
+                      key={`${group.normalizedNote}-${group.note}-${group.categoryName ?? 'none'}-${group.count}`}
+                      group={group}
+                      categories={taxonomyData.categories}
+                      onSave={onSaveGroup}
+                    />
+                  ))}
+                </div>
+                <PaginationBar
+                  rangeLabel={groupPager.rangeLabel}
+                  hasPrev={groupPager.hasPrev}
+                  hasNext={groupPager.hasNext}
+                  onPrev={groupPager.prev}
+                  onNext={groupPager.next}
+                />
+              </>
             ) : (
               <div className="sentinel-empty-state text-sm">
                 No distraction labels match the current filters yet.
@@ -1000,6 +1234,7 @@ export function TaxonomyManagerScreen({
             )}
           </SectionCard>
 
+          {/* ── Right column: Categories + Recent Logs ─────────── */}
           <div className="space-y-8">
             <SectionCard
               title="Categories"
@@ -1025,26 +1260,35 @@ export function TaxonomyManagerScreen({
               icon="reports"
             >
               {taxonomyData.recentEntries.length > 0 ? (
-                <div className="space-y-3">
-                  {taxonomyData.recentEntries.slice(0, 8).map((entry) => (
-                    <div
-                      key={entry.id}
-                      className="rounded-[calc(var(--card-radius)-6px)] border border-[rgba(73,68,85,0.18)] bg-[rgba(14,14,14,0.18)] px-4 py-3"
-                    >
-                      <div className="flex items-center justify-between gap-4">
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold text-(--text-primary)">{entry.note}</p>
-                          <p className="truncate text-xs text-(--text-muted)">
-                            {entry.categoryName ?? 'Uncategorized'}
-                          </p>
+                <>
+                  <div className="space-y-3">
+                    {logPager.slice.map((entry) => (
+                      <div
+                        key={entry.id}
+                        className="rounded-[calc(var(--card-radius)-6px)] border border-[rgba(73,68,85,0.18)] bg-[rgba(14,14,14,0.18)] px-4 py-3"
+                      >
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-semibold text-(--text-primary)">{entry.note}</p>
+                            <p className="truncate text-xs text-(--text-muted)">
+                              {entry.categoryName ?? 'Uncategorized'}
+                            </p>
+                          </div>
+                          <span className="text-xs uppercase tracking-[0.16em] text-(--text-muted)">
+                            {new Date(entry.timestamp).toLocaleDateString()}
+                          </span>
                         </div>
-                        <span className="text-xs uppercase tracking-[0.16em] text-(--text-muted)">
-                          {new Date(entry.timestamp).toLocaleDateString()}
-                        </span>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                  <PaginationBar
+                    rangeLabel={logPager.rangeLabel}
+                    hasPrev={logPager.hasPrev}
+                    hasNext={logPager.hasNext}
+                    onPrev={logPager.prev}
+                    onNext={logPager.next}
+                  />
+                </>
               ) : (
                 <div className="sentinel-empty-state text-sm">
                   Logged distractions will appear here after the first intervention is saved.
@@ -1272,8 +1516,12 @@ export function SettingsScreen({
   const updateSetting = <K extends keyof Settings>(key: K, value: Settings[K]) => {
     onSaveSettings({ ...settings, [key]: value });
   };
+  const [pendingDeletePresetIndex, setPendingDeletePresetIndex] = useState<number | null>(null);
+  const [newPresetNameInput, setNewPresetNameInput] = useState('');
+  const [showPresetNameInput, setShowPresetNameInput] = useState(false);
 
   return (
+  <>
     <WorkspaceLayout
       activeView="settings"
       navigation={workspaceNavigation(navigation)}
@@ -1351,11 +1599,7 @@ export function SettingsScreen({
                       />
                       <button
                         type="button"
-                        onClick={() => {
-                          if (!window.confirm(`Delete preset "${preset.name}"?`)) return;
-                          const updated = (settings.customPresets ?? []).filter((_, i) => i !== index);
-                          onSaveSettings({ ...settings, customPresets: updated });
-                        }}
+                        onClick={() => setPendingDeletePresetIndex(index)}
                         className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500/80 text-xs text-white hover:bg-red-500"
                         aria-label={`Delete ${preset.name} preset`}
                       >
@@ -1365,101 +1609,52 @@ export function SettingsScreen({
                   ))}
                 </div>
                 {!isPresetActive(settings, PRESETS[0]) && !isPresetActive(settings, PRESETS[1]) && !isPresetActive(settings, PRESETS[2]) && (
+                  showPresetNameInput ? (
+                    <div className="flex gap-2 items-center">
+                      <input
+                        type="text"
+                        value={newPresetNameInput}
+                        onChange={(e) => setNewPresetNameInput(e.target.value)}
+                        placeholder="Preset name"
+                        maxLength={40}
+                        autoFocus
+                        className={cx(inputClasses.base, 'flex-1')}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && newPresetNameInput.trim()) {
+                            onSaveSettings({ ...settings, customPresets: [...(settings.customPresets ?? []), { name: newPresetNameInput.trim(), focus: settings.pomodoroMinutes, shortBreak: settings.shortBreakMinutes, longBreak: settings.longBreakMinutes }] });
+                            setNewPresetNameInput('');
+                            setShowPresetNameInput(false);
+                          }
+                          if (e.key === 'Escape') { setNewPresetNameInput(''); setShowPresetNameInput(false); }
+                        }}
+                      />
+                      <button
+                        type="button"
+                        disabled={!newPresetNameInput.trim()}
+                        onClick={() => {
+                          if (!newPresetNameInput.trim()) return;
+                          onSaveSettings({ ...settings, customPresets: [...(settings.customPresets ?? []), { name: newPresetNameInput.trim(), focus: settings.pomodoroMinutes, shortBreak: settings.shortBreakMinutes, longBreak: settings.longBreakMinutes }] });
+                          setNewPresetNameInput('');
+                          setShowPresetNameInput(false);
+                        }}
+                        className={buttonClasses.primary}
+                      >
+                        Save
+                      </button>
+                      <button type="button" onClick={() => { setNewPresetNameInput(''); setShowPresetNameInput(false); }} className={buttonClasses.secondary}>
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
                   <button
                     type="button"
-                    onClick={() => {
-                      const name = window.prompt('Name this preset:');
-                      if (!name?.trim()) return;
-                      const newPreset = {
-                        name: name.trim(),
-                        focus: settings.pomodoroMinutes,
-                        shortBreak: settings.shortBreakMinutes,
-                        longBreak: settings.longBreakMinutes,
-                      };
-                      onSaveSettings({
-                        ...settings,
-                        customPresets: [...(settings.customPresets ?? []), newPreset],
-                      });
-                    }}
+                    onClick={() => setShowPresetNameInput(true)}
                     className={buttonClasses.inline}
                   >
                     Save Current as Preset
                   </button>
+                  )
                 )}
-              </FieldBlock>
-            </SectionCard>
-
-            <SectionCard
-              title="Idle & Behavior"
-              description="Control when Sentinel steps in and how the desktop wrapper behaves."
-              icon="spark"
-            >
-              <FieldBlock
-                label="Idle Detection"
-                description="How long Sentinel waits without input before showing the intervention modal."
-              >
-                <NumberField
-                  label="Seconds"
-                  value={settings.idleThresholdSeconds}
-                  min={10}
-                  max={300}
-                  onChange={(value) => updateSetting('idleThresholdSeconds', value)}
-                />
-              </FieldBlock>
-
-              <div className="space-y-3">
-                {SETTINGS_TOGGLES.map((toggle) => (
-                  <ToggleRow
-                    key={toggle.key}
-                    label={toggle.label}
-                    description={toggle.description}
-                    checked={settings[toggle.key]}
-                    onToggle={() => updateSetting(toggle.key, !settings[toggle.key])}
-                  />
-                ))}
-              </div>
-
-              <FieldBlock
-                label="Mini Overlay Style"
-                description="Choose how the corner widget looks when you shrink Sentinel."
-              >
-                <div className="grid gap-3 sm:grid-cols-3">
-                  {OVERLAY_STYLE_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.key}
-                      type="button"
-                      onClick={() => updateSetting('overlayStyle', opt.key)}
-                      className="rounded-[calc(var(--card-radius)-6px)] border px-4 py-4 text-left transition-colors"
-                      style={
-                        settings.overlayStyle === opt.key
-                          ? { borderColor: 'rgba(124, 77, 255, 0.45)', background: 'rgba(124, 77, 255, 0.16)', color: '#cdbdff' }
-                          : { borderColor: 'rgba(73, 68, 85, 0.22)', background: 'rgba(14, 14, 14, 0.18)', color: 'var(--text-primary)' }
-                      }
-                    >
-                      <span className="block text-sm font-semibold">{opt.label}</span>
-                      <span className="mt-1 block text-xs text-(--text-muted)">{opt.description}</span>
-                    </button>
-                  ))}
-                </div>
-              </FieldBlock>
-            </SectionCard>
-
-            <SectionCard
-              title="Goals & Export"
-              description="Track your daily target and keep portable copies of your focus history."
-              icon="download"
-            >
-              <FieldBlock
-                label="Daily Focus Goal"
-                description="Set a daily target in minutes for the progress bar on the timer screen."
-              >
-                <NumberField
-                  label="Minutes"
-                  value={settings.dailyFocusGoalMinutes}
-                  min={0}
-                  max={600}
-                  onChange={(value) => updateSetting('dailyFocusGoalMinutes', value)}
-                />
               </FieldBlock>
 
               <FieldBlock
@@ -1488,6 +1683,87 @@ export function SettingsScreen({
           </div>
 
           <div className="space-y-8">
+              <SectionCard
+                title="Presets"
+                description="Quick starting points. Apply one to jump straight into a session."
+                icon="bolt"
+              >
+                <div className="grid gap-3 min-[520px]:grid-cols-3">
+                  {PRESETS.map((preset) => (
+                    <PresetChoice
+                      key={preset.name}
+                      preset={preset}
+                      active={isPresetActive(settings, preset)}
+                      onClick={() => onApplyPreset(preset)}
+                    />
+                  ))}
+                  {(settings.customPresets ?? []).map((preset, index) => (
+                    <div key={`custom-${preset.name}-${index}`} className="relative">
+                      <PresetChoice
+                        preset={preset}
+                        active={isPresetActive(settings, preset)}
+                        onClick={() => onApplyPreset(preset)}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setPendingDeletePresetIndex(index)}
+                        className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500/80 text-xs text-white hover:bg-red-500"
+                        aria-label={`Delete ${preset.name} preset`}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                {!isPresetActive(settings, PRESETS[0]) && !isPresetActive(settings, PRESETS[1]) && !isPresetActive(settings, PRESETS[2]) && (
+                  showPresetNameInput ? (
+                    <div className="flex gap-2 items-center">
+                      <input
+                        type="text"
+                        value={newPresetNameInput}
+                        onChange={(e) => setNewPresetNameInput(e.target.value)}
+                        placeholder="Preset name"
+                        maxLength={40}
+                        autoFocus
+                        className={cx(inputClasses.base, 'flex-1')}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && newPresetNameInput.trim()) {
+                            onSaveSettings({ ...settings, customPresets: [...(settings.customPresets ?? []), { name: newPresetNameInput.trim(), focus: settings.pomodoroMinutes, shortBreak: settings.shortBreakMinutes, longBreak: settings.longBreakMinutes }] });
+                            setNewPresetNameInput('');
+                            setShowPresetNameInput(false);
+                          }
+                          if (e.key === 'Escape') { setNewPresetNameInput(''); setShowPresetNameInput(false); }
+                        }}
+                      />
+                      <button
+                        type="button"
+                        disabled={!newPresetNameInput.trim()}
+                        onClick={() => {
+                          if (!newPresetNameInput.trim()) return;
+                          onSaveSettings({ ...settings, customPresets: [...(settings.customPresets ?? []), { name: newPresetNameInput.trim(), focus: settings.pomodoroMinutes, shortBreak: settings.shortBreakMinutes, longBreak: settings.longBreakMinutes }] });
+                          setNewPresetNameInput('');
+                          setShowPresetNameInput(false);
+                        }}
+                        className={buttonClasses.primary}
+                      >
+                        Save
+                      </button>
+                      <button type="button" onClick={() => { setNewPresetNameInput(''); setShowPresetNameInput(false); }} className={buttonClasses.secondary}>
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setShowPresetNameInput(true)}
+                      className={buttonClasses.inline}
+                    >
+                      Save Current as Preset
+                    </button>
+                  )
+                )}
+              </SectionCard>
+
             <SectionCard
               title="Account & Shortcuts"
               description="Manage optional sign-in and keep the most useful keyboard actions close."
@@ -1559,6 +1835,21 @@ export function SettingsScreen({
         </div>
       </ScreenShell>
     </WorkspaceLayout>
+    {pendingDeletePresetIndex !== null && (
+      <ConfirmModal
+        title="Delete Preset"
+        message={`Delete "${(settings.customPresets ?? [])[pendingDeletePresetIndex]?.name ?? 'this preset'}"? This cannot be undone.`}
+        confirmLabel="Delete"
+        danger
+        onConfirm={() => {
+          const updated = (settings.customPresets ?? []).filter((_, i) => i !== pendingDeletePresetIndex);
+          onSaveSettings({ ...settings, customPresets: updated });
+          setPendingDeletePresetIndex(null);
+        }}
+        onCancel={() => setPendingDeletePresetIndex(null)}
+      />
+    )}
+  </>
   );
 }
 
@@ -1890,15 +2181,18 @@ export function TimerScreen({
               {(['pomodoro', 'shortBreak', 'longBreak'] as TimerMode[]).map((mode) => {
                 const isActive = timerMode === mode;
                 const meta = MODE_META[mode];
+                const locked = isRunning && !isActive;
 
                 return (
                   <button
                     key={mode}
                     type="button"
                     onClick={() => onModeChange(mode)}
+                    disabled={locked}
                     role="tab"
                     aria-selected={isActive}
-                    className="flex-1 rounded-2xl px-4 py-3 text-sm font-semibold transition-colors"
+                    title={locked ? 'Stop the timer before switching modes' : undefined}
+                    className="flex-1 rounded-2xl px-4 py-3 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40"
                     style={
                       isActive
                         ? {
@@ -2011,49 +2305,8 @@ export function TimerScreen({
                   </div>
                 )}
               </div>
+
             </section>
-
-            <div className="grid gap-6 sm:grid-cols-2">
-              <MetricCard
-                label="Completed"
-                value={String(sessionsCompleted)}
-                detail="Focus sessions finished today"
-                icon="target"
-                accent="#3ce36a"
-              />
-              <MetricCard
-                label="Distractions"
-                value={String(distractionCount)}
-                detail="Captured interruptions in this run"
-                icon="taxonomy"
-                accent="#00affe"
-              />
-            </div>
-
-            {dailyGoalMinutes > 0 && (
-              <SectionCard
-                title="Daily Goal"
-                description={`${goalProgress}% of your ${dailyGoalMinutes}-minute target is complete.`}
-                icon="bolt"
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between text-xs uppercase tracking-[0.18em] text-(--text-muted)">
-                    <span>Progress</span>
-                    <span>{goalProgress}%</span>
-                  </div>
-                  <div
-                    className="sentinel-progress h-2.5"
-                    role="progressbar"
-                    aria-valuenow={goalProgress}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-label="Daily focus goal progress"
-                  >
-                    <div className="sentinel-progress__bar" style={{ width: `${goalProgress}%` }} />
-                  </div>
-                </div>
-              </SectionCard>
-            )}
           </div>
 
           <div className="space-y-8">
@@ -2084,6 +2337,18 @@ export function TimerScreen({
                   Open Settings
                 </button>
               </div>
+            </SectionCard>
+
+            <SectionCard
+              title="Progress Today"
+              description="Quick pulse on today's output."
+              icon="target"
+            >
+              <InsightRow label="Completed" value={sessionsCompleted} accent="#3ce36a" />
+              <InsightRow label="Distractions" value={distractionCount} accent="#00affe" />
+              {dailyGoalMinutes > 0 && (
+                <InsightRow label="Goal" value={`${Math.round(goalProgress)}%`} accent="#cdbdff" />
+              )}
             </SectionCard>
           </div>
         </div>
@@ -2285,6 +2550,7 @@ function TaxonomyGroupEditor({
   categories: string[];
   onSave: (normalizedNote: string, note: string, categoryName: string | null) => void;
 }) {
+  const [expanded, setExpanded] = useState(false);
   const [note, setNote] = useState(group.note);
   const [categorySelection, setCategorySelection] = useState(group.categoryName ?? '__none__');
   const [newCategoryName, setNewCategoryName] = useState('');
@@ -2297,61 +2563,88 @@ function TaxonomyGroupEditor({
         : categorySelection;
 
   return (
-    <div className="rounded-[calc(var(--card-radius)-6px)] border border-[rgba(73,68,85,0.18)] bg-[rgba(14,14,14,0.18)] px-4 py-4">
-      <div className="flex flex-wrap items-center gap-3 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-(--text-muted)">
-        <span>{group.count} logs</span>
-        <span>Last seen {new Date(group.lastSeenAt).toLocaleDateString()}</span>
-      </div>
+    <div className="rounded-[calc(var(--card-radius)-6px)] border border-[rgba(73,68,85,0.18)] bg-[rgba(14,14,14,0.18)] px-4 py-3">
+      {/* ── Summary row (always visible) ─── */}
+      <button
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        className="flex w-full items-center justify-between gap-3 text-left"
+        aria-expanded={expanded}
+      >
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-semibold text-(--text-primary)">{group.note}</p>
+          <div className="mt-1 flex flex-wrap items-center gap-2">
+            <span
+              className="inline-block rounded-full px-2 py-0.5 text-[0.64rem] font-semibold uppercase tracking-[0.12em]"
+              style={
+                group.categoryName
+                  ? { background: 'rgba(124, 77, 255, 0.14)', color: '#cdbdff' }
+                  : { background: 'rgba(148, 142, 161, 0.14)', color: 'var(--text-muted)' }
+              }
+            >
+              {group.categoryName ?? 'Uncategorized'}
+            </span>
+            <span className="text-[0.64rem] text-(--text-muted)">
+              {group.count} log{group.count !== 1 ? 's' : ''} · last {new Date(group.lastSeenAt).toLocaleDateString()}
+            </span>
+          </div>
+        </div>
+        <span className="shrink-0 text-xs text-(--text-muted)">{expanded ? '▲' : '▼'}</span>
+      </button>
 
-      <div className="mt-4 grid gap-3">
-        <input
-          type="text"
-          value={note}
-          onChange={(event) => setNote(event.target.value)}
-          className={inputClasses.base}
-          aria-label={`Label for ${group.note}`}
-        />
-
-        <select
-          value={categorySelection}
-          onChange={(event) => setCategorySelection(event.target.value)}
-          className={inputClasses.base}
-          aria-label={`Category for ${group.note}`}
-        >
-          <option value="__none__">Uncategorized</option>
-          {categories.map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-          <option value="__new__">Create new category</option>
-        </select>
-
-        {categorySelection === '__new__' && (
+      {/* ── Edit panel (expanded) ─── */}
+      {expanded && (
+        <div className="mt-3 grid gap-3 border-t border-[rgba(73,68,85,0.18)] pt-3">
           <input
             type="text"
-            value={newCategoryName}
-            onChange={(event) => setNewCategoryName(event.target.value)}
-            placeholder="New category name"
+            value={note}
+            onChange={(event) => setNote(event.target.value)}
             className={inputClasses.base}
-            aria-label={`New category for ${group.note}`}
+            aria-label={`Label for ${group.note}`}
           />
-        )}
 
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-xs text-(--text-muted)">
-            Reporting bucket: {resolvedCategoryName ?? 'Uncategorized'}
-          </p>
-          <button
-            type="button"
-            onClick={() => onSave(group.normalizedNote, note, resolvedCategoryName)}
-            className={cx(buttonClasses.secondary, 'sm:w-auto')}
-            disabled={!note.trim() || (categorySelection === '__new__' && !newCategoryName.trim())}
+          <select
+            value={categorySelection}
+            onChange={(event) => setCategorySelection(event.target.value)}
+            className={inputClasses.base}
+            aria-label={`Category for ${group.note}`}
           >
-            Save
-          </button>
+            <option value="__none__">Uncategorized</option>
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+            <option value="__new__">Create new category</option>
+          </select>
+
+          {categorySelection === '__new__' && (
+            <input
+              type="text"
+              value={newCategoryName}
+              onChange={(event) => setNewCategoryName(event.target.value)}
+              placeholder="New category name"
+              maxLength={50}
+              className={inputClasses.base}
+              aria-label={`New category for ${group.note}`}
+            />
+          )}
+
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-xs text-(--text-muted)">
+              Bucket: {resolvedCategoryName ?? 'Uncategorized'}
+            </p>
+            <button
+              type="button"
+              onClick={() => onSave(group.normalizedNote, note, resolvedCategoryName)}
+              className={cx(buttonClasses.secondary, 'sm:w-auto')}
+              disabled={!note.trim() || (categorySelection === '__new__' && !newCategoryName.trim())}
+            >
+              Save
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -2363,28 +2656,59 @@ function CategoryRenameRow({
   category: string;
   onRename: (oldName: string, newName: string) => void;
 }) {
+  const [isEditing, setIsEditing] = useState(false);
   const [nextName, setNextName] = useState(category);
 
-  return (
-    <div className="rounded-[calc(var(--card-radius)-6px)] border border-[rgba(73,68,85,0.18)] bg-[rgba(14,14,14,0.18)] px-4 py-4">
-      <div className="space-y-3">
+  if (isEditing) {
+    return (
+      <div className="flex items-center gap-2 rounded-[calc(var(--card-radius)-6px)] border border-[rgba(124,77,255,0.3)] bg-[rgba(14,14,14,0.18)] px-3 py-2.5">
         <input
           type="text"
           value={nextName}
           onChange={(event) => setNextName(event.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && nextName.trim() && nextName.trim() !== category) {
+              onRename(category, nextName.trim());
+              setIsEditing(false);
+            }
+            if (e.key === 'Escape') {
+              setNextName(category);
+              setIsEditing(false);
+            }
+          }}
+          autoFocus
           aria-label={`Rename ${category}`}
-          className={inputClasses.base}
+          className={cx(inputClasses.base, 'flex-1')}
         />
         <button
           type="button"
-          onClick={() => onRename(category, nextName)}
-          className={cx(buttonClasses.secondary, 'sm:w-auto')}
+          onClick={() => { onRename(category, nextName.trim()); setIsEditing(false); }}
           disabled={!nextName.trim() || nextName.trim() === category}
+          className={cx(buttonClasses.secondary, 'shrink-0 px-3 py-1.5 text-sm')}
         >
-          Rename
+          Save
+        </button>
+        <button
+          type="button"
+          onClick={() => { setNextName(category); setIsEditing(false); }}
+          className={cx(buttonClasses.ghost, 'shrink-0 px-3 py-1.5 text-sm')}
+        >
+          Cancel
         </button>
       </div>
-    </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => setIsEditing(true)}
+      className="flex w-full items-center justify-between rounded-[calc(var(--card-radius)-6px)] border border-[rgba(73,68,85,0.18)] bg-[rgba(14,14,14,0.18)] px-4 py-2.5 text-left transition-colors hover:border-[rgba(124,77,255,0.3)] hover:bg-[rgba(124,77,255,0.05)]"
+      aria-label={`Edit category ${category}`}
+    >
+      <span className="text-sm font-medium text-(--text-primary)">{category}</span>
+      <Glyph name="spark" className="h-3.5 w-3.5 text-(--text-muted)" />
+    </button>
   );
 }
 
