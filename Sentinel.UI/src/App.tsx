@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef, useLayoutEffect } from 'react';
 import type { FormEvent } from 'react';
-import { db, auth } from './firebase';
+import { db, auth, googleProvider } from './firebase';
 import {
   collection,
   addDoc,
@@ -15,6 +15,8 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  signInWithPopup,
+  signInWithRedirect,
   signOut,
 } from 'firebase/auth';
 import type { User } from 'firebase/auth';
@@ -164,9 +166,16 @@ function App() {
   }, [user, settings, distractions]);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, setUser);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      if (!user) {
+        setReportData(null);
+        setExportStatus(null);
+      }
+    });
+
     return () => unsubscribe();
-  }, []);
+  }, []); // Assuming requestReportData is not a direct dependency here, based on original code structure.
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -661,6 +670,17 @@ function App() {
     }
   };
 
+  const handleDeleteCategory = (categoryName: string) => {
+    postMessage({
+      type: 'DELETE_CATEGORY',
+      categoryName,
+    });
+    requestTaxonomyData();
+    if (reportData) {
+      requestReportData(reportRange);
+    }
+  };
+
   const handleCancelSnooze = () => {
     postMessage({ type: 'CANCEL_SNOOZE' });
     setIsSnoozed(false);
@@ -789,6 +809,29 @@ function App() {
         setAuthError('Invalid email address.');
       } else {
         setAuthError(firebaseError?.message || 'Signup failed. Please try again.');
+      }
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setAuthError('');
+    try {
+      // Try popup first — works in most desktop/browser environments
+      await signInWithPopup(auth, googleProvider);
+      setView('timer');
+    } catch (popupError: unknown) {
+      const fbErr = popupError as { code?: string; message?: string };
+      const code = fbErr?.code ?? '';
+      // If popup was blocked or COOP denied it, fall back to redirect
+      if (code === 'auth/popup-blocked' || code === 'auth/popup-closed-by-user' || code === 'auth/user-cancelled') {
+        try {
+          await signInWithRedirect(auth, googleProvider);
+        } catch (redirectError: unknown) {
+          const rErr = redirectError as { code?: string; message?: string };
+          setAuthError(rErr?.message || 'Google login failed.');
+        }
+      } else {
+        setAuthError(fbErr?.message || 'Google login failed.');
       }
     }
   };
@@ -923,6 +966,7 @@ function App() {
         reportRange={reportRange}
         reportLoading={reportLoading}
         reportData={reportData}
+        userEmail={userEmail}
         onBack={() => setView('timer')}
         onSelectRange={requestReportData}
         onOpenTaxonomy={() => openTaxonomy('reports')}
@@ -939,6 +983,7 @@ function App() {
       <SessionHistoryScreen
         reportData={reportData}
         reportLoading={reportLoading}
+        userEmail={userEmail}
         onBack={() => setView('timer')}
         onSelectRange={requestReportData}
         navigation={{
@@ -953,9 +998,11 @@ function App() {
     return (
       <TaxonomyManagerScreen
         taxonomyData={taxonomyData}
+        userEmail={userEmail}
         onBack={() => setView(taxonomyReturnView)}
         onSaveGroup={handleSaveTaxonomyGroup}
         onRenameCategory={handleRenameCategory}
+        onDeleteCategory={handleDeleteCategory}
         navigation={{
           ...baseNavigation,
           onOpenTaxonomy: () => setView('taxonomy'),
@@ -974,6 +1021,7 @@ function App() {
         onAuthEmailChange={setAuthEmail}
         onAuthPasswordChange={setAuthPassword}
         onLogin={handleLogin}
+        onGoogleLogin={handleGoogleLogin}
         onSignup={handleSignup}
         onLogout={handleLogout}
         onBack={() => setView('timer')}
@@ -1047,6 +1095,7 @@ function App() {
     <TimerScreen
       sessionName={sessionName}
       onSessionNameChange={setSessionName}
+      userEmail={userEmail}
       timerMode={timerMode}
       timeLabel={timeLabel}
       isRunning={isRunning}

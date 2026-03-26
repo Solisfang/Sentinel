@@ -16,7 +16,7 @@ Use these prompts as the implementation brief for the next planned phase. Phases
 | Phase 6 | Production build and distribution | Complete |
 | Phase 7 | Advanced features | Complete |
 | Phase 8 | Optimization, onboarding, accessibility, testing | Complete |
-| Phase 9 | Distraction taxonomy and corner overlay | Approved Next |
+| Phase 9 | Distraction taxonomy and corner overlay | Complete |
 
 ---
 

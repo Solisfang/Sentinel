@@ -18,7 +18,7 @@
 | Phase 6 | Production build and distribution | Complete | - |
 | Phase 7 | Advanced features | Complete | - |
 | Phase 8 | Polish and optimization | Complete | - |
-| Phase 9 | Distraction taxonomy and corner overlay | Approved Next | High |
+| Phase 9 | Distraction taxonomy and corner overlay | Complete | - |
 
 ---
 
@@ -84,7 +84,7 @@ The approved goals are:
 
 ---
 
-## Phase 9: Distraction Taxonomy and Corner Overlay
+## Phase 9: Distraction Taxonomy and Corner Overlay (Completed)
 
 ### Goal
 

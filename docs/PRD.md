@@ -126,7 +126,7 @@ To prevent feature creep, the Day 1 MVP should only include:
 
 ---
 
-## 7. Approved Next Enhancements (Planned, Not Yet Implemented)
+## 7. Advanced Features (Implemented in Phase 9)
 
 - Suggested distraction pills in the intervention flow using recent and top distractions
 - Distraction categories and mappings so raw entries like "twitter" and "instagram" can roll up into categories like "Social Media"

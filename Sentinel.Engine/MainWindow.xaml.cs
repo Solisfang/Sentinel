@@ -490,6 +490,10 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                     await HandleRenameCategory(root);
                     break;
 
+                case "DELETE_CATEGORY":
+                    await HandleDeleteCategory(root);
+                    break;
+
                 case "LOG_SESSION":
                     await HandleLogSession(root);
                     break;
@@ -658,6 +662,21 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
         await _repository.RenameCategoryAsync(oldName, newName);
         Debug.WriteLine($"[Sentinel] Category renamed: {oldName} -> {newName}");
+        await SendTaxonomyDataAsync();
+    }
+
+    private async Task HandleDeleteCategory(JsonElement root)
+    {
+        if (!root.TryGetProperty("categoryName", out var catProp)) return;
+        var categoryName = catProp.GetString();
+
+        if (string.IsNullOrWhiteSpace(categoryName))
+        {
+            return;
+        }
+
+        await _repository.DeleteCategoryAsync(categoryName);
+        Debug.WriteLine($"[Sentinel] Category deleted: {categoryName}");
         await SendTaxonomyDataAsync();
     }
 

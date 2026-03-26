@@ -5,7 +5,7 @@
 - **Intervention**: The modal that appears when idle/distraction is detected during an active focus session.
 - **Idle Detection**: Monitoring user input inactivity to detect drift away from focused work.
 - **WebView2**: Microsoft's Chromium-based web control for embedding web UIs inside desktop apps.
-- **SQLite**: Lightweight local database for sessions, distractions, and future taxonomy data.
+- **SQLite**: Lightweight local database for sessions, distractions, and taxonomy data.
 - **Firebase**: Google's cloud platform for authentication and cloud data storage.
 - **Firestore**: Firebase's cloud database used for optional syncing of sessions and distractions.
 - **Firebase Auth**: Firebase's authentication service for secure optional login.

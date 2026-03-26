@@ -16,7 +16,7 @@ Welcome to the Sentinel docs folder. This is the central reference point for pro
 - **MCP_CONTEXT.md**: MCP and AI-pairing context
 
 ## Current Documentation Note
-The docs now also track the next approved UX enhancement set:
+The docs now also track the recently completed UX enhancements:
 
 - distraction quick-select pills using recent and top distractions
 - user-manageable distraction categories and mappings

@@ -16,7 +16,6 @@
 │   ├── MainWindow.xaml.cs   # Window logic, messaging
 │   ├── UserActivityMonitor.cs # Idle detection
 │   ├── SettingsService.cs   # Settings persistence
-│   ├── FirebaseService.cs   # Firebase Admin SDK
 │   ├── SentinelDbContext.cs # EF Core SQLite
 │   ├── DistractionRepository.cs # DB operations
 │   └── Models.cs            # Data entities
@@ -133,7 +132,7 @@ SettingsService.Save() → writes to settings.json
 Settings applied immediately (e.g., idle threshold, always on top)
 ```
 
-### 4. Planned Distraction Taxonomy Flow
+### 4. Distraction Taxonomy Flow
 ```
 Idle detected -> Intervention modal appears
   ->
@@ -150,7 +149,7 @@ Sentinel stores:
 Reports aggregate by category while preserving raw source labels
 ```
 
-### 5. Planned Historical Taxonomy Editing Flow
+### 5. Historical Taxonomy Editing Flow
 ```
 User opens distraction history / taxonomy management
   ->
@@ -163,7 +162,7 @@ Mappings update
 Reports become cleaner without losing original logged data
 ```
 
-### 6. Planned Corner Overlay Flow
+### 6. Compact Overlay Flow
 ```
 User switches from full window to corner overlay
   ->
@@ -198,8 +197,8 @@ User expands back to full window for settings, reports, or taxonomy management
 | Settings View | Configure timer, idle, sync options |
 | Auth View | Firebase email/password login |
 | Intervention Modal | Distraction input prompt |
-| Planned Taxonomy Manager | Review historical distractions, categories, and mappings |
-| Planned Corner Overlay | Small desktop overlay for essential timer visibility and control |
+| Taxonomy Manager | Review historical distractions, categories, and mappings |
+| Compact Overlay | Small desktop overlay for essential timer visibility and control |
 
 ---
 
@@ -230,7 +229,7 @@ User expands back to full window for settings, reports, or taxonomy management
 | Local Database | `%LOCALAPPDATA%\Sentinel\sentinel.db` | SQLite |
 | Cloud Sessions | Firestore `sessions` collection | Document |
 | Cloud Distractions | Firestore `distractions` collection | Document |
-| Planned Taxonomy Data | Local database tables for distraction labels, categories, and mappings | SQLite |
+| Taxonomy Data | Local database tables for distraction labels, categories, and mappings | SQLite |
 
 ---
 

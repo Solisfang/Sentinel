@@ -24,7 +24,7 @@ Sentinel's original 8-phase roadmap is documented as complete. The next approved
 | 6 | Production Build and Distribution | Complete | Build pipeline and packaging |
 | 7 | Advanced Features | Complete | Media suppression, sleep recovery, hotkeys, export |
 | 8 | Polish and Optimization | Complete | Onboarding, accessibility, tests, optimization |
-| 9 | Distraction Taxonomy and Corner Overlay | Planned | Approved next enhancement set |
+| 9 | Distraction Taxonomy and Corner Overlay | Complete | Taxonomy, mappings, corner overlay |
 
 ---
 
@@ -77,18 +77,18 @@ Sentinel's original 8-phase roadmap is documented as complete. The next approved
 
 ---
 
-## Approved Next Enhancements (Not Yet Implemented)
+## Phase 9 (Completed Enhancements)
 
-These items are approved for the next implementation pass, but they are not shipped yet.
+These items were completed in Phase 9.
 
 | Enhancement | Purpose | Status |
 |-------------|---------|--------|
-| Quick-select distraction pills | Let users log repeated distractions without retyping | Planned |
-| Recent and top distraction suggestions | Show at least 5 pills using recent and frequent history | Planned |
-| Distraction categories and mappings | Group raw labels into cleaner reporting categories | Planned |
-| Historical taxonomy editing | Let users edit labels, categories, and mappings later | Planned |
-| Category-aware reporting | Improve analytics clarity without losing raw data | Planned |
-| Corner overlay / mini-window mode | Keep Sentinel visible in a small corner popup | Planned |
+| Quick-select distraction pills | Let users log repeated distractions without retyping | Complete |
+| Recent and top distraction suggestions | Show at least 5 pills using recent and frequent history | Complete |
+| Distraction categories and mappings | Group raw labels into cleaner reporting categories | Complete |
+| Historical taxonomy editing | Let users edit labels, categories, and mappings later | Complete |
+| Category-aware reporting | Improve analytics clarity without losing raw data | Complete |
+| Corner overlay / mini-window mode | Keep Sentinel visible in a small corner popup | Complete |
 
 ---
 
@@ -103,11 +103,11 @@ The documentation now reflects the following agreed product direction:
 
 ---
 
-## Known Product Gaps
+## Known Product Gaps (Resolved in Phase 9)
 
-These are not regressions in the shipped roadmap. They are the currently acknowledged gaps the next phase aims to solve.
+These are not regressions in the shipped roadmap. They are the previously acknowledged gaps that Phase 9 solved.
 
-| Gap | Why It Matters | Planned Resolution |
+| Gap | Why It Matters | Resolved By |
 |-----|----------------|-------------------|
 | Users must retype common distractions too often | Adds friction at the exact moment of interruption | Quick-select pills and history-driven suggestions |
 | Similar distractions fragment reports | Analytics become noisy and harder to learn from | Category mapping and taxonomy editing |
@@ -118,10 +118,4 @@ These are not regressions in the shipped roadmap. They are the currently acknowl
 
 ## Next Step
 
-The next implementation pass should focus on Phase 9:
-
-1. quick distraction suggestions
-2. categories and mappings
-3. historical taxonomy editing
-4. category-aware reporting
-5. corner overlay / mini-window mode
+Phase 9 is completed. Future enhancements will be discussed.

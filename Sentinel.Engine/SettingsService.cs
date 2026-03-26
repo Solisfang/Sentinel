@@ -66,7 +66,15 @@ public class SettingsService
 
     public static void Save(AppSettings settings)
     {
-        SaveToPath(settings, SettingsPath);
+        try
+        {
+            SaveToPath(settings, SettingsPath);
+            SentinelLog.Info($"Settings successfully saved to {SettingsPath}");
+        }
+        catch (Exception ex)
+        {
+            SentinelLog.Error($"Failed to save settings to {SettingsPath}", ex);
+        }
     }
 
     public static void SaveToPath(AppSettings settings, string settingsPath)

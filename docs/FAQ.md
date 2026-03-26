@@ -42,33 +42,33 @@ A: Yes. Sentinel includes reporting for focus time, sessions, distractions, char
 
 ---
 
-## Approved Next Enhancements
+## Advanced Features
 
-The items below are approved product direction, but they are not implemented yet.
+The items below are advanced features available in Sentinel:
 
-**Q: Will I be able to log common distractions without typing them every time?**  
-A: Yes. The next planned enhancement adds clickable suggestion pills under the distraction input so common entries can be logged instantly.
+**Q: Can I log common distractions without typing them every time?**  
+A: Yes. Sentinel has clickable suggestion pills under the distraction input so common entries can be logged instantly.
 
-**Q: How many quick distraction suggestions will appear?**  
-A: The current plan is at least 5 suggestions: the 2 most recent distractions and the 3 most frequent distractions, with duplicates removed.
+**Q: How many quick distraction suggestions appear?**  
+A: There are up to 5 suggestions: the 2 most recent distractions and the 3 most frequent distractions, with duplicates removed.
 
 **Q: Can Sentinel group raw distractions into broader categories?**  
-A: Yes. The next planned enhancement introduces user-managed distraction categories and mappings, so entries like `twitter` and `instagram` can roll up into a category such as `Social Media`.
+A: Yes. Sentinel includes user-managed distraction categories and mappings, so entries like `twitter` and `instagram` can roll up into a category such as `Social Media`.
 
-**Q: Will the original distraction text still be preserved if I map it to a category?**  
-A: Yes. The plan is to preserve raw original labels while also storing an optional category mapping for better reporting.
+**Q: Is the original distraction text still preserved if I map it to a category?**  
+A: Yes. Sentinel preserves raw original labels while also storing an optional category mapping for better reporting.
 
 **Q: Can I create a new category while logging a distraction?**  
-A: Yes. The approved plan includes creating a new category inline or mapping to an existing one when a new distraction is entered.
+A: Yes. You can create a new category inline or map to an existing one when a new distraction is entered.
 
 **Q: Can I edit categories and mappings later?**  
-A: Yes. A planned taxonomy-management flow will let users revisit previous distractions and edit labels, categories, and mappings after the fact.
+A: Yes. The taxonomy-management view lets users revisit previous distractions and edit labels, categories, and mappings after the fact.
 
-**Q: Will reporting use categories once they exist?**  
-A: Yes. The goal is cleaner charts and summaries by grouping related distractions while still keeping raw history available.
+**Q: Does reporting use categories once they exist?**  
+A: Yes. Charts and summaries group related distractions while still keeping raw history available.
 
-**Q: Will there be a smaller popup or overlay so I do not need the full app open?**  
-A: Yes. A corner overlay or mini-window mode is part of the approved next enhancement set.
+**Q: Is there a smaller popup or overlay so I do not need the full app open?**  
+A: Yes. A compact layout mode is available for a smaller overlay.
 
 ---
 

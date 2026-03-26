@@ -253,6 +253,26 @@ public class DistractionRepository
         return targetExists;
     }
 
+    public async Task DeleteCategoryAsync(string categoryName)
+    {
+        var cleanCat = CleanCategory(categoryName);
+        if (string.IsNullOrWhiteSpace(cleanCat)) return;
+
+        await using var db = _contextFactory();
+
+        var matches = await db.Distractions
+            .Where(d => d.CategoryName != null &&
+                        EF.Functions.Like(d.CategoryName, cleanCat))
+            .ToListAsync();
+
+        foreach (var match in matches)
+        {
+            match.CategoryName = null;
+        }
+
+        await db.SaveChangesAsync();
+    }
+
     public async Task AddSessionAsync(Session session)
     {
         await using var db = _contextFactory();

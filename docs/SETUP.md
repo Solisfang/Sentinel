@@ -60,8 +60,6 @@ dotnet run
 |---------|---------|
 | `Microsoft.Web.WebView2` | Embedded browser for React UI |
 | `Microsoft.EntityFrameworkCore.Sqlite` | Local database |
-| `FirebaseAdmin` | Firebase Admin SDK (optional) |
-| `Google.Cloud.Firestore` | Firestore client (optional) |
 
 ---
 

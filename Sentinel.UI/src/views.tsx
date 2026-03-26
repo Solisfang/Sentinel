@@ -508,6 +508,7 @@ interface ReportsScreenProps {
   reportRange: ReportRange;
   reportLoading: boolean;
   reportData: ReportData | null;
+  userEmail?: string | null;
   onBack: () => void;
   onSelectRange: (range: ReportRange) => void;
   onOpenTaxonomy: () => void;
@@ -518,6 +519,7 @@ export function ReportsScreen({
   reportRange,
   reportLoading,
   reportData,
+  userEmail,
   onBack,
   onSelectRange,
   onOpenTaxonomy,
@@ -533,6 +535,7 @@ export function ReportsScreen({
     <WorkspaceLayout
       activeView="reports"
       navigation={workspaceNavigation(navigation)}
+      userEmail={userEmail}
       statusLabel="Insight View"
       statusDetail="Focus patterns, interruption trends, and category-aware reporting."
       topbarMeta={<TopbarPill label={labelForRange(reportRange)} icon="reports" />}
@@ -699,29 +702,13 @@ export function ReportsScreen({
                           </div>
                         ))}
                       </div>
-                      <div className="flex flex-col items-center gap-2 mt-6">
-                        <div className="flex gap-4">
-                          <button
-                            type="button"
-                            className={buttonClasses.inline}
-                            onClick={() => setSessionPage((p) => Math.max(0, p - 1))}
-                            disabled={sessionPage === 0}
-                          >
-                            Previous
-                          </button>
-                          <span className="text-xs text-(--text-muted) px-2 py-1 rounded bg-[rgba(73,68,85,0.10)]">
-                            Page {sessionPage + 1} of {totalSessionPages}
-                          </span>
-                          <button
-                            type="button"
-                            className={buttonClasses.inline}
-                            onClick={() => setSessionPage((p) => Math.min(totalSessionPages - 1, p + 1))}
-                            disabled={sessionPage >= totalSessionPages - 1}
-                          >
-                            Next
-                          </button>
-                        </div>
-                      </div>
+                      <PaginationBar
+                        rangeLabel={sessions.length > 0 ? `${sessionPage * SESSIONS_PER_PAGE + 1}–${sessionPage * SESSIONS_PER_PAGE + pagedSessions.length} of ${sessions.length}` : '0 of 0'}
+                        hasPrev={sessionPage > 0}
+                        hasNext={sessionPage < totalSessionPages - 1}
+                        onPrev={() => setSessionPage((p) => Math.max(0, p - 1))}
+                        onNext={() => setSessionPage((p) => Math.min(totalSessionPages - 1, p + 1))}
+                      />
                     </>
                   ) : (
                     <div className="sentinel-empty-state text-sm">Completed sessions will appear here as you work.</div>
@@ -893,6 +880,7 @@ export function ReportsScreen({
 interface SessionHistoryScreenProps {
   reportData: ReportData | null;
   reportLoading: boolean;
+  userEmail?: string | null;
   onBack: () => void;
   onSelectRange: (range: ReportRange) => void;
   navigation: WorkspaceNavigation;
@@ -901,6 +889,7 @@ interface SessionHistoryScreenProps {
 export function SessionHistoryScreen({
   reportData,
   reportLoading,
+  userEmail,
   onBack,
   onSelectRange,
   navigation,
@@ -934,6 +923,7 @@ export function SessionHistoryScreen({
     <WorkspaceLayout
       activeView="history"
       navigation={workspaceNavigation(navigation)}
+      userEmail={userEmail}
       statusLabel="Session History"
       statusDetail="Browse all your completed focus sessions."
       topbarMeta={<TopbarPill label="History" icon="history" />}
@@ -1071,20 +1061,114 @@ export function SessionHistoryScreen({
 /*  Taxonomy Manager Screen                                           */
 /* ------------------------------------------------------------------ */
 
+function CategoryEditor({
+  category,
+  onRename,
+  onDelete,
+}: {
+  category: string;
+  onRename: (oldName: string, newName: string) => void;
+  onDelete: (name: string) => void;
+}) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(category);
+
+  if (isEditing) {
+    return (
+      <div className="flex items-center justify-between gap-3 rounded-[calc(var(--card-radius)-6px)] border border-[rgba(73,68,85,0.4)] bg-[rgba(14,14,14,0.4)] px-3 py-2">
+        <input
+          type="text"
+          value={editValue}
+          onChange={(e) => setEditValue(e.target.value)}
+          className={inputClasses.base}
+          autoFocus
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              if (editValue.trim() && editValue.trim() !== category) {
+                onRename(category, editValue.trim());
+              }
+              setIsEditing(false);
+            }
+            if (e.key === 'Escape') {
+              setEditValue(category);
+              setIsEditing(false);
+            }
+          }}
+        />
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className={buttonClasses.inline}
+            onClick={() => {
+              if (editValue.trim() && editValue.trim() !== category) {
+                onRename(category, editValue.trim());
+              }
+              setIsEditing(false);
+            }}
+          >
+            Save
+          </button>
+          <button
+            type="button"
+            className={buttonClasses.inline}
+            onClick={() => {
+              setEditValue(category);
+              setIsEditing(false);
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center justify-between rounded-[calc(var(--card-radius)-6px)] border border-[rgba(73,68,85,0.18)] bg-[rgba(14,14,14,0.18)] px-4 py-3">
+      <span className="text-sm font-medium text-(--text-primary)">{category}</span>
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          className="text-xs font-semibold text-(--text-muted) hover:text-(--text-primary) transition-colors"
+          onClick={() => setIsEditing(true)}
+        >
+          Edit
+        </button>
+        <button
+          type="button"
+          className="text-xs font-semibold text-rose-500/80 hover:text-rose-400 transition-colors"
+          onClick={() => {
+            if (confirm(`Are you sure you want to delete the category "${category}"? \n\nDistractions using this category will become Uncategorized.`)) {
+              onDelete(category);
+            }
+          }}
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  );
+}
+
 interface TaxonomyManagerScreenProps {
   taxonomyData: TaxonomyData;
+  userEmail?: string | null;
   onBack: () => void;
   onSaveGroup: (normalizedNote: string, note: string, categoryName: string | null) => void;
-  // onRenameCategory: (oldName: string, newName: string) => void;
+  onRenameCategory: (oldName: string, newName: string) => void;
+  onDeleteCategory: (categoryName: string) => void;
   navigation: WorkspaceNavigation;
 }
 
 export function TaxonomyManagerScreen({
   taxonomyData,
+  userEmail,
   onBack,
   onSaveGroup,
+  onRenameCategory,
+  onDeleteCategory,
   navigation,
-}: Omit<TaxonomyManagerScreenProps, 'onRenameCategory'>) {
+}: TaxonomyManagerScreenProps) {
   const [search, setSearch] = useState('');
   const [onlyUncategorized, setOnlyUncategorized] = useState(false);
 
@@ -1121,6 +1205,7 @@ export function TaxonomyManagerScreen({
     <WorkspaceLayout
       activeView="taxonomy"
       navigation={workspaceNavigation(navigation)}
+      userEmail={userEmail}
       statusLabel={`${taxonomyData.groups.length} tracked labels`}
       statusDetail="Edit mappings, clean category names, and tighten the reporting engine."
       topbarMeta={<TopbarPill label="Taxonomy Manager" icon="taxonomy" />}
@@ -1258,9 +1343,12 @@ export function TaxonomyManagerScreen({
               {taxonomyData.categories.length > 0 ? (
                 <div className="space-y-3">
                   {taxonomyData.categories.map((category) => (
-                    <div key={category} className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-(--text-primary)">{category}</span>
-                    </div>
+                    <CategoryEditor
+                      key={category}
+                      category={category}
+                      onRename={onRenameCategory}
+                      onDelete={onDeleteCategory}
+                    />
                   ))}
                 </div>
               ) : (
@@ -1327,6 +1415,7 @@ interface AuthScreenProps {
   onAuthEmailChange: (value: string) => void;
   onAuthPasswordChange: (value: string) => void;
   onLogin: (event: FormEvent<HTMLFormElement>) => void;
+  onGoogleLogin: () => void;
   onSignup: () => void;
   onLogout: () => void;
   onBack: () => void;
@@ -1341,6 +1430,7 @@ export function AuthScreen({
   onAuthEmailChange,
   onAuthPasswordChange,
   onLogin,
+  onGoogleLogin,
   onSignup,
   onLogout,
   onBack,
@@ -1350,6 +1440,7 @@ export function AuthScreen({
     <WorkspaceLayout
       activeView="account"
       navigation={workspaceNavigation(navigation)}
+      userEmail={userEmail}
       statusLabel={userEmail ? 'Account Connected' : 'Local-First Mode'}
       statusDetail={
         userEmail
@@ -1464,6 +1555,21 @@ export function AuthScreen({
                       Sign Up
                     </button>
                   </ActionGrid>
+
+                  <div className="relative flex items-center py-4">
+                    <div className="flex-grow border-t border-[rgba(73,68,85,0.4)]"></div>
+                    <span className="flex-shrink-0 px-4 text-xs tracking-[0.2em] text-(--text-muted) uppercase">or</span>
+                    <div className="flex-grow border-t border-[rgba(73,68,85,0.4)]"></div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={onGoogleLogin}
+                    className="flex w-full items-center justify-center gap-2 rounded-[calc(var(--card-radius)-6px)] border border-[rgba(73,68,85,0.4)] bg-[rgba(14,14,14,0.4)] px-4 py-2.5 text-sm font-semibold text-(--text-primary) transition-colors hover:bg-[rgba(255,255,255,0.05)]"
+                  >
+                    <img src="https://www.google.com/favicon.ico" alt="Google" className="h-4 w-4 opacity-90" />
+                    Continue with Google
+                  </button>
                 </form>
               )}
             </SectionCard>
@@ -1542,6 +1648,7 @@ export function SettingsScreen({
     <WorkspaceLayout
       activeView="settings"
       navigation={workspaceNavigation(navigation)}
+      userEmail={userEmail}
       statusLabel="Configuration"
       statusDetail="Refine your focus rhythm, interventions, exports, and account behavior."
       topbarMeta={<TopbarPill label="System Settings" icon="settings" />}
@@ -1783,7 +1890,7 @@ export function SettingsScreen({
 
             <SectionCard
               title="Account & Shortcuts"
-              description="Manage optional sign-in and keep the most useful keyboard actions close."
+              description="Manage optional sign-in, cloud sync, and keep the most useful keyboard actions close."
               icon="account"
             >
               {updateInfo && updateInfo.downloadUrl && /^https:\/\/github\.com\//.test(updateInfo.downloadUrl) && (
@@ -1806,6 +1913,57 @@ export function SettingsScreen({
                   </div>
                 </div>
               )}
+
+
+              <FieldBlock
+                label="Cloud Sync"
+                description="Enable to sync your data with the cloud and access it across devices. Works only when signed in."
+              >
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={settings.cloudSyncEnabled}
+                    onClick={() => updateSetting('cloudSyncEnabled', !settings.cloudSyncEnabled)}
+                    style={{
+                      display: 'inline-block',
+                      height: '1.5rem',
+                      width: '3rem',
+                      borderRadius: '9999px',
+                      background: settings.cloudSyncEnabled ? '#7c4dff' : '#444',
+                      border: 'none',
+                      cursor: 'pointer',
+                      position: 'relative',
+                      transition: 'background 0.2s',
+                    }}
+                    tabIndex={0}
+                    aria-label="Toggle cloud sync"
+                  >
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        height: '1.25rem',
+                        width: '1.25rem',
+                        borderRadius: '50%',
+                        background: '#fff',
+                        boxShadow: '0 1px 4px rgba(0,0,0,0.18)',
+                        position: 'absolute',
+                        left: settings.cloudSyncEnabled ? '1.5rem' : '0.25rem',
+                        top: '0.125rem',
+                        transition: 'left 0.2s',
+                      }}
+                    />
+                  </button>
+                  <span style={{ fontSize: '0.95rem', color: 'var(--text-primary)' }}>
+                    {settings.cloudSyncEnabled ? 'Enabled' : 'Disabled'}
+                  </span>
+                </div>
+                <span className="block text-xs text-(--text-muted) mt-1">
+                  {settings.cloudSyncEnabled
+                    ? 'Your data will sync to the cloud when signed in.'
+                    : 'Data stays local to this device.'}
+                </span>
+              </FieldBlock>
 
               <FieldBlock
                 label="Account"
@@ -2121,6 +2279,7 @@ interface TimerScreenProps {
   snoozeText: string;
   showPresets: boolean;
   settings: Settings;
+  userEmail?: string | null;
   onModeChange: (mode: TimerMode) => void;
   onStartPause: () => void;
   onReset: () => void;
@@ -2152,6 +2311,7 @@ export function TimerScreen({
   snoozeText,
   showPresets,
   settings,
+  userEmail,
   onModeChange,
   onStartPause,
   onReset,
@@ -2172,10 +2332,15 @@ export function TimerScreen({
       ? 'Cloud sync is enabled for this workspace.'
       : 'Local-first mode keeps everything on this machine.';
 
+  const isActuallySyncing = isSynced && !!userEmail;
+  const syncStatusLabel = isActuallySyncing ? 'Active' : (isSynced ? 'Login Required' : 'Local Only');
+  const syncStatusColor = isActuallySyncing ? '#3ce36a' : (isSynced ? '#f59e0b' : '#948ea1');
+
   return (
     <WorkspaceLayout
       activeView="timer"
       navigation={workspaceNavigation(navigation)}
+      userEmail={userEmail}
       statusLabel={statusLabel}
       statusDetail={statusDetail}
       topbarMeta={<TopbarPill label={modeMeta.label} icon="target" accent={modeMeta.accent} />}
@@ -2339,7 +2504,7 @@ export function TimerScreen({
             >
               <InsightRow label="Mode" value={modeMeta.label} accent={modeMeta.accent} />
               <InsightRow label="State" value={isRunning ? 'Running' : 'Paused'} accent={modeMeta.accent} />
-              <InsightRow label="Cloud Sync" value={isSynced ? 'Enabled' : 'Local Only'} accent={isSynced ? '#3ce36a' : '#948ea1'} />
+              <InsightRow label="Cloud Sync" value={syncStatusLabel} accent={syncStatusColor} />
               <InsightRow label="Interventions" value={isSnoozed ? `Snoozed ${snoozeText}` : 'Watching for drift'} accent={isSnoozed ? '#3ce36a' : '#00affe'} />
             </SectionCard>
 

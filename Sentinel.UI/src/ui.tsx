@@ -217,7 +217,7 @@ function renderGlyph(name: GlyphName) {
         </>
       );
     default: {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // @ts-expect-error Used for exhaustiveness checking
       const _exhaustive: never = name;
       return null;
     }
@@ -257,6 +257,7 @@ interface WorkspaceLayoutProps extends HTMLAttributes<HTMLDivElement> {
   activeView: WorkspaceViewKey;
   children: ReactNode;
   navigation?: Partial<Record<WorkspaceViewKey, () => void>>;
+  userEmail?: string | null;
 
   statusLabel?: string;
   statusDetail?: string;
@@ -267,6 +268,7 @@ export function WorkspaceLayout({
   activeView,
   children,
   navigation = {},
+  userEmail,
   statusLabel,
   statusDetail,
   topbarMeta,
@@ -315,7 +317,7 @@ export function WorkspaceLayout({
               </div>
             )}
             <SidebarButton
-              label="Account"
+              label={userEmail ? userEmail.split('@')[0] : 'Account'}
               icon="account"
               active={activeView === 'account'}
               onClick={navigation.account}

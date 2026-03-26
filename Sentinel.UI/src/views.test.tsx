@@ -16,6 +16,7 @@ import { defaultSettings } from './utils';
 const navigation = {
   onOpenTimer: vi.fn(),
   onOpenReports: vi.fn(),
+  onOpenHistory: vi.fn(),
   onOpenTaxonomy: vi.fn(),
   onOpenSettings: vi.fn(),
   onOpenAccount: vi.fn(),
@@ -36,6 +37,7 @@ describe('SettingsScreen', () => {
         onOpenAuth={vi.fn()}
         onOpenTaxonomy={vi.fn()}
         onDismissUpdate={vi.fn()}
+        onSeedDatabase={vi.fn()}
         navigation={navigation}
       />,
     );
@@ -59,6 +61,7 @@ describe('ReportsScreen', () => {
         reportRange="week"
         reportLoading={false}
         reportData={null}
+        userEmail={null}
         onBack={vi.fn()}
         onSelectRange={vi.fn()}
         onOpenTaxonomy={vi.fn()}
@@ -134,6 +137,8 @@ describe('TaxonomyManagerScreen', () => {
         onBack={vi.fn()}
         onSaveGroup={vi.fn()}
         onRenameCategory={vi.fn()}
+        onDeleteCategory={vi.fn()}
+        userEmail={null}
         navigation={navigation}
       />,
     );
@@ -159,6 +164,7 @@ describe('AuthScreen', () => {
         onAuthEmailChange={vi.fn()}
         onAuthPasswordChange={vi.fn()}
         onLogin={vi.fn()}
+        onGoogleLogin={vi.fn()}
         onSignup={vi.fn()}
         onLogout={vi.fn()}
         onBack={vi.fn()}
@@ -277,6 +283,7 @@ describe('TimerScreen', () => {
         snoozeText="0s"
         showPresets={false}
         settings={defaultSettings}
+        userEmail={null}
         onModeChange={vi.fn()}
         onStartPause={vi.fn()}
         onReset={vi.fn()}
@@ -345,6 +352,7 @@ describe('SessionCompleteScreen', () => {
         chartData={[{ name: 'Focus', value: 25 }]}
         onTakeBreak={onTakeBreak}
         onAgain={onAgain}
+        onExit={vi.fn()}
       />,
     );
 
