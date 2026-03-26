@@ -1633,7 +1633,7 @@ export function SettingsScreen({
   onOpenAuth,
   onOpenTaxonomy,
   onDismissUpdate,
-  onSeedDatabase,
+  // onSeedDatabase,
   navigation,
 }: SettingsScreenProps) {
   const updateSetting = <K extends keyof Settings>(key: K, value: Settings[K]) => {
