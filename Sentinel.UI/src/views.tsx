@@ -1702,6 +1702,21 @@ export function SettingsScreen({
               </FieldBlock>
 
               <FieldBlock
+                label="Daily Goal (Minutes)"
+                description="Your target amount of focus time for the day."
+              >
+                <div className="grid gap-3 min-[520px]:grid-cols-3">
+                  <NumberField
+                    label="Goal"
+                    value={settings.dailyFocusGoalMinutes}
+                    min={0}
+                    max={1440}
+                    onChange={(value) => updateSetting('dailyFocusGoalMinutes', value)}
+                  />
+                </div>
+              </FieldBlock>
+
+              <FieldBlock
                 label="Presets"
                 description="Quick starting points. You can also save your current timer values as a custom preset."
               >
@@ -1795,12 +1810,129 @@ export function SettingsScreen({
                 </ActionGrid>
                 {exportStatus && <p className="text-sm text-(--text-muted)">{exportStatus}</p>}
               </FieldBlock>
-              <FieldBlock
+              {/* <FieldBlock
                 label="Demo Data"
                 description="Load sample sessions and distractions to explore all features. Safe to run once — ignored if data already exists."
               >
                 <button type="button" onClick={onSeedDatabase} className={buttonClasses.secondary}>
                   Load Demo Data
+                </button>
+              </FieldBlock> */}
+            </SectionCard>
+
+            <SectionCard
+              title="Idle & Behavior"
+              description="Control when Sentinel considers you inactive, and how it behaves during media playback."
+              icon="moon"
+            >
+              <FieldBlock
+                label="Idle Threshold"
+                description="How many seconds of inactivity before Sentinel considers you idle and triggers an intervention."
+              >
+                <div className="flex items-center gap-4">
+                  <input
+                    type="range"
+                    min={10}
+                    max={300}
+                    step={5}
+                    value={settings.idleThresholdSeconds}
+                    onChange={(e) => updateSetting('idleThresholdSeconds', Number(e.target.value))}
+                    className="flex-1 accent-[#7c4dff]"
+                    aria-label="Idle threshold seconds"
+                  />
+                  <span className="min-w-[3.5rem] text-right text-lg font-extrabold tracking-tight text-(--text-primary)">
+                    {settings.idleThresholdSeconds}s
+                  </span>
+                </div>
+                <p className="text-xs text-(--text-muted) mt-1">
+                  {settings.idleThresholdSeconds <= 30
+                    ? 'Very sensitive — triggers quickly after you stop moving.'
+                    : settings.idleThresholdSeconds <= 60
+                      ? 'Balanced — gives you a moment to think before flagging.'
+                      : settings.idleThresholdSeconds <= 120
+                        ? 'Relaxed — ideal if you read or study between sessions.'
+                        : 'Very relaxed — long pauses are allowed before intervention.'}
+                </p>
+              </FieldBlock>
+
+              <FieldBlock
+                label="Media Detection"
+                description="Suppress idle interventions while audio or video is playing."
+              >
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={settings.suppressDuringMedia}
+                  onClick={() => updateSetting('suppressDuringMedia', !settings.suppressDuringMedia)}
+                  className="sentinel-toggle-row"
+                >
+                  <span className="min-w-0 space-y-1.5 text-left">
+                    <span className="block text-sm font-semibold text-(--text-primary)">
+                      {settings.suppressDuringMedia ? 'Active' : 'Disabled'}
+                    </span>
+                    <span className="block text-sm leading-6 text-(--text-secondary)">
+                      {settings.suppressDuringMedia
+                        ? 'Interventions are paused while audio or video is detected.'
+                        : 'Idle checks run even during media playback.'}
+                    </span>
+                  </span>
+                  <span className={cx('sentinel-toggle', settings.suppressDuringMedia && 'sentinel-toggle--checked')} aria-hidden="true">
+                    <span className="sentinel-toggle-thumb" />
+                  </span>
+                </button>
+              </FieldBlock>
+
+              <FieldBlock
+                label="Sound Notifications"
+                description="Play a chime when a session ends or an intervention fires."
+              >
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={settings.soundEnabled}
+                  onClick={() => updateSetting('soundEnabled', !settings.soundEnabled)}
+                  className="sentinel-toggle-row"
+                >
+                  <span className="min-w-0 space-y-1.5 text-left">
+                    <span className="block text-sm font-semibold text-(--text-primary)">
+                      {settings.soundEnabled ? 'Enabled' : 'Muted'}
+                    </span>
+                    <span className="block text-sm leading-6 text-(--text-secondary)">
+                      {settings.soundEnabled
+                        ? 'You will hear audio cues at the end of focus blocks.'
+                        : 'All notification sounds are silenced.'}
+                    </span>
+                  </span>
+                  <span className={cx('sentinel-toggle', settings.soundEnabled && 'sentinel-toggle--checked')} aria-hidden="true">
+                    <span className="sentinel-toggle-thumb" />
+                  </span>
+                </button>
+              </FieldBlock>
+
+              <FieldBlock
+                label="Always On Top"
+                description="Keep the Sentinel overlay above all other windows while running."
+              >
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={settings.alwaysOnTop}
+                  onClick={() => updateSetting('alwaysOnTop', !settings.alwaysOnTop)}
+                  className="sentinel-toggle-row"
+                >
+                  <span className="min-w-0 space-y-1.5 text-left">
+                    <span className="block text-sm font-semibold text-(--text-primary)">
+                      {settings.alwaysOnTop ? 'Pinned' : 'Normal'}
+                    </span>
+                    <span className="block text-sm leading-6 text-(--text-secondary)">
+                      {settings.alwaysOnTop
+                        ? 'Timer overlay stays above other windows.'
+                        : 'Timer overlay can be covered by other windows.'}
+                    </span>
+                  </span>
+                  <span className={cx('sentinel-toggle', settings.alwaysOnTop && 'sentinel-toggle--checked')} aria-hidden="true">
+                    <span className="sentinel-toggle-thumb" />
+                  </span>
                 </button>
               </FieldBlock>
             </SectionCard>
@@ -2098,7 +2230,7 @@ interface CompactTimerScreenProps {
   overlayStyle: OverlayStyle;
   distractionCount: number;
   onStartPause: () => void;
-  onReset: () => void;
+  onMinimize: () => void;
   onExpand: () => void;
   onClose: () => void;
 }
@@ -2111,7 +2243,7 @@ export function CompactTimerScreen({
   overlayStyle,
   distractionCount,
   onStartPause,
-  onReset,
+  onMinimize,
   onExpand,
   onClose,
 }: CompactTimerScreenProps) {
@@ -2135,6 +2267,9 @@ export function CompactTimerScreen({
             </span>
           </div>
           <div className="sentinel-overlay-nodrag flex items-center gap-1">
+            <button type="button" onClick={onMinimize} className="sentinel-overlay-btn" aria-label="Minimize" title="Minimize">
+              &#x2500;
+            </button>
             <button type="button" onClick={onExpand} className="sentinel-overlay-btn" aria-label="Expand" title="Double-click anywhere or click here to expand">
               <Glyph name="overlay" className="h-3 w-3" />
             </button>
@@ -2178,6 +2313,9 @@ export function CompactTimerScreen({
             </span>
           </div>
           <div className="sentinel-overlay-nodrag flex items-center gap-1">
+            <button type="button" onClick={onMinimize} className="sentinel-overlay-btn" aria-label="Minimize" title="Minimize">
+              &#x2500;
+            </button>
             <button type="button" onClick={onExpand} className="sentinel-overlay-btn" aria-label="Expand" title="Double-click anywhere or click here to expand">
               <Glyph name="overlay" className="h-3 w-3" />
             </button>
@@ -2198,9 +2336,6 @@ export function CompactTimerScreen({
         <div className="sentinel-overlay-nodrag flex items-center justify-center gap-3 pb-2">
           <button type="button" onClick={onStartPause} className="sentinel-overlay-btn" aria-label={isRunning ? 'Pause' : 'Start'} title={isRunning ? 'Pause' : 'Start'}>
             <Glyph name={isRunning ? 'pause' : 'play'} className="h-3.5 w-3.5" />
-          </button>
-          <button type="button" onClick={onReset} className="sentinel-overlay-btn" aria-label="Reset" title="Reset">
-            <Glyph name="stop" className="h-3.5 w-3.5" />
           </button>
         </div>
         <div className="absolute bottom-0 left-0 h-0.75 w-full bg-[rgba(53,53,52,0.6)]">
@@ -2228,6 +2363,9 @@ export function CompactTimerScreen({
           </span>
         </div>
         <div className="sentinel-overlay-nodrag flex items-center gap-1">
+          <button type="button" onClick={onMinimize} className="sentinel-overlay-btn" aria-label="Minimize" title="Minimize">
+            &#x2500;
+          </button>
           <button type="button" onClick={onExpand} className="sentinel-overlay-btn" aria-label="Expand" title="Double-click anywhere or click here to expand">
             <Glyph name="overlay" className="h-3 w-3" />
           </button>
@@ -2249,9 +2387,6 @@ export function CompactTimerScreen({
       <div className="sentinel-overlay-nodrag flex items-center justify-center gap-3 pb-2">
         <button type="button" onClick={onStartPause} className="sentinel-overlay-btn" aria-label={isRunning ? 'Pause' : 'Start'} title={isRunning ? 'Pause' : 'Start'}>
           <Glyph name={isRunning ? 'pause' : 'play'} className="h-3.5 w-3.5" />
-        </button>
-        <button type="button" onClick={onReset} className="sentinel-overlay-btn" aria-label="Reset" title="Reset">
-          <Glyph name="stop" className="h-3.5 w-3.5" />
         </button>
       </div>
       <div className="absolute bottom-0 left-0 h-0.75 w-full bg-[rgba(53,53,52,0.6)]">

@@ -530,6 +530,10 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                     Dispatcher.Invoke(() => Close());
                     break;
 
+                case "OVERLAY_MINIMIZE":
+                    Dispatcher.Invoke(() => WindowState = WindowState.Minimized);
+                    break;
+
                 case "OVERLAY_MAXIMIZE":
                     HandleToggleCompact();
                     break;

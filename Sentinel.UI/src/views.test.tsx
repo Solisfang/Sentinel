@@ -314,7 +314,7 @@ describe('CompactTimerScreen', () => {
     overlayStyle: 'compact' as const,
     distractionCount: 1,
     onStartPause: vi.fn(),
-    onReset: vi.fn(),
+    onMinimize: vi.fn(),
     onExpand: vi.fn(),
     onClose: vi.fn(),
   };

@@ -488,8 +488,11 @@ function App() {
       }
     }
 
-    requestTaxonomyData();
     dismissIntervention();
+
+    // Delay taxonomy data reload so quick suggestion pills don't reorder
+    // while the intervention modal is still visually closing.
+    setTimeout(() => requestTaxonomyData(), 300);
   };
 
   const toggleCompact = () => {
@@ -1084,7 +1087,7 @@ function App() {
         overlayStyle={settings.overlayStyle}
         distractionCount={distractions.length}
         onStartPause={handleStartPause}
-        onReset={handleReset}
+        onMinimize={() => postMessage({ type: 'OVERLAY_MINIMIZE' })}
         onExpand={toggleCompact}
         onClose={() => postMessage({ type: 'OVERLAY_CLOSE' })}
       />
