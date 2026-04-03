@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sentinel vNext - Session History</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#e5e2e1",
+                        "secondary": "#8ecdff",
+                        "inverse-primary": "#635690",
+                        "on-primary-fixed": "#1f1048",
+                        "surface": "#131313",
+                        "primary-fixed": "#e8deff",
+                        "surface-container-high": "#2a2a2a",
+                        "background": "#131313",
+                        "on-surface-variant": "#cac4d0",
+                        "tertiary-fixed": "#69ff87",
+                        "tertiary-fixed-dim": "#3be36a",
+                        "on-background": "#e5e2e1",
+                        "primary-fixed-dim": "#cdbdff",
+                        "outline": "#938f9a",
+                        "on-surface": "#e5e2e1",
+                        "on-tertiary-fixed-variant": "#00531e",
+                        "surface-variant": "#353534",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-container": "#9ed3ff",
+                        "surface-bright": "#393939",
+                        "surface-tint": "#cdbdff",
+                        "on-secondary": "#00344f",
+                        "inverse-on-surface": "#313030",
+                        "error": "#ffb4ab",
+                        "surface-container-low": "#1c1b1b",
+                        "secondary-fixed-dim": "#8ecdff",
+                        "tertiary-container": "#3be269",
+                        "surface-container": "#201f1f",
+                        "surface-container-highest": "#353534",
+                        "on-primary-fixed-variant": "#4b3e76",
+                        "outline-variant": "#48454f",
+                        "secondary-fixed": "#cae6ff",
+                        "on-primary": "#34275e",
+                        "primary": "#e7ddff",
+                        "on-primary-container": "#574a83",
+                        "on-error": "#690005",
+                        "surface-dim": "#131313",
+                        "error-container": "#93000a",
+                        "on-secondary-fixed": "#001e30",
+                        "on-tertiary-fixed": "#002108",
+                        "tertiary": "#64ff85",
+                        "secondary-container": "#025c89",
+                        "on-tertiary": "#003912",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary-container": "#006024",
+                        "on-secondary-fixed-variant": "#004b70",
+                        "primary-container": "#cdbdff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #131313;
+            color: #e5e2e1;
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(28, 27, 27, 0.7);
+            backdrop-filter: blur(32px);
+            outline: 1px solid rgba(72, 69, 79, 0.15);
+        }
+        .primary-gradient {
+            background: linear-gradient(135deg, #CDBDFF 0%, #7C4DFF 100%);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #353534;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen overflow-hidden">
+<!-- Shared SideNavBar -->
+<aside class="flex flex-col py-8 fixed left-0 top-0 h-full h-screen w-64 border-r-0 bg-[#1C1B1B] dark:bg-[#1C1B1B] z-50">
+<div class="px-8 text-xl font-bold tracking-tighter text-[#CDBDFF] mb-8 font-['Manrope']">
+            SENTINEL <span class="text-xs font-normal opacity-50 ml-1">vNext</span>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center py-3 px-8 text-gray-500 hover:text-gray-300 hover:bg-[#353534]/50 transition-colors duration-200 font-['Manrope'] tracking-tight text-sm" href="#">
+<span class="material-symbols-outlined mr-4" data-icon="timer">timer</span>
+                Timer
+            </a>
+<a class="flex items-center py-3 px-8 text-gray-500 hover:text-gray-300 hover:bg-[#353534]/50 transition-colors duration-200 font-['Manrope'] tracking-tight text-sm" href="#">
+<span class="material-symbols-outlined mr-4" data-icon="calendar_today">calendar_today</span>
+                Planner
+            </a>
+<a class="flex items-center py-3 px-8 text-gray-500 hover:text-gray-300 hover:bg-[#353534]/50 transition-colors duration-200 font-['Manrope'] tracking-tight text-sm" href="#">
+<span class="material-symbols-outlined mr-4" data-icon="bar_chart">bar_chart</span>
+                Reports
+            </a>
+<a class="flex items-center py-3 px-8 text-[#CDBDFF] font-semibold border-l-2 border-[#CDBDFF] bg-[#353534]/30 font-['Manrope'] tracking-tight text-sm" href="#">
+<span class="material-symbols-outlined mr-4" data-icon="history">history</span>
+                History
+            </a>
+<a class="flex items-center py-3 px-8 text-gray-500 hover:text-gray-300 hover:bg-[#353534]/50 transition-colors duration-200 font-['Manrope'] tracking-tight text-sm" href="#">
+<span class="material-symbols-outlined mr-4" data-icon="category">category</span>
+                Taxonomy
+            </a>
+<div class="mt-auto pt-8">
+<a class="flex items-center py-3 px-8 text-gray-500 hover:text-gray-300 hover:bg-[#353534]/50 transition-colors duration-200 font-['Manrope'] tracking-tight text-sm" href="#">
+<span class="material-symbols-outlined mr-4" data-icon="settings">settings</span>
+                    Settings
+                </a>
+<a class="flex items-center py-3 px-8 text-gray-500 hover:text-gray-300 hover:bg-[#353534]/50 transition-colors duration-200 font-['Manrope'] tracking-tight text-sm" href="#">
+<span class="material-symbols-outlined mr-4" data-icon="account_circle">account_circle</span>
+                    Account
+                </a>
+</div>
+</nav>
+</aside>
+<main class="flex-1 ml-64 flex flex-col h-screen overflow-hidden">
+<!-- Shared TopAppBar -->
+<header class="flex items-center justify-between px-6 w-full h-12 sticky top-0 z-40 bg-[#131313]/80 backdrop-blur-3xl shadow-[0_1px_0_0_rgba(72,69,79,0.15)]">
+<div class="flex items-center gap-4">
+<span class="font-['Manrope'] text-xs uppercase tracking-widest text-[#CDBDFF]">History / Session Archive</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center bg-surface-container-lowest px-3 py-1 rounded shadow-inner">
+<span class="material-symbols-outlined text-xs text-outline mr-2" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-[10px] w-48 text-on-surface p-0" placeholder="Filter history..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-gray-400 hover:text-white cursor-pointer text-lg" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-gray-400 hover:text-white cursor-pointer text-lg" data-icon="help_outline">help_outline</span>
+<span class="material-symbols-outlined text-gray-400 hover:text-white cursor-pointer text-lg" data-icon="close">close</span>
+</div>
+</div>
+</header>
+<!-- Main Content Area: 60/40 Asymmetric Split -->
+<div class="flex flex-1 overflow-hidden">
+<!-- S22: History List (Left Panel) -->
+<section class="w-7/12 p-8 overflow-y-auto custom-scrollbar flex flex-col gap-6">
+<div class="flex items-baseline justify-between mb-2">
+<h1 class="font-headline text-3xl font-extrabold tracking-tighter text-on-surface">Recent Sessions</h1>
+<div class="flex gap-2">
+<button class="bg-surface-container-high px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase rounded hover:bg-surface-bright transition-colors">Export CSV</button>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<!-- Session Card: Active/Selected -->
+<div class="glass-panel p-6 rounded-xl border-l-4 border-[#CDBDFF] relative cursor-default">
+<div class="flex justify-between items-start mb-4">
+<div>
+<span class="text-[10px] font-bold uppercase tracking-widest text-outline block mb-1">Thursday, Oct 24</span>
+<h3 class="font-headline text-xl text-primary-fixed">Deep Focus Session Alpha</h3>
+</div>
+<span class="bg-primary/10 text-primary-fixed px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase">Active View</span>
+</div>
+<div class="grid grid-cols-4 gap-4">
+<div class="flex flex-col">
+<span class="text-[10px] text-outline font-medium uppercase tracking-tight">Duration</span>
+<span class="text-sm font-semibold">02:45:12</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-outline font-medium uppercase tracking-tight">Timeframe</span>
+<span class="text-sm font-semibold">09:00 - 11:45</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-outline font-medium uppercase tracking-tight">Distractions</span>
+<span class="text-sm font-semibold text-error">12</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-outline font-medium uppercase tracking-tight">False Alarms</span>
+<span class="text-sm font-semibold text-tertiary">02</span>
+</div>
+</div>
+</div>
+<!-- Session Card: Early End Badge -->
+<div class="bg-surface-container-low p-6 rounded-xl hover:bg-surface-container-high transition-all cursor-pointer group">
+<div class="flex justify-between items-start mb-4">
+<div>
+<span class="text-[10px] font-bold uppercase tracking-widest text-outline block mb-1">Wednesday, Oct 23</span>
+<h3 class="font-headline text-xl text-on-surface group-hover:text-primary transition-colors">Mid-Day Strategy Block</h3>
+</div>
+<div class="flex gap-2">
+<span class="bg-error/10 text-error px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase">Early End</span>
+</div>
+</div>
+<div class="grid grid-cols-4 gap-4">
+<div class="flex flex-col">
+<span class="text-[10px] text-outline font-medium uppercase tracking-tight">Duration</span>
+<span class="text-sm font-semibold">00:42:00</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-outline font-medium uppercase tracking-tight">Timeframe</span>
+<span class="text-sm font-semibold">14:15 - 14:57</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-outline font-medium uppercase tracking-tight">Distractions</span>
+<span class="text-sm font-semibold text-on-surface">04</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-outline font-medium uppercase tracking-tight">False Alarms</span>
+<span class="text-sm font-semibold text-on-surface">01</span>
+</div>
+</div>
+</div>
+<!-- Session Card: Standard -->
+<div class="bg-surface-container-low p-6 rounded-xl hover:bg-surface-container-high transition-all cursor-pointer group">
+<div class="flex justify-between items-start mb-4">
+<div>
+<span class="text-[10px] font-bold uppercase tracking-widest text-outline block mb-1">Tuesday, Oct 22</span>
+<h3 class="font-headline text-xl text-on-surface group-hover:text-primary transition-colors">Morning Documentation</h3>
+</div>
+</div>
+<div class="grid grid-cols-4 gap-4">
+<div class="flex flex-col">
+<span class="text-[10px] text-outline font-medium uppercase tracking-tight">Duration</span>
+<span class="text-sm font-semibold">03:15:00</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-outline font-medium uppercase tracking-tight">Timeframe</span>
+<span class="text-sm font-semibold">08:00 - 11:15</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-outline font-medium uppercase tracking-tight">Distractions</span>
+<span class="text-sm font-semibold text-on-surface">02</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] text-outline font-medium uppercase tracking-tight">False Alarms</span>
+<span class="text-sm font-semibold text-on-surface">05</span>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="flex justify-center mt-4 gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded-full bg-surface-container hover:bg-surface-bright text-outline"><span class="material-symbols-outlined text-sm" data-icon="chevron_left">chevron_left</span></button>
+<button class="w-8 h-8 flex items-center justify-center rounded-full bg-primary-container text-on-primary-container text-xs font-bold">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-full bg-surface-container hover:bg-surface-bright text-outline text-xs">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-full bg-surface-container hover:bg-surface-bright text-outline text-xs">3</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-full bg-surface-container hover:bg-surface-bright text-outline"><span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span></button>
+</div>
+</div>
+</section>
+<!-- S23: Expanded Detail (Right Panel) -->
+<section class="w-5/12 bg-surface-container-low border-l border-outline-variant/15 p-8 flex flex-col">
+<div class="mb-8">
+<span class="text-[10px] font-bold uppercase tracking-widest text-[#CDBDFF] block mb-2">Detailed Analysis</span>
+<h2 class="font-headline text-2xl font-bold tracking-tight text-on-surface mb-1">Session Alpha Events</h2>
+<p class="text-xs text-outline">Granular timeline of distraction telemetry and category classification.</p>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar pr-4">
+<div class="relative ml-4 pl-8 border-l border-outline-variant/30 space-y-8">
+<!-- Timeline Event: Distraction -->
+<div class="relative">
+<span class="absolute -left-[41px] top-1 w-4 h-4 rounded-full bg-error ring-4 ring-surface-container-low"></span>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center">
+<span class="text-xs font-bold font-headline text-on-surface">09:12:45 AM</span>
+<span class="text-[9px] font-black uppercase tracking-tighter text-error bg-error-container/20 px-1.5 py-0.5 rounded">Alert Triggered</span>
+</div>
+<div class="glass-panel p-3 rounded-lg mt-2">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] text-outline uppercase font-medium">Raw Label</span>
+<span class="text-[10px] text-primary-fixed uppercase font-medium">Mapped Category</span>
+</div>
+<div class="flex justify-between items-center">
+<code class="text-xs font-mono text-on-surface-variant bg-surface-container-lowest px-1 rounded">com.social.x.main</code>
+<span class="material-symbols-outlined text-sm text-outline" data-icon="arrow_forward">arrow_forward</span>
+<span class="text-xs font-bold text-on-surface">Social Media</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Timeline Event: Context Switch -->
+<div class="relative">
+<span class="absolute -left-[41px] top-1 w-4 h-4 rounded-full bg-secondary ring-4 ring-surface-container-low"></span>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center">
+<span class="text-xs font-bold font-headline text-on-surface">09:45:20 AM</span>
+<span class="text-[9px] font-black uppercase tracking-tighter text-secondary bg-secondary-container/20 px-1.5 py-0.5 rounded">Context Shift</span>
+</div>
+<div class="glass-panel p-3 rounded-lg mt-2">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] text-outline uppercase font-medium">Raw Label</span>
+<span class="text-[10px] text-primary-fixed uppercase font-medium">Mapped Category</span>
+</div>
+<div class="flex justify-between items-center">
+<code class="text-xs font-mono text-on-surface-variant bg-surface-container-lowest px-1 rounded">app.slack.channels</code>
+<span class="material-symbols-outlined text-sm text-outline" data-icon="arrow_forward">arrow_forward</span>
+<span class="text-xs font-bold text-on-surface">Communication</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Timeline Event: False Alarm -->
+<div class="relative">
+<span class="absolute -left-[41px] top-1 w-4 h-4 rounded-full bg-tertiary ring-4 ring-surface-container-low"></span>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center">
+<span class="text-xs font-bold font-headline text-on-surface">10:02:15 AM</span>
+<span class="text-[9px] font-black uppercase tracking-tighter text-tertiary bg-tertiary-container/20 px-1.5 py-0.5 rounded">User Override</span>
+</div>
+<div class="glass-panel p-3 rounded-lg mt-2">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] text-outline uppercase font-medium">Raw Label</span>
+<span class="text-[10px] text-primary-fixed uppercase font-medium">Mapped Category</span>
+</div>
+<div class="flex justify-between items-center">
+<code class="text-xs font-mono text-on-surface-variant bg-surface-container-lowest px-1 rounded">terminal.bin.compile</code>
+<span class="material-symbols-outlined text-sm text-outline" data-icon="arrow_forward">arrow_forward</span>
+<span class="text-xs font-bold text-on-surface">Development</span>
+</div>
+<div class="mt-2 pt-2 border-t border-outline-variant/10">
+<p class="text-[9px] text-tertiary italic">Classification updated: Marked as 'Work Essential'</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Timeline Event: Distraction -->
+<div class="relative">
+<span class="absolute -left-[41px] top-1 w-4 h-4 rounded-full bg-error ring-4 ring-surface-container-low"></span>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center">
+<span class="text-xs font-bold font-headline text-on-surface">11:15:33 AM</span>
+<span class="text-[9px] font-black uppercase tracking-tighter text-error bg-error-container/20 px-1.5 py-0.5 rounded">Alert Triggered</span>
+</div>
+<div class="glass-panel p-3 rounded-lg mt-2">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] text-outline uppercase font-medium">Raw Label</span>
+<span class="text-[10px] text-primary-fixed uppercase font-medium">Mapped Category</span>
+</div>
+<div class="flex justify-between items-center">
+<code class="text-xs font-mono text-on-surface-variant bg-surface-container-lowest px-1 rounded">web.youtube.video</code>
+<span class="material-symbols-outlined text-sm text-outline" data-icon="arrow_forward">arrow_forward</span>
+<span class="text-xs font-bold text-on-surface">Entertainment</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-outline-variant/15 flex gap-4">
+<button class="flex-1 primary-gradient text-on-primary py-3 rounded text-[10px] font-bold tracking-widest uppercase hover:opacity-90 transition-opacity">View Full Report</button>
+<button class="bg-surface-container-high text-on-surface px-4 py-3 rounded hover:bg-surface-bright transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="share">share</span>
+</button>
+</div>
+</section>
+</div>
+</main>
+</body></html>

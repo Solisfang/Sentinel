@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sentinel vNext - Onboarding</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "inverse-surface": "#e5e2e1",
+                  "secondary": "#8ecdff",
+                  "inverse-primary": "#635690",
+                  "on-primary-fixed": "#1f1048",
+                  "surface": "#131313",
+                  "primary-fixed": "#e8deff",
+                  "surface-container-high": "#2a2a2a",
+                  "background": "#131313",
+                  "on-surface-variant": "#cac4d0",
+                  "tertiary-fixed": "#69ff87",
+                  "tertiary-fixed-dim": "#3be36a",
+                  "on-background": "#e5e2e1",
+                  "primary-fixed-dim": "#cdbdff",
+                  "outline": "#938f9a",
+                  "on-surface": "#e5e2e1",
+                  "on-tertiary-fixed-variant": "#00531e",
+                  "surface-variant": "#353534",
+                  "on-error-container": "#ffdad6",
+                  "on-secondary-container": "#9ed3ff",
+                  "surface-bright": "#393939",
+                  "surface-tint": "#cdbdff",
+                  "on-secondary": "#00344f",
+                  "inverse-on-surface": "#313030",
+                  "error": "#ffb4ab",
+                  "surface-container-low": "#1c1b1b",
+                  "secondary-fixed-dim": "#8ecdff",
+                  "tertiary-container": "#3be269",
+                  "surface-container": "#201f1f",
+                  "surface-container-highest": "#353534",
+                  "on-primary-fixed-variant": "#4b3e76",
+                  "outline-variant": "#48454f",
+                  "secondary-fixed": "#cae6ff",
+                  "on-primary": "#34275e",
+                  "primary": "#e7ddff",
+                  "on-primary-container": "#574a83",
+                  "on-error": "#690005",
+                  "surface-dim": "#131313",
+                  "error-container": "#93000a",
+                  "on-secondary-fixed": "#001e30",
+                  "on-tertiary-fixed": "#002108",
+                  "tertiary": "#64ff85",
+                  "secondary-container": "#025c89",
+                  "on-tertiary": "#003912",
+                  "surface-container-lowest": "#0e0e0e",
+                  "on-tertiary-container": "#006024",
+                  "on-secondary-fixed-variant": "#004b70",
+                  "primary-container": "#cdbdff"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.125rem",
+                  "lg": "0.25rem",
+                  "xl": "0.5rem",
+                  "full": "0.75rem"
+          },
+          "fontFamily": {
+                  "headline": ["Manrope"],
+                  "body": ["Inter"],
+                  "label": ["Inter"]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .glass-effect {
+      backdrop-filter: blur(40px);
+      background-color: rgba(53, 53, 52, 0.4);
+    }
+    .ghost-border {
+      outline: 1px solid rgba(72, 69, 79, 0.15);
+    }
+    .obsidian-gradient {
+      background: linear-gradient(135deg, #cdbdff 0%, #7c4dff 100%);
+    }
+    .custom-scroll::-webkit-scrollbar { width: 4px; }
+    .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #353534; border-radius: 10px; }
+  </style>
+</head>
+<body class="bg-background text-on-surface flex overflow-hidden h-screen w-screen">
+<!-- SideNavBar Anchor -->
+<aside class="flex flex-col py-8 fixed left-0 top-0 h-full bg-[#1C1B1B] dark:bg-[#1C1B1B] font-['Manrope'] tracking-tight text-sm h-screen w-64 border-r-0 z-40">
+<div class="text-xl font-bold tracking-tighter text-[#CDBDFF] mb-8 px-8">SENTINEL</div>
+<nav class="flex-1 space-y-1">
+<!-- Timer (Inactive) -->
+<a class="flex items-center gap-4 text-gray-500 hover:text-gray-300 pl-4 hover:bg-[#353534]/50 transition-colors duration-200 py-3" href="#">
+<span class="material-symbols-outlined">timer</span>
+<span>Timer</span>
+</a>
+<!-- Planner (Inactive) -->
+<a class="flex items-center gap-4 text-gray-500 hover:text-gray-300 pl-4 hover:bg-[#353534]/50 transition-colors duration-200 py-3" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span>Planner</span>
+</a>
+<!-- Account (Active Logic: Onboarding is related to Account/Setup) -->
+<a class="flex items-center gap-4 text-[#CDBDFF] font-semibold border-l-2 border-[#CDBDFF] pl-4 hover:bg-[#353534]/50 transition-colors duration-200 py-3" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+<span>Account</span>
+</a>
+<!-- History (Inactive) -->
+<a class="flex items-center gap-4 text-gray-500 hover:text-gray-300 pl-4 hover:bg-[#353534]/50 transition-colors duration-200 py-3" href="#">
+<span class="material-symbols-outlined">history</span>
+<span>History</span>
+</a>
+</nav>
+<div class="px-8 mt-auto">
+<div class="text-[10px] text-gray-600 uppercase tracking-widest">vNext S-SERIES</div>
+</div>
+</aside>
+<!-- Main Content Canvas (Narrow View Simulation: 480x640 centered) -->
+<main class="flex-1 flex items-center justify-center relative ml-64 bg-surface">
+<!-- TopAppBar for Onboarding (Close/Help) -->
+<header class="flex items-center justify-between px-6 w-full absolute top-0 left-0 h-12 bg-[#131313]/80 backdrop-blur-3xl z-30 shadow-[0_1px_0_0_rgba(72,69,79,0.15)] font-['Manrope'] text-xs uppercase tracking-widest">
+<div class="text-[#CDBDFF] font-bold">Sentinel vNext</div>
+<div class="flex gap-4 items-center">
+<button class="text-gray-400 hover:text-white transition-opacity"><span class="material-symbols-outlined text-[18px]">help_outline</span></button>
+<button class="text-gray-400 hover:text-white transition-opacity"><span class="material-symbols-outlined text-[18px]">close</span></button>
+</div>
+</header>
+<!-- Onboarding Container (The 480x640 Viewport) -->
+<div class="w-[480px] h-[640px] bg-surface-container-lowest rounded-xl shadow-2xl relative overflow-hidden ghost-border flex flex-col">
+<!-- Progression Indicator -->
+<div class="flex w-full px-8 pt-6 gap-2">
+<div class="h-1 flex-1 obsidian-gradient rounded-full"></div>
+<div class="h-1 flex-1 bg-surface-container-highest rounded-full"></div>
+<div class="h-1 flex-1 bg-surface-container-highest rounded-full"></div>
+<div class="h-1 flex-1 bg-surface-container-highest rounded-full"></div>
+</div>
+<div class="flex-1 overflow-y-auto custom-scroll p-8 pt-10">
+<!-- S31: Welcome Screen -->
+<section class="flex flex-col items-center text-center" id="step-s31">
+<div class="w-20 h-20 obsidian-gradient rounded-full flex items-center justify-center mb-8 shadow-lg">
+<span class="material-symbols-outlined text-4xl text-on-primary" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<h1 class="text-3xl font-extrabold tracking-tighter text-on-surface mb-4 leading-tight">Welcome to the<br/>Obsidian Sanctuary.</h1>
+<p class="text-on-surface-variant text-sm leading-relaxed mb-8 max-w-[280px]">
+            Sentinel is an intelligent silencer for your digital workspace. We preserve your focus through automated intervention.
+          </p>
+<div class="grid grid-cols-2 gap-4 w-full mt-4">
+<div class="p-4 bg-surface-container-low rounded-lg text-left">
+<span class="material-symbols-outlined text-primary mb-2">lock</span>
+<div class="text-xs font-bold text-on-surface uppercase tracking-wider mb-1">Local First</div>
+<div class="text-[10px] text-on-surface-variant">Your data never leaves this machine.</div>
+</div>
+<div class="p-4 bg-surface-container-low rounded-lg text-left">
+<span class="material-symbols-outlined text-primary mb-2">auto_awesome</span>
+<div class="text-xs font-bold text-on-surface uppercase tracking-wider mb-1">Intelligent</div>
+<div class="text-[10px] text-on-surface-variant">Adapts to your rhythmic work cycles.</div>
+</div>
+</div>
+</section>
+<!-- S32: How It Works (Hidden by default in logic, visible for preview) -->
+<section class="hidden flex flex-col items-center" id="step-s32">
+<div class="w-full h-40 bg-surface-container-high rounded-xl mb-8 relative flex items-center justify-center overflow-hidden">
+<!-- Abstract Focus Timer Visual -->
+<div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary via-transparent to-transparent"></div>
+<div class="text-5xl font-bold font-headline tracking-tighter text-primary">25:00</div>
+<div class="absolute bottom-4 text-[10px] uppercase tracking-[0.2em] text-outline">Deep Work Session</div>
+</div>
+<h2 class="text-xl font-bold mb-3 text-center">Intervention Logic</h2>
+<p class="text-sm text-on-surface-variant text-center mb-6 leading-relaxed">
+                When the system detects idle patterns or unauthorized app usage, Sentinel enters <strong>Isolation Mode</strong> automatically.
+            </p>
+<div class="w-full space-y-3">
+<div class="flex items-center p-3 bg-surface-container-lowest rounded ghost-border gap-4">
+<span class="material-symbols-outlined text-secondary">bolt</span>
+<div class="text-xs">Automatic Focus Lock</div>
+</div>
+<div class="flex items-center p-3 bg-surface-container-lowest rounded ghost-border gap-4">
+<span class="material-symbols-outlined text-secondary">vitals</span>
+<div class="text-xs">Idle State Intervention</div>
+</div>
+</div>
+</section>
+<!-- S33: Keyboard Shortcuts (Visual Guide) -->
+<section class="hidden flex flex-col" id="step-s33">
+<h2 class="text-xl font-bold mb-6 text-center">Command Center</h2>
+<div class="grid grid-cols-1 gap-3">
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-lg">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-highest flex items-center justify-center border border-outline-variant shadow-sm text-xs font-bold text-primary">SPC</div>
+<span class="text-sm">Start / Pause Timer</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-lg">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-highest flex items-center justify-center border border-outline-variant shadow-sm text-xs font-bold text-primary">S</div>
+<span class="text-sm">Snooze Intervention</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-lg">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-highest flex items-center justify-center border border-outline-variant shadow-sm text-xs font-bold text-primary">ESC</div>
+<span class="text-sm">Emergency Override</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-lg">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-highest flex items-center justify-center border border-outline-variant shadow-sm text-xs font-bold text-primary">CMD + K</div>
+<span class="text-sm">Omni Search &amp; Config</span>
+</div>
+</div>
+</div>
+</section>
+<!-- S34: Privacy & Ledger -->
+<section class="hidden flex flex-col items-center" id="step-s34">
+<div class="relative w-full h-48 bg-surface-container-lowest rounded-xl flex items-center justify-center mb-8">
+<img class="absolute inset-0 w-full h-full object-cover opacity-30 rounded-xl" data-alt="abstract digital visualization of a secure blockchain ledger with glowing nodes and geometric connections in deep purple and dark tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRzVP0q5Uu405OBUsBkgwDxWVRuRBMR-Gf1cMT1l0AQyLrm_YSrkgcJ89kNU6jjJBTwbtZXVqyvwmLNBpUG0sosa8ZE1KBIPp68o5C16_dcToJfzB3oGTJjQz_RpK8MTcDStH9xxCzEUYkIEMjQSmQUkEZuMmY94MN_1gHEh67csWfMvCot3T31QuG2F3FUZFr6kHK0ayjpqBPHnNUbTEZI_Q5k1RQybUwf1d7erTShPp0n7XcoOulkPfW4ax2G9p9gvnP-aZSI3Nr"/>
+<div class="z-10 text-center">
+<span class="material-symbols-outlined text-5xl text-primary mb-2">database</span>
+<div class="text-xs font-bold uppercase tracking-widest">Append-Only Ledger</div>
+</div>
+</div>
+<h2 class="text-xl font-bold mb-3 text-center">Local-First Privacy</h2>
+<p class="text-sm text-on-surface-variant text-center mb-6 leading-relaxed">
+                Sentinel uses an immutable Firestore ledger that remains local to your device. Cloud sync is end-to-end encrypted and completely optional.
+            </p>
+<div class="flex gap-2 items-center text-[10px] text-tertiary font-bold uppercase tracking-tighter bg-tertiary/10 px-3 py-1 rounded-full">
+<span class="material-symbols-outlined text-[14px]">verified_user</span>
+                GDPR &amp; HIPAA COMPLIANT ARCHITECTURE
+            </div>
+</section>
+</div>
+<!-- Persistent Footer Actions -->
+<footer class="p-8 pt-4 flex flex-col gap-4 bg-surface-container-lowest/80 backdrop-blur-xl">
+<button class="w-full h-12 obsidian-gradient text-on-primary font-bold rounded-lg flex items-center justify-center gap-2 transition-transform active:scale-[0.98]">
+<span>Next Step</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+<button class="w-full py-2 text-[10px] text-outline font-bold uppercase tracking-widest hover:text-on-surface transition-colors">
+            Quick Skip to Dashboard
+        </button>
+</footer>
+<!-- Background Ambient Glow -->
+<div class="absolute -bottom-20 -right-20 w-64 h-64 bg-primary/10 blur-[100px] pointer-events-none"></div>
+</div>
+</main>
+<!-- Notification Overlay (Task Focused Suppression) -->
+<!-- No Mobile Bottom Bar as per instructions -->
+</body></html>

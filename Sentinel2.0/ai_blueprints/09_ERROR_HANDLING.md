@@ -8,6 +8,7 @@ This section defines the phase-by-phase execution plan for migrating Project Sen
 2. **Source-first verification.** Before implementing a target feature, read the source file(s) that implement the equivalent behavior. Verify that the target implementation handles every edge case the source handles.
 3. **No parallel paths.** The source application (`Sentinel.Engine` + `Sentinel.UI`) remains the production build until Phase 12. The target application (`Sentinel.Shell` + `Sentinel.App`) is developed in a separate project directory within the same solution. The two coexist in `Sentinel.sln` throughout development.
 4. **Test at each phase boundary.** Each phase has explicit acceptance criteria. All criteria must pass before proceeding to the next phase.
+5. **Greenfield bootstrap fallback.** If source files are not present (for example, clean-workspace scaffolding), treat Source → Target mappings as behavior references only and scaffold target files directly from the target architecture and phase deliverables.
 
 **Phase dependency graph:**
 
@@ -484,7 +485,7 @@ suspendMonitor.Resumed += (s, e) =>
 
 ### 9.3. Phase 3: Angular App Scaffold with Design System
 
-**Objective:** Create the Angular SPA project (`Sentinel.App`), configure Tailwind CSS v4 with the dark-mode design system (→ §5.1, design tokens from `artifacts/stitch/sentinel-product-design-brief/design-system.md`), implement shared layout components, set up routing for all feature modules, and connect the Angular app to the Photino shell's `wwwroot`.
+**Objective:** Create the Angular SPA project (`Sentinel.App`), configure Tailwind CSS v4 with the dark-mode design system (→ §5.1, design tokens from `stitch_exports/Sentinel2.0/metadata/design-system-theme.json`), implement shared layout components, set up routing for all feature modules, and connect the Angular app to the Photino shell's `wwwroot`.
 
 **Prerequisites:** Phase 1 (Photino shell loads `wwwroot/index.html`).
 
@@ -573,7 +574,7 @@ Sentinel.App/
 
 #### 9.3.4. Design System Integration
 
-**Source:** Design tokens are defined in `artifacts/stitch/sentinel-product-design-brief/design-system.md`. These specify the exact color palette, typography scale, spacing scale, border radii, and shadows.
+**Source:** Design tokens are defined in `stitch_exports/Sentinel2.0/metadata/design-system-theme.json`. These specify the exact color palette, typography scale, spacing scale, border radii, and shadows.
 
 **Target:** Tailwind CSS v4 custom theme in `styles.css` using `@theme` directive:
 
@@ -583,7 +584,7 @@ Sentinel.App/
 @import "tailwindcss";
 
 @theme {
-  /* Colors from design-system.md */
+  /* Colors from stitch_exports/Sentinel2.0/metadata/design-system-theme.json */
   --color-surface-primary: #0a0a0a;
   --color-surface-secondary: #141414;
   --color-surface-tertiary: #1e1e1e;
@@ -1214,7 +1215,7 @@ The source codebase has NO planner functionality. The `views.tsx` file contains 
 
 > **Core Modules:** Timer, Planner (Teams-style calendar), History, Reports, Settings, and Account.
 
-The Planner is referenced in the Stitch design brief at `artifacts/stitch/sentinel-product-design-brief/` and the navigation structure expects a "Planner" route.
+The Planner is referenced in the Stitch exports at `stitch_exports/Sentinel2.0/` and the navigation structure expects a "Planner" route.
 
 #### 9.8.4. Acceptance Criteria
 

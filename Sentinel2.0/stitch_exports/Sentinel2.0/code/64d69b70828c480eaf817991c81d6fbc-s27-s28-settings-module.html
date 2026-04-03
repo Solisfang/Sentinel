@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#e5e2e1",
+                    "secondary": "#8ecdff",
+                    "inverse-primary": "#635690",
+                    "on-primary-fixed": "#1f1048",
+                    "surface": "#131313",
+                    "primary-fixed": "#e8deff",
+                    "surface-container-high": "#2a2a2a",
+                    "background": "#131313",
+                    "on-surface-variant": "#cac4d0",
+                    "tertiary-fixed": "#69ff87",
+                    "tertiary-fixed-dim": "#3be36a",
+                    "on-background": "#e5e2e1",
+                    "primary-fixed-dim": "#cdbdff",
+                    "outline": "#938f9a",
+                    "on-surface": "#e5e2e1",
+                    "on-tertiary-fixed-variant": "#00531e",
+                    "surface-variant": "#353534",
+                    "on-error-container": "#ffdad6",
+                    "on-secondary-container": "#9ed3ff",
+                    "surface-bright": "#393939",
+                    "surface-tint": "#cdbdff",
+                    "on-secondary": "#00344f",
+                    "inverse-on-surface": "#313030",
+                    "error": "#ffb4ab",
+                    "surface-container-low": "#1c1b1b",
+                    "secondary-fixed-dim": "#8ecdff",
+                    "tertiary-container": "#3be269",
+                    "surface-container": "#201f1f",
+                    "surface-container-highest": "#353534",
+                    "on-primary-fixed-variant": "#4b3e76",
+                    "outline-variant": "#48454f",
+                    "secondary-fixed": "#cae6ff",
+                    "on-primary": "#34275e",
+                    "primary": "#e7ddff",
+                    "on-primary-container": "#574a83",
+                    "on-error": "#690005",
+                    "surface-dim": "#131313",
+                    "error-container": "#93000a",
+                    "on-secondary-fixed": "#001e30",
+                    "on-tertiary-fixed": "#002108",
+                    "tertiary": "#64ff85",
+                    "secondary-container": "#025c89",
+                    "on-tertiary": "#003912",
+                    "surface-container-lowest": "#0e0e0e",
+                    "on-tertiary-container": "#006024",
+                    "on-secondary-fixed-variant": "#004b70",
+                    "primary-container": "#cdbdff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        font-size: 20px;
+      }
+      .glass-card {
+        background: rgba(53, 53, 52, 0.4);
+        backdrop-filter: blur(40px);
+        outline: 1px solid rgba(72, 69, 79, 0.15);
+      }
+      .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+      .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: #353534; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body overflow-hidden selection:bg-primary-container selection:text-on-primary-container">
+<div class="flex h-screen w-full">
+<!-- SideNavBar - Predicted Shared Component -->
+<aside class="flex flex-col py-8 fixed left-0 top-0 h-full h-screen w-64 border-r-0 bg-[#1C1B1B] dark:bg-[#1C1B1B] border-none shadow-none z-50">
+<div class="px-8 text-xl font-bold tracking-tighter text-[#CDBDFF] mb-8 font-['Manrope']">
+                SENTINEL
+                <span class="block text-[10px] font-medium tracking-widest text-gray-500 mt-1 uppercase">vNext</span>
+</div>
+<nav class="flex-1 space-y-1 font-['Manrope'] tracking-tight text-sm">
+<a class="flex items-center gap-3 text-gray-500 hover:text-gray-300 pl-4 py-3 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">timer</span>
+<span>Timer</span>
+</a>
+<a class="flex items-center gap-3 text-gray-500 hover:text-gray-300 pl-4 py-3 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span>Planner</span>
+</a>
+<a class="flex items-center gap-3 text-gray-500 hover:text-gray-300 pl-4 py-3 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">bar_chart</span>
+<span>Reports</span>
+</a>
+<a class="flex items-center gap-3 text-gray-500 hover:text-gray-300 pl-4 py-3 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">history</span>
+<span>History</span>
+</a>
+<a class="flex items-center gap-3 text-gray-500 hover:text-gray-300 pl-4 py-3 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">category</span>
+<span>Taxonomy</span>
+</a>
+<a class="flex items-center gap-3 text-[#CDBDFF] font-semibold border-l-2 border-[#CDBDFF] pl-4 py-3 bg-[#353534]/30" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-3 text-gray-500 hover:text-gray-300 pl-4 py-3 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span>Account</span>
+</a>
+</nav>
+<div class="px-8 mt-auto">
+<div class="p-4 rounded-xl bg-surface-container-highest/20 border border-outline-variant/10">
+<p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">Cloud Status</p>
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-tertiary"></div>
+<span class="text-xs font-medium text-on-surface-variant">Encrypted Sync Active</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-64 overflow-y-auto custom-scrollbar bg-background">
+<!-- TopAppBar - Predicted Shared Component -->
+<header class="flex items-center justify-between px-6 w-full w-full h-12 sticky top-0 z-50 bg-[#131313]/80 backdrop-blur-3xl shadow-[0_1px_0_0_rgba(72,69,79,0.15)]">
+<div class="flex items-center gap-4">
+<h1 class="font-['Manrope'] text-xs uppercase tracking-[0.2em] font-extrabold text-[#CDBDFF]">System Preferences</h1>
+<span class="text-[10px] text-outline-variant">•</span>
+<span class="font-['Inter'] text-[10px] text-gray-500 font-medium">Build 27.2.1-vNext</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative group">
+<div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-500 group-focus-within:text-[#CDBDFF]">
+<span class="material-symbols-outlined !text-sm">search</span>
+</div>
+<input class="bg-surface-container-lowest border-none text-[10px] tracking-widest font-semibold px-4 py-1.5 pr-10 focus:ring-1 ring-[#CDBDFF] w-48 transition-all" placeholder="SEARCH SETTINGS..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-1.5 text-gray-400 hover:text-white transition-opacity"><span class="material-symbols-outlined !text-[18px]">notifications</span></button>
+<button class="p-1.5 text-gray-400 hover:text-white transition-opacity"><span class="material-symbols-outlined !text-[18px]">help_outline</span></button>
+<button class="p-1.5 text-gray-400 hover:text-white transition-opacity"><span class="material-symbols-outlined !text-[18px]">close</span></button>
+</div>
+</div>
+</header>
+<div class="max-w-6xl mx-auto px-8 py-12">
+<!-- Page Title -->
+<div class="mb-12">
+<h2 class="font-headline text-4xl font-extrabold tracking-tight mb-2">Settings</h2>
+<p class="text-on-surface-variant font-medium opacity-70">Configure your workspace environment and monitoring behavior.</p>
+</div>
+<!-- Settings Grid -->
+<div class="grid grid-cols-12 gap-8 items-start">
+<!-- S27: Main Settings Column (70%) -->
+<div class="col-span-8 space-y-8">
+<!-- Timer & Presets -->
+<section class="glass-card p-6 rounded-xl">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-primary">schedule</span>
+<h3 class="font-headline text-sm font-bold uppercase tracking-widest">Timer &amp; Presets</h3>
+</div>
+<div class="space-y-6">
+<div class="flex items-center justify-between group">
+<div>
+<h4 class="text-sm font-semibold mb-1">Deep Work Interval</h4>
+<p class="text-xs text-on-surface-variant">Recommended 50-minute focused blocks.</p>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-xs font-mono text-primary">50:00</span>
+<div class="h-8 w-12 bg-surface-container-low rounded flex items-center justify-center cursor-pointer hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined !text-sm">edit</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between group">
+<div>
+<h4 class="text-sm font-semibold mb-1">Auto-Start Next Session</h4>
+<p class="text-xs text-on-surface-variant">Automatically trigger the break timer after focus sessions.</p>
+</div>
+<button class="w-10 h-5 bg-primary-container rounded-full relative transition-colors">
+<div class="absolute right-1 top-1 w-3 h-3 bg-on-primary rounded-full"></div>
+</button>
+</div>
+</div>
+</section>
+<!-- Idle & Behavior -->
+<section class="glass-card p-6 rounded-xl">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-primary">sensors</span>
+<h3 class="font-headline text-sm font-bold uppercase tracking-widest">Idle &amp; Behavior</h3>
+</div>
+<div class="space-y-6">
+<div class="flex items-center justify-between">
+<div>
+<h4 class="text-sm font-semibold mb-1">Idle Detection Threshold</h4>
+<p class="text-xs text-on-surface-variant">Pause timer after no system activity for X minutes.</p>
+</div>
+<select class="bg-surface-container-lowest border-none text-xs rounded-lg py-2 px-4 focus:ring-1 ring-primary min-w-[120px]">
+<option>3 Minutes</option>
+<option selected="">5 Minutes</option>
+<option>10 Minutes</option>
+</select>
+</div>
+<div class="flex items-center justify-between">
+<div>
+<h4 class="text-sm font-semibold mb-1">Low-Battery Power Saver</h4>
+<p class="text-xs text-on-surface-variant">Disable rich animations and sync when below 20%.</p>
+</div>
+<button class="w-10 h-5 bg-surface-container-highest rounded-full relative transition-colors">
+<div class="absolute left-1 top-1 w-3 h-3 bg-outline rounded-full"></div>
+</button>
+</div>
+</div>
+</section>
+<!-- Data & Privacy -->
+<section class="glass-card p-6 rounded-xl">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-primary">security</span>
+<h3 class="font-headline text-sm font-bold uppercase tracking-widest">Goals &amp; Data Export</h3>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<button class="flex flex-col items-start p-4 bg-surface-container-low hover:bg-surface-container-high transition-colors rounded-lg group">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary mb-2">download</span>
+<span class="text-xs font-semibold">Export JSON History</span>
+<span class="text-[10px] text-gray-500 mt-1">Full raw telemetry data.</span>
+</button>
+<button class="flex flex-col items-start p-4 bg-surface-container-low hover:bg-surface-container-high transition-colors rounded-lg group">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary mb-2">table_chart</span>
+<span class="text-xs font-semibold">Generate CSV Report</span>
+<span class="text-[10px] text-gray-500 mt-1">Ready for spreadsheet analysis.</span>
+</button>
+</div>
+</section>
+</div>
+<!-- S28: Overlay & Whitelist Column (30%) -->
+<div class="col-span-4 space-y-8">
+<!-- Overlay Style Selector -->
+<section class="glass-card p-6 rounded-xl border-l-4 border-primary/20">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-primary">layers</span>
+<h3 class="font-headline text-sm font-bold uppercase tracking-widest">Overlay Style</h3>
+</div>
+<div class="space-y-3">
+<!-- Pill Style -->
+<div class="flex items-center p-3 rounded-lg bg-primary-container text-on-primary-container cursor-pointer transition-all">
+<span class="material-symbols-outlined mr-3">rectangle</span>
+<div class="flex-1">
+<p class="text-xs font-bold">Pill Mode</p>
+<p class="text-[10px] opacity-70">Floating minimal status bar.</p>
+</div>
+<span class="material-symbols-outlined !text-sm" data-weight="fill">check_circle</span>
+</div>
+<!-- Compact -->
+<div class="flex items-center p-3 rounded-lg bg-surface-container-low hover:bg-surface-container-high cursor-pointer transition-all">
+<span class="material-symbols-outlined mr-3 text-on-surface-variant">grid_view</span>
+<div class="flex-1">
+<p class="text-xs font-semibold">Compact</p>
+<p class="text-[10px] text-on-surface-variant">Snap to screen corners.</p>
+</div>
+</div>
+<!-- Monitoring -->
+<div class="flex items-center p-3 rounded-lg bg-surface-container-low hover:bg-surface-container-high cursor-pointer transition-all">
+<span class="material-symbols-outlined mr-3 text-on-surface-variant">monitoring</span>
+<div class="flex-1">
+<p class="text-xs font-semibold">Monitoring</p>
+<p class="text-[10px] text-on-surface-variant">Full diagnostic stream.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Whitelist Editor -->
+<section class="glass-card p-6 rounded-xl">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-primary">list_alt</span>
+<h3 class="font-headline text-sm font-bold uppercase tracking-widest">Process Whitelist</h3>
+</div>
+<div class="relative mb-4">
+<input class="w-full bg-surface-container-lowest border-none text-xs rounded-lg py-3 px-4 focus:ring-1 ring-primary" placeholder="Add process (e.g. slack.exe)" type="text"/>
+<button class="absolute right-2 top-2 p-1 bg-primary text-on-primary rounded-md">
+<span class="material-symbols-outlined !text-sm">add</span>
+</button>
+</div>
+<div class="space-y-2 max-h-64 overflow-y-auto custom-scrollbar pr-1">
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest rounded group">
+<div class="flex items-center gap-3">
+<img class="w-6 h-6 rounded" data-alt="minimalist black and white icon for chrome browser on dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBz1BPYHdbGtJYi3Rgej5ucai0nGLZDUPEmvGlK3baGrh1vKTD5kvR-EptaFcdIni8pMwPKXCpKSqAUxf4W3NHuzZYL4nWMU3-PVWxyeI60K3a9AygPYWupritLcHrBZfEwfaN436RoW1DZ06cTahpqYUq8y76TFVdbNl6tQB4pHB_5jFfVekP09g41dwRS_BPKEZgzIg56LqlEUnXkhGuN58ypGTMnLbt1W84j59_9ML1KlfzTR2DjzQFmoSjr6sXGgBX7fLQWO3V1"/>
+<span class="text-xs font-mono text-on-surface-variant">chrome.exe</span>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-error">
+<span class="material-symbols-outlined !text-sm">delete</span>
+</button>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest rounded group">
+<div class="flex items-center gap-3">
+<img class="w-6 h-6 rounded" data-alt="minimalist white icon for vscode software development application on dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcU3lkDDu7jtj7zhX0fuz_ugqDgDo6fDB_25OS7A-Vc32X90ieUTHoLMMDvKqMAMnmF_JR3d3D7YptNlX0ufNPLsw7atBNrd9OLcKYepZ2gjN_0Sve-lp4usr93LfVh_xgUdDnw7HOP7qsWfoxBHoUoLZ7_xVRNcOirE9aZle0PMkNteeBdWfwFdxIcdOSENzvuxCxTukhr33VvDWIjvPXG9J8Ed3fPuxoevIZ-zrpdmbTvwMPXlSFX2oCOLPev_AMpMgfA0y1iZoD"/>
+<span class="text-xs font-mono text-on-surface-variant">vscode.exe</span>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-error">
+<span class="material-symbols-outlined !text-sm">delete</span>
+</button>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container-lowest rounded group">
+<div class="flex items-center gap-3">
+<img class="w-6 h-6 rounded" data-alt="minimalist white icon for figma design tool application on dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAY0FKcpiZ6Tu9l15l7KW3aHP3vZLYqoVEsY7nrzbbSQNgrHq4nG_b8oDxwIGzsHCCmtS_vrGnIJZgUzIDnRFFRi7T377qW3myFqIyf9Q3RYwJUwCuAU0FugIlKmy-saqDYgrorozDUfuMKCYo7Ebrvre1xD6Qse2Uwi0eML6iupPtD14kSo8OS4CJ8dPz3kki4dvcOybHfzUw-kjw_SmbKmrcj0ZRkAhTkgJZ0MtdOxROxKr71PsHjzNtDm7vsFjZNyBK3q3C8vAaK"/>
+<span class="text-xs font-mono text-on-surface-variant">figma.exe</span>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity text-error">
+<span class="material-symbols-outlined !text-sm">delete</span>
+</button>
+</div>
+</div>
+<p class="mt-4 text-[10px] text-on-surface-variant leading-relaxed italic opacity-60">
+                                These processes will not trigger idle timeouts when focused.
+                            </p>
+</section>
+<!-- Shortcuts -->
+<section class="glass-card p-6 rounded-xl">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-primary">keyboard</span>
+<h3 class="font-headline text-sm font-bold uppercase tracking-widest">Shortcuts</h3>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<span class="text-xs">Toggle Overlay</span>
+<span class="px-2 py-1 bg-surface-container-high rounded text-[10px] font-mono border border-outline-variant/30">ALT + S</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-xs">Quick Pause</span>
+<span class="px-2 py-1 bg-surface-container-high rounded text-[10px] font-mono border border-outline-variant/30">ALT + P</span>
+</div>
+</div>
+</section>
+</div>
+</div>
+<!-- Footer Action Bar -->
+<div class="mt-16 flex items-center justify-end gap-4 border-t border-outline-variant/10 pt-8">
+<button class="px-6 py-2 text-xs font-bold uppercase tracking-widest text-on-surface-variant hover:text-on-surface transition-colors">Discard Changes</button>
+<button class="px-8 py-2.5 bg-gradient-to-br from-primary to-[#7C4DFF] text-on-primary text-xs font-bold uppercase tracking-widest rounded-md shadow-lg shadow-primary/10 hover:brightness-110 transition-all">
+                        Apply Synchronization
+                    </button>
+</div>
+</div>
+</main>
+</div>
+</body></html>

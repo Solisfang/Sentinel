@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sentinel vNext - Focused States</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#e5e2e1",
+                    "secondary": "#8ecdff",
+                    "inverse-primary": "#635690",
+                    "on-primary-fixed": "#1f1048",
+                    "surface": "#131313",
+                    "primary-fixed": "#e8deff",
+                    "surface-container-high": "#2a2a2a",
+                    "background": "#131313",
+                    "on-surface-variant": "#cac4d0",
+                    "tertiary-fixed": "#69ff87",
+                    "tertiary-fixed-dim": "#3be36a",
+                    "on-background": "#e5e2e1",
+                    "primary-fixed-dim": "#cdbdff",
+                    "outline": "#938f9a",
+                    "on-surface": "#e5e2e1",
+                    "on-tertiary-fixed-variant": "#00531e",
+                    "surface-variant": "#353534",
+                    "on-error-container": "#ffdad6",
+                    "on-secondary-container": "#9ed3ff",
+                    "surface-bright": "#393939",
+                    "surface-tint": "#cdbdff",
+                    "on-secondary": "#00344f",
+                    "inverse-on-surface": "#313030",
+                    "error": "#ffb4ab",
+                    "surface-container-low": "#1c1b1b",
+                    "secondary-fixed-dim": "#8ecdff",
+                    "tertiary-container": "#3be269",
+                    "surface-container": "#201f1f",
+                    "surface-container-highest": "#353534",
+                    "on-primary-fixed-variant": "#4b3e76",
+                    "outline-variant": "#48454f",
+                    "secondary-fixed": "#cae6ff",
+                    "on-primary": "#34275e",
+                    "primary": "#e7ddff",
+                    "on-primary-container": "#574a83",
+                    "on-error": "#690005",
+                    "surface-dim": "#131313",
+                    "error-container": "#93000a",
+                    "on-secondary-fixed": "#001e30",
+                    "on-tertiary-fixed": "#002108",
+                    "tertiary": "#64ff85",
+                    "secondary-container": "#025c89",
+                    "on-tertiary": "#003912",
+                    "surface-container-lowest": "#0e0e0e",
+                    "on-tertiary-container": "#006024",
+                    "on-secondary-fixed-variant": "#004b70",
+                    "primary-container": "#cdbdff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      .asymmetric-70-30 { grid-template-columns: 7fr 3fr; }
+      .obsidian-glass { background: rgba(19, 19, 19, 0.6); backdrop-filter: blur(32px); }
+      .ghost-border { outline: 1px solid rgba(72, 69, 79, 0.15); }
+      .primary-gradient { background: linear-gradient(135deg, #cdbdff 0%, #7C4DFF 100%); }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary/30">
+<!-- Wrapper for fixed side navigation and content -->
+<div class="flex h-screen overflow-hidden">
+<!-- SideNavBar Component -->
+<nav class="flex flex-col py-8 fixed left-0 top-0 h-full bg-[#1C1B1B] dark:bg-[#1C1B1B] h-screen w-64 border-r-0 font-['Manrope'] tracking-tight text-sm z-40 hidden md:flex">
+<div class="px-8">
+<div class="text-xl font-bold tracking-tighter text-[#CDBDFF] mb-8">SENTINEL</div>
+<div class="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-8 opacity-60">vNext System</div>
+</div>
+<div class="flex flex-col space-y-1">
+<div class="text-[#CDBDFF] font-semibold border-l-2 border-[#CDBDFF] pl-4 flex items-center py-3 hover:bg-[#353534]/50 transition-colors duration-200 cursor-pointer">
+<span class="material-symbols-outlined mr-4" data-icon="timer">timer</span>
+<span>Timer</span>
+</div>
+<div class="text-gray-500 hover:text-gray-300 pl-4 flex items-center py-3 hover:bg-[#353534]/50 transition-colors duration-200 cursor-pointer">
+<span class="material-symbols-outlined mr-4" data-icon="calendar_today">calendar_today</span>
+<span>Planner</span>
+</div>
+<div class="text-gray-500 hover:text-gray-300 pl-4 flex items-center py-3 hover:bg-[#353534]/50 transition-colors duration-200 cursor-pointer">
+<span class="material-symbols-outlined mr-4" data-icon="bar_chart">bar_chart</span>
+<span>Reports</span>
+</div>
+<div class="text-gray-500 hover:text-gray-300 pl-4 flex items-center py-3 hover:bg-[#353534]/50 transition-colors duration-200 cursor-pointer">
+<span class="material-symbols-outlined mr-4" data-icon="history">history</span>
+<span>History</span>
+</div>
+<div class="text-gray-500 hover:text-gray-300 pl-4 flex items-center py-3 hover:bg-[#353534]/50 transition-colors duration-200 cursor-pointer">
+<span class="material-symbols-outlined mr-4" data-icon="category">category</span>
+<span>Taxonomy</span>
+</div>
+</div>
+<div class="mt-auto flex flex-col space-y-1">
+<div class="text-gray-500 hover:text-gray-300 pl-4 flex items-center py-3 hover:bg-[#353534]/50 transition-colors duration-200 cursor-pointer">
+<span class="material-symbols-outlined mr-4" data-icon="settings">settings</span>
+<span>Settings</span>
+</div>
+<div class="text-gray-500 hover:text-gray-300 pl-4 flex items-center py-3 hover:bg-[#353534]/50 transition-colors duration-200 cursor-pointer">
+<span class="material-symbols-outlined mr-4" data-icon="account_circle">account_circle</span>
+<span>Account</span>
+</div>
+</div>
+</nav>
+<!-- Main Workspace (Restricted to 480x640 Mockup behavior within the canvas) -->
+<main class="flex-1 md:ml-64 relative flex items-center justify-center bg-surface overflow-auto p-4 md:p-8">
+<!-- Narrow View Frame Container -->
+<div class="w-[480px] h-[640px] bg-surface relative overflow-hidden flex flex-col ghost-border rounded-xl shadow-2xl shrink-0">
+<!-- TopAppBar Component -->
+<header class="flex items-center justify-between px-6 w-full h-12 sticky top-0 z-50 bg-[#131313]/80 backdrop-blur-3xl shadow-[0_1px_0_0_rgba(72,69,79,0.15)]">
+<div class="flex items-center">
+<span class="font-headline font-extrabold tracking-tighter text-[#CDBDFF] text-lg">SENTINEL</span>
+<span class="ml-2 font-headline text-[8px] uppercase tracking-widest text-gray-500 font-medium">vNext</span>
+</div>
+<div class="flex items-center space-x-4">
+<span class="material-symbols-outlined text-gray-400 text-sm cursor-pointer hover:text-white transition-opacity" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-gray-400 text-sm cursor-pointer hover:text-white transition-opacity" data-icon="help_outline">help_outline</span>
+<span class="material-symbols-outlined text-gray-400 text-sm cursor-pointer hover:text-white transition-opacity" data-icon="close">close</span>
+</div>
+</header>
+<!-- Scrollable Content Area -->
+<div class="flex-1 flex flex-col no-scrollbar overflow-y-auto">
+<!-- S06: Timer Running State -->
+<section class="min-h-[640px] w-full flex flex-col relative py-12 px-8 shrink-0">
+<!-- Breathing Background Gradient (Atmospheric) -->
+<div class="absolute inset-0 z-0 opacity-10">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-primary rounded-full blur-[100px]"></div>
+</div>
+<div class="relative z-10 flex flex-col h-full">
+<div class="flex justify-between items-start mb-16">
+<div class="space-y-1">
+<h2 class="font-headline text-[10px] uppercase tracking-[0.2em] text-primary font-bold">Current Focus</h2>
+<p class="font-headline text-lg font-bold tracking-tight">System Architecture</p>
+</div>
+<div class="px-2 py-1 bg-surface-container-high rounded text-[10px] font-mono text-primary/80">S06_ACTV</div>
+</div>
+<div class="flex-1 flex flex-col items-center justify-center">
+<!-- The "Sentinel" Focus Timer Readout -->
+<div class="relative group cursor-pointer">
+<div class="font-headline text-7xl font-extrabold tracking-tighter text-primary-fixed leading-none">24:42</div>
+<div class="h-1 w-full bg-surface-container-high mt-4 overflow-hidden rounded-full">
+<div class="h-full bg-primary w-[82%]"></div>
+</div>
+</div>
+<p class="mt-8 font-label text-[10px] text-gray-500 uppercase tracking-widest flex items-center">
+<span class="w-1.5 h-1.5 rounded-full bg-primary mr-2 animate-pulse"></span>
+                                    Session in progress
+                                </p>
+</div>
+<div class="mt-auto pt-12 space-y-6">
+<div class="flex gap-4">
+<button class="flex-1 primary-gradient h-12 rounded-lg flex items-center justify-center font-headline text-on-primary font-bold transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined mr-2" data-icon="pause">pause</span>
+                                        Pause
+                                    </button>
+<button class="w-12 h-12 bg-surface-container-high rounded-lg flex items-center justify-center text-on-surface hover:bg-surface-bright transition-colors">
+<span class="material-symbols-outlined" data-icon="skip_next">skip_next</span>
+</button>
+</div>
+<div class="flex justify-center">
+<div class="px-3 py-1 bg-surface-container-low rounded-full ghost-border">
+<span class="font-label text-[10px] text-gray-500 font-medium">[Space] to Pause</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- S07: Timer Paused State (Simulated overlay on same layout) -->
+<section class="min-h-[640px] w-full flex flex-col relative shrink-0">
+<div class="absolute inset-0 z-0 grayscale-[0.4] opacity-40">
+<!-- Replicating state bg -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-secondary rounded-full blur-[100px]"></div>
+</div>
+<!-- Paused Overlay -->
+<div class="absolute inset-0 obsidian-glass z-20 flex flex-col items-center justify-center text-center p-8">
+<div class="w-16 h-16 bg-surface-container-highest rounded-full flex items-center justify-center mb-6 shadow-2xl ghost-border">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="pause" data-weight="fill">pause</span>
+</div>
+<h3 class="font-headline text-2xl font-bold tracking-tight mb-2">Session Paused</h3>
+<p class="font-body text-sm text-gray-400 mb-12 max-w-[200px]">System resources are in standby mode. Ready to resume.</p>
+<button class="w-full primary-gradient h-14 rounded-xl flex items-center justify-center font-headline text-on-primary font-bold text-lg shadow-xl shadow-primary/10">
+<span class="material-symbols-outlined mr-2" data-icon="play_arrow" data-weight="fill">play_arrow</span>
+                                Resume Session
+                            </button>
+<div class="mt-8 flex gap-8">
+<button class="flex flex-col items-center group">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center mb-2 group-hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-gray-400" data-icon="refresh">refresh</span>
+</div>
+<span class="text-[9px] uppercase tracking-widest text-gray-500 font-bold">Restart</span>
+</button>
+<button class="flex flex-col items-center group">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center mb-2 group-hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-gray-400" data-icon="stop">stop</span>
+</div>
+<span class="text-[9px] uppercase tracking-widest text-gray-500 font-bold">End Now</span>
+</button>
+</div>
+</div>
+<div class="relative z-10 flex flex-col h-full p-8 blur-sm pointer-events-none">
+<div class="font-headline text-7xl font-extrabold tracking-tighter text-primary-fixed/30 leading-none text-center mt-32">24:42</div>
+</div>
+</section>
+<!-- S08: Timer Snoozed State -->
+<section class="min-h-[640px] w-full flex flex-col relative py-12 px-8 shrink-0 bg-surface-container-lowest">
+<!-- Snooze specific atmospheric tone -->
+<div class="absolute inset-0 z-0 opacity-10">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-secondary rounded-full blur-[100px]"></div>
+</div>
+<div class="relative z-10 flex flex-col h-full">
+<div class="flex justify-between items-center mb-16">
+<div class="px-3 py-1.5 bg-secondary-container/20 rounded-full flex items-center">
+<span class="material-symbols-outlined text-secondary text-xs mr-2" data-icon="snooze">snooze</span>
+<span class="font-label text-[10px] text-secondary font-bold uppercase tracking-widest">Snooze Active</span>
+</div>
+<div class="px-2 py-1 bg-surface-container-high rounded text-[10px] font-mono text-secondary/80">S08_SNZ</div>
+</div>
+<div class="flex-1 flex flex-col items-center justify-center">
+<div class="text-center space-y-4">
+<div class="font-headline text-5xl font-extrabold tracking-tighter text-on-surface/40 leading-none">04:12</div>
+<p class="font-headline text-xs text-gray-500 uppercase tracking-[0.3em]">Remaining in Snooze</p>
+</div>
+<!-- Subtle Progress Suppression -->
+<div class="w-full max-w-[240px] mt-12 grid grid-cols-5 gap-1.5 h-1">
+<div class="bg-secondary rounded-full"></div>
+<div class="bg-secondary rounded-full"></div>
+<div class="bg-secondary rounded-full"></div>
+<div class="bg-secondary/40 rounded-full"></div>
+<div class="bg-surface-container-high rounded-full"></div>
+</div>
+</div>
+<div class="mt-auto pt-12">
+<div class="bg-surface-container-low p-6 rounded-2xl ghost-border mb-8">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Next Action</span>
+<span class="text-[10px] font-mono text-secondary">05:00 Total</span>
+</div>
+<p class="font-body text-sm text-gray-200">Return to <span class="text-primary font-bold">System Architecture</span> focus block</p>
+</div>
+<button class="w-full bg-surface-container-highest h-14 rounded-xl flex items-center justify-center font-headline text-on-surface font-bold transition-all hover:bg-surface-bright active:scale-[0.98]">
+<span class="material-symbols-outlined mr-2" data-icon="alarm_off">alarm_off</span>
+                                    Cancel Snooze
+                                </button>
+</div>
+</div>
+</section>
+</div>
+<!-- FAB Suppression Note: FAB is omitted as per Task Instructions for State Details/Focused screens -->
+</div>
+<!-- Image placeholders for context in background if needed (Editorially placed) -->
+<div class="absolute top-20 right-20 w-64 h-96 opacity-10 pointer-events-none hidden xl:block">
+<img alt="Clean minimalist workspace" class="w-full h-full object-cover rounded-3xl grayscale" data-alt="abstract close-up of high-tech geometric architectural lines in dark grey and violet tones with sharp edges and moody lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCILajj2gOFfrMIt7dFO5Jn32q3WDtHMBMwTM7FHg-mvBhjNAisUFXAOGiRxyHUwSvm4Y1mbOhVhXMWXn7S7S8bdmIAU8x9bkHcg0gOKa51z0-dkfS1HcjGOb4bwqUD0fdvmpWayldAfV4b85wuPa03awisOryH6wsIpB7ypC7EkMyz-BtWrx7DSxhnLkSe-yJQwUrX1YeK3ByPrvIS3EhZBD8JzxL3E8jyv-jaYtOOSUX_qjGY_tC9MFqmNqEkfyEN36yZdshx6rA-"/>
+</div>
+</main>
+</div>
+</body></html>

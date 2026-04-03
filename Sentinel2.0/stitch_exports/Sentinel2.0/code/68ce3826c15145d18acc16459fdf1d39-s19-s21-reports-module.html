@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sentinel vNext - Reports Module</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#e5e2e1",
+                        "secondary": "#8ecdff",
+                        "inverse-primary": "#635690",
+                        "on-primary-fixed": "#1f1048",
+                        "surface": "#131313",
+                        "primary-fixed": "#e8deff",
+                        "surface-container-high": "#2a2a2a",
+                        "background": "#131313",
+                        "on-surface-variant": "#cac4d0",
+                        "tertiary-fixed": "#69ff87",
+                        "tertiary-fixed-dim": "#3be36a",
+                        "on-background": "#e5e2e1",
+                        "primary-fixed-dim": "#cdbdff",
+                        "outline": "#938f9a",
+                        "on-surface": "#e5e2e1",
+                        "on-tertiary-fixed-variant": "#00531e",
+                        "surface-variant": "#353534",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-container": "#9ed3ff",
+                        "surface-bright": "#393939",
+                        "surface-tint": "#cdbdff",
+                        "on-secondary": "#00344f",
+                        "inverse-on-surface": "#313030",
+                        "error": "#ffb4ab",
+                        "surface-container-low": "#1c1b1b",
+                        "secondary-fixed-dim": "#8ecdff",
+                        "tertiary-container": "#3be269",
+                        "surface-container": "#201f1f",
+                        "surface-container-highest": "#353534",
+                        "on-primary-fixed-variant": "#4b3e76",
+                        "outline-variant": "#48454f",
+                        "secondary-fixed": "#cae6ff",
+                        "on-primary": "#34275e",
+                        "primary": "#e7ddff",
+                        "on-primary-container": "#574a83",
+                        "on-error": "#690005",
+                        "surface-dim": "#131313",
+                        "error-container": "#93000a",
+                        "on-secondary-fixed": "#001e30",
+                        "on-tertiary-fixed": "#002108",
+                        "tertiary": "#64ff85",
+                        "secondary-container": "#025c89",
+                        "on-tertiary": "#003912",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary-container": "#006024",
+                        "on-secondary-fixed-variant": "#004b70",
+                        "primary-container": "#cdbdff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #131313; color: #e5e2e1; }
+        .font-headline { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
+        .bg-obsidian-gradient { background: linear-gradient(135deg, #cdbdff 0%, #7C4DFF 100%); }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #131313; }
+        ::-webkit-scrollbar-thumb { background: #353534; border-radius: 10px; }
+    </style>
+</head>
+<body class="flex min-h-screen overflow-hidden">
+<!-- S19: SideNavBar (Shared Component Execution) -->
+<aside class="flex flex-col py-8 fixed left-0 top-0 h-full h-screen w-64 border-r-0 bg-[#1C1B1B] dark:bg-[#1C1B1B] shadow-none z-50">
+<div class="px-8 text-xl font-bold tracking-tighter text-[#CDBDFF] mb-8">
+            SENTINEL
+            <span class="block text-[10px] uppercase tracking-[0.2em] font-normal text-gray-500 mt-1">vNext</span>
+</div>
+<nav class="flex flex-col gap-y-1">
+<a class="flex items-center gap-3 py-3 font-['Manrope'] tracking-tight text-sm text-gray-500 hover:text-gray-300 pl-4 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="timer">timer</span>
+                Timer
+            </a>
+<a class="flex items-center gap-3 py-3 font-['Manrope'] tracking-tight text-sm text-gray-500 hover:text-gray-300 pl-4 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+                Planner
+            </a>
+<!-- Reports is ACTIVE -->
+<a class="flex items-center gap-3 py-3 font-['Manrope'] tracking-tight text-sm text-[#CDBDFF] font-semibold border-l-2 border-[#CDBDFF] pl-4 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+                Reports
+            </a>
+<a class="flex items-center gap-3 py-3 font-['Manrope'] tracking-tight text-sm text-gray-500 hover:text-gray-300 pl-4 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+                History
+            </a>
+<a class="flex items-center gap-3 py-3 font-['Manrope'] tracking-tight text-sm text-gray-500 hover:text-gray-300 pl-4 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="category">category</span>
+                Taxonomy
+            </a>
+<div class="mt-auto flex flex-col gap-y-1">
+<a class="flex items-center gap-3 py-3 font-['Manrope'] tracking-tight text-sm text-gray-500 hover:text-gray-300 pl-4 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                    Settings
+                </a>
+<a class="flex items-center gap-3 py-3 font-['Manrope'] tracking-tight text-sm text-gray-500 hover:text-gray-300 pl-4 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+                    Account
+                </a>
+</div>
+</nav>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-64 flex flex-col h-screen overflow-y-auto bg-surface relative">
+<!-- TopAppBar (Shared Component Execution) -->
+<header class="flex items-center justify-between px-6 w-full w-full h-12 sticky top-0 z-50 bg-[#131313]/80 backdrop-blur-3xl shadow-[0_1px_0_0_rgba(72,69,79,0.15)]">
+<div class="flex items-center gap-4">
+<span class="font-['Manrope'] text-xs uppercase tracking-widest text-[#CDBDFF]">Reports Overview</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center bg-surface-container-lowest px-3 py-1 rounded-sm">
+<span class="material-symbols-outlined text-sm text-gray-500 mr-2" data-icon="search">search</span>
+<input class="bg-transparent border-none text-[10px] uppercase tracking-wider focus:ring-0 p-0 w-32 placeholder:text-gray-600" placeholder="Search sessions..." type="text"/>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-gray-400 hover:text-white cursor-pointer text-lg" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-gray-400 hover:text-white cursor-pointer text-lg" data-icon="help_outline">help_outline</span>
+<span class="material-symbols-outlined text-gray-400 hover:text-white cursor-pointer text-lg" data-icon="close">close</span>
+</div>
+</div>
+</header>
+<!-- S19: Reports Overview Populated -->
+<section class="p-8 max-w-[1280px] mx-auto w-full">
+<!-- Date Filter & Header -->
+<div class="flex justify-between items-end mb-10">
+<div>
+<h1 class="text-4xl font-headline font-extrabold tracking-tighter text-on-surface">System Performance</h1>
+<p class="text-sm text-outline mt-1 font-body">Deep work analysis and cognitive load telemetry.</p>
+</div>
+<div class="flex bg-surface-container-low p-1 rounded-lg">
+<button class="px-4 py-1.5 text-[10px] font-headline uppercase tracking-widest text-gray-500 hover:text-white transition-all">Today</button>
+<button class="px-4 py-1.5 text-[10px] font-headline uppercase tracking-widest text-primary-fixed bg-surface-container-high rounded shadow-sm transition-all">Week</button>
+<button class="px-4 py-1.5 text-[10px] font-headline uppercase tracking-widest text-gray-500 hover:text-white transition-all">Month</button>
+<button class="px-4 py-1.5 text-[10px] font-headline uppercase tracking-widest text-gray-500 hover:text-white transition-all">All</button>
+</div>
+</div>
+<!-- Summary Cards: 60/40 Asymmetric Row -->
+<div class="grid grid-cols-12 gap-6 mb-12">
+<div class="col-span-8 grid grid-cols-3 gap-6">
+<div class="bg-surface-container-low p-6 rounded-xl relative overflow-hidden group hover:bg-surface-container transition-all">
+<div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-8 -mt-8"></div>
+<span class="text-[10px] font-headline uppercase tracking-wider text-outline block mb-4">Total Focus</span>
+<div class="flex items-baseline gap-1">
+<span class="text-3xl font-headline font-bold text-on-surface">32.5</span>
+<span class="text-sm font-headline font-semibold text-primary">HRS</span>
+</div>
+<div class="mt-4 flex items-center text-[10px] text-tertiary font-medium">
+<span class="material-symbols-outlined text-xs mr-1" data-icon="trending_up">trending_up</span> 12% vs last week
+                        </div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl hover:bg-surface-container transition-all">
+<span class="text-[10px] font-headline uppercase tracking-wider text-outline block mb-4">Avg Session</span>
+<div class="flex items-baseline gap-1">
+<span class="text-3xl font-headline font-bold text-on-surface">52</span>
+<span class="text-sm font-headline font-semibold text-secondary">MIN</span>
+</div>
+<div class="mt-4 flex items-center text-[10px] text-error font-medium">
+<span class="material-symbols-outlined text-xs mr-1" data-icon="trending_down">trending_down</span> 4% vs last week
+                        </div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl hover:bg-surface-container transition-all">
+<span class="text-[10px] font-headline uppercase tracking-wider text-outline block mb-4">Distraction Rate</span>
+<div class="flex items-baseline gap-1">
+<span class="text-3xl font-headline font-bold text-on-surface">0.8</span>
+<span class="text-sm font-headline font-semibold text-tertiary">/HR</span>
+</div>
+<div class="mt-4 flex items-center text-[10px] text-tertiary font-medium">
+                            Optimal Range
+                        </div>
+</div>
+</div>
+<!-- Signature Accent Card -->
+<div class="col-span-4 bg-obsidian-gradient p-6 rounded-xl flex flex-col justify-between text-on-primary shadow-2xl shadow-primary/10">
+<div>
+<span class="text-[10px] font-headline uppercase tracking-widest opacity-80 block mb-2">Cognitive Score</span>
+<h3 class="text-4xl font-headline font-extrabold tracking-tighter">Elite</h3>
+</div>
+<div class="flex items-end justify-between">
+<div class="text-[11px] leading-relaxed opacity-90 max-w-[140px]">
+                            Your focus resilience is 14% higher than the global baseline.
+                        </div>
+<span class="material-symbols-outlined text-5xl opacity-30" data-icon="shield_with_heart" style="font-variation-settings: 'FILL' 1;">shield_with_heart</span>
+</div>
+</div>
+</div>
+<!-- Main Charts Row: 70/30 Asymmetric Split -->
+<div class="grid grid-cols-12 gap-8 items-start mb-12">
+<!-- Daily Focus Bar Chart -->
+<div class="col-span-8 bg-surface-container-lowest p-8 rounded-2xl relative">
+<div class="flex justify-between items-center mb-8">
+<h3 class="font-headline font-bold text-lg text-on-surface">Weekly Focus Distribution</h3>
+<span class="text-[10px] font-headline uppercase tracking-widest text-outline">Telemetry: Pulse-Active</span>
+</div>
+<div class="flex items-end justify-between h-48 gap-4 px-4">
+<div class="flex-1 flex flex-col items-center gap-3">
+<div class="w-full bg-surface-container-high rounded-t-sm relative group">
+<div class="absolute bottom-0 w-full bg-primary/20 h-[60%] group-hover:bg-primary transition-all"></div>
+</div>
+<span class="text-[10px] font-headline text-outline">MON</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-3">
+<div class="w-full bg-surface-container-high rounded-t-sm h-full relative group">
+<div class="absolute bottom-0 w-full bg-primary/20 h-[85%] group-hover:bg-primary transition-all"></div>
+</div>
+<span class="text-[10px] font-headline text-outline">TUE</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-3">
+<div class="w-full bg-surface-container-high rounded-t-sm h-full relative group">
+<div class="absolute bottom-0 w-full bg-primary/20 h-[45%] group-hover:bg-primary transition-all"></div>
+</div>
+<span class="text-[10px] font-headline text-outline">WED</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-3">
+<div class="w-full bg-surface-container-high rounded-t-sm h-full relative group">
+<div class="absolute bottom-0 w-full bg-primary h-[95%]"></div>
+</div>
+<span class="text-[10px] font-headline text-primary font-bold">THU</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-3">
+<div class="w-full bg-surface-container-high rounded-t-sm h-full relative group">
+<div class="absolute bottom-0 w-full bg-primary/20 h-[70%] group-hover:bg-primary transition-all"></div>
+</div>
+<span class="text-[10px] font-headline text-outline">FRI</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-3">
+<div class="w-full bg-surface-container-high rounded-t-sm h-full relative group">
+<div class="absolute bottom-0 w-full bg-primary/20 h-[30%] group-hover:bg-primary transition-all"></div>
+</div>
+<span class="text-[10px] font-headline text-outline">SAT</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-3">
+<div class="w-full bg-surface-container-high rounded-t-sm h-full relative group">
+<div class="absolute bottom-0 w-full bg-primary/20 h-[20%] group-hover:bg-primary transition-all"></div>
+</div>
+<span class="text-[10px] font-headline text-outline">SUN</span>
+</div>
+</div>
+</div>
+<!-- Top Categories & False Alarm Metric -->
+<div class="col-span-4 flex flex-col gap-6">
+<div class="bg-surface-container-low p-6 rounded-2xl">
+<h4 class="text-[10px] font-headline uppercase tracking-widest text-outline mb-6">Top Categories</h4>
+<div class="flex items-center justify-center relative h-32 mb-6">
+<!-- Visual Donut Placeholder -->
+<div class="w-28 h-28 rounded-full border-[10px] border-surface-container-high flex items-center justify-center">
+<div class="absolute inset-0 w-28 h-28 rounded-full border-[10px] border-transparent border-t-primary border-r-secondary border-b-tertiary rotate-45"></div>
+<span class="text-xs font-headline font-bold text-on-surface">82%</span>
+</div>
+</div>
+<ul class="space-y-3">
+<li class="flex items-center justify-between text-[11px]">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-on-surface">Deep Engineering</span>
+</div>
+<span class="text-outline font-medium">45%</span>
+</li>
+<li class="flex items-center justify-between text-[11px]">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="text-on-surface">Design Strategy</span>
+</div>
+<span class="text-outline font-medium">28%</span>
+</li>
+<li class="flex items-center justify-between text-[11px]">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="text-on-surface">Administration</span>
+</div>
+<span class="text-outline font-medium">12%</span>
+</li>
+</ul>
+<button class="w-full mt-6 py-2 border border-outline-variant/20 rounded text-[10px] font-headline uppercase tracking-widest text-outline hover:text-primary transition-all">
+                            View Taxonomy
+                        </button>
+</div>
+<div class="bg-surface-container-low p-5 rounded-2xl flex items-center justify-between">
+<div>
+<span class="text-[10px] font-headline uppercase tracking-widest text-outline block mb-1">False Alarm Ratio</span>
+<span class="text-xl font-headline font-bold text-on-surface">2.4%</span>
+</div>
+<span class="material-symbols-outlined text-tertiary opacity-50 text-3xl" data-icon="check_circle">check_circle</span>
+</div>
+</div>
+</div>
+<!-- Bottom Row: Top Raw Distractions (Editorial List Style) -->
+<div class="grid grid-cols-12 gap-8 mb-12">
+<div class="col-span-12">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline font-bold text-lg text-on-surface">Neural Friction Points</h3>
+<p class="text-[10px] font-headline uppercase tracking-widest text-outline">Raw Distractions Log</p>
+</div>
+<div class="bg-surface-container-lowest rounded-2xl overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant/10">
+<th class="px-8 py-4 text-[10px] font-headline uppercase tracking-[0.2em] text-outline">Distraction Source</th>
+<th class="px-8 py-4 text-[10px] font-headline uppercase tracking-[0.2em] text-outline text-right">Occurrence</th>
+<th class="px-8 py-4 text-[10px] font-headline uppercase tracking-[0.2em] text-outline text-right">Total Impact</th>
+<th class="px-8 py-4 text-[10px] font-headline uppercase tracking-[0.2em] text-outline text-right">Sanitized</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5">
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="mail">mail</span>
+<div>
+<div class="text-sm font-semibold text-on-surface">Microsoft Outlook</div>
+<div class="text-[10px] text-outline">Internal Communications</div>
+</div>
+</div>
+</td>
+<td class="px-8 py-5 text-right font-headline font-medium text-on-surface">14</td>
+<td class="px-8 py-5 text-right font-headline font-medium text-error">42m</td>
+<td class="px-8 py-5 text-right">
+<span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-tertiary-fixed-dim/10 text-tertiary">Success</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="language">language</span>
+<div>
+<div class="text-sm font-semibold text-on-surface">reddit.com</div>
+<div class="text-[10px] text-outline">Social Browsing</div>
+</div>
+</div>
+</td>
+<td class="px-8 py-5 text-right font-headline font-medium text-on-surface">8</td>
+<td class="px-8 py-5 text-right font-headline font-medium text-error">1h 12m</td>
+<td class="px-8 py-5 text-right">
+<span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-outline-variant/20 text-outline">Monitoring</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="forum">forum</span>
+<div>
+<div class="text-sm font-semibold text-on-surface">Slack</div>
+<div class="text-[10px] text-outline">Workspace Chat</div>
+</div>
+</div>
+</td>
+<td class="px-8 py-5 text-right font-headline font-medium text-on-surface">22</td>
+<td class="px-8 py-5 text-right font-headline font-medium text-error">28m</td>
+<td class="px-8 py-5 text-right">
+<span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-tertiary-fixed-dim/10 text-tertiary">Success</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- S20: Loading State (Hidden by default, shown for reference/visual logic) -->
+<div class="hidden">
+<div class="animate-pulse space-y-12">
+<div class="flex justify-between items-end">
+<div class="space-y-3">
+<div class="h-10 w-64 bg-surface-container-high rounded"></div>
+<div class="h-4 w-96 bg-surface-container rounded"></div>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-6">
+<div class="col-span-8 grid grid-cols-3 gap-6">
+<div class="h-32 bg-surface-container-low rounded-xl"></div>
+<div class="h-32 bg-surface-container-low rounded-xl"></div>
+<div class="h-32 bg-surface-container-low rounded-xl"></div>
+</div>
+<div class="col-span-4 h-32 bg-surface-container-high rounded-xl"></div>
+</div>
+</div>
+</div>
+<!-- S21: Empty State (Hidden by default) -->
+<div class="hidden min-h-[614px] flex flex-col items-center justify-center text-center">
+<div class="w-20 h-20 bg-surface-container-low rounded-full flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-4xl text-outline" data-icon="analytics">analytics</span>
+</div>
+<h2 class="text-2xl font-headline font-bold text-on-surface mb-2">No data for this period</h2>
+<p class="text-sm text-outline max-w-xs mx-auto mb-8">
+                    Your cognitive engine hasn't recorded any telemetry yet. Time to enter the Obsidian Sanctuary.
+                </p>
+<button class="px-8 py-3 bg-obsidian-gradient rounded-full text-sm font-headline font-bold uppercase tracking-widest text-on-primary shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+                    Start your first session
+                </button>
+</div>
+</section>
+<!-- Signature Editorial Footer Decor -->
+<footer class="mt-auto px-8 py-12 border-t border-outline-variant/10 opacity-30">
+<div class="flex justify-between items-center text-[9px] font-headline uppercase tracking-[0.3em]">
+<span>Sentinel Collective // Intelligence Layer v2.1</span>
+<span>All telemetry is encrypted end-to-end</span>
+</div>
+</footer>
+</main>
+<!-- Contextual FAB (Shared Component Rule: Suppress on Details/Reports) -->
+<!-- FAB is suppressed here to prioritize canvas focus as per instructions -->
+</body></html>

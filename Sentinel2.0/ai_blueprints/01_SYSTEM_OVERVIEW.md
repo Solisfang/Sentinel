@@ -23,7 +23,7 @@ This document is the single authoritative specification for re-implementing the 
 
 **Out-of-scope:**
 
-- Visual design mockups (see `artifacts/stitch/sentinel-product-design-brief/` for Stitch design system assets).
+- Visual design mockups (see `stitch_exports/Sentinel2.0/` for current Stitch design assets and metadata).
 - End-user documentation or marketing materials.
 - CI/CD pipeline configuration (covered separately).
 
@@ -436,7 +436,7 @@ The target architecture is defined authoritatively in `TARGET_ARCHITECTURE.md`. 
 |---|---|---|---|
 | Desktop Shell | WPF (`<Window>`) + WebView2 (`Microsoft.Web.WebView2`) | **Photino** (`PhotinoWindow`) | Photino replaces both WPF and WebView2. It provides a lightweight chromeless window with built-in web view. No WPF dependency. No `Microsoft.Web.WebView2` NuGet. |
 | Frontend Framework | React 18 + Vite + TypeScript | **Angular** (Strict TypeScript) | Complete rewrite. All React components, hooks, and state in `App.tsx`/`views.tsx` must be reimplemented as Angular components, services, and RxJS observables. |
-| Styling | Tailwind CSS | **Tailwind CSS** (retain) | Tailwind config and utility classes carry forward. Design tokens from `artifacts/stitch/sentinel-product-design-brief/` apply. |
+| Styling | Tailwind CSS | **Tailwind CSS** (retain) | Tailwind config and utility classes carry forward. Design tokens from `stitch_exports/Sentinel2.0/metadata/design-system-theme.json` apply. |
 | Local Database | SQLite via EF Core | **Removed** — replaced by Firestore | SQLite is eliminated. All persistence moves to Firebase Firestore. A one-time migration utility converts existing SQLite data to Firestore documents. |
 | Cloud Backend | Firebase (partial — flat collections, optional sync) | **Firebase** (full — Firestore, Auth, Cloud Functions) | Firestore structure changes from flat mutable collections to user-scoped documents with an append-only Event Ledger. Cloud Functions are new. |
 | IPC Protocol | WebView2 `PostWebMessageAsJson` / `WebMessageReceived` | **Photino** `SendMessage` / `WebMessageReceived` | Message envelope schema (`{ type, ...payload }`) is preserved. Transport changes from WebView2 COM channel to Photino's native message passing. |

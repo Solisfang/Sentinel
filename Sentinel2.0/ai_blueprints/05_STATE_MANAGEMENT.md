@@ -122,7 +122,7 @@ The Angular production build output (`dist/sentinel-ui/browser/`) is embedded in
 
 The source uses Tailwind CSS v4 (imported via `@import "tailwindcss";` in `index.css`). The target maintains this approach.
 
-**Source design system tokens** (from `Sentinel.UI/src/index.css` and `artifacts/stitch/sentinel-product-design-brief/design-system.md`):
+**Source design system tokens** (from `Sentinel.UI/src/index.css` and `stitch_exports/Sentinel2.0/metadata/design-system-theme.json`):
 
 The "Obsidian Sanctuary" design system defines the following CSS custom properties, which are carried forward verbatim:
 

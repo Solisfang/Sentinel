@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sentinel vNext | Obsidian Sanctuary</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#e5e2e1",
+                        "secondary": "#8ecdff",
+                        "inverse-primary": "#635690",
+                        "on-primary-fixed": "#1f1048",
+                        "surface": "#131313",
+                        "primary-fixed": "#e8deff",
+                        "surface-container-high": "#2a2a2a",
+                        "background": "#131313",
+                        "on-surface-variant": "#cac4d0",
+                        "tertiary-fixed": "#69ff87",
+                        "tertiary-fixed-dim": "#3be36a",
+                        "on-background": "#e5e2e1",
+                        "primary-fixed-dim": "#cdbdff",
+                        "outline": "#938f9a",
+                        "on-surface": "#e5e2e1",
+                        "on-tertiary-fixed-variant": "#00531e",
+                        "surface-variant": "#353534",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-container": "#9ed3ff",
+                        "surface-bright": "#393939",
+                        "surface-tint": "#cdbdff",
+                        "on-secondary": "#00344f",
+                        "inverse-on-surface": "#313030",
+                        "error": "#ffb4ab",
+                        "surface-container-low": "#1c1b1b",
+                        "secondary-fixed-dim": "#8ecdff",
+                        "tertiary-container": "#3be269",
+                        "surface-container": "#201f1f",
+                        "surface-container-highest": "#353534",
+                        "on-primary-fixed-variant": "#4b3e76",
+                        "outline-variant": "#48454f",
+                        "secondary-fixed": "#cae6ff",
+                        "on-primary": "#34275e",
+                        "primary": "#e7ddff",
+                        "on-primary-container": "#574a83",
+                        "on-error": "#690005",
+                        "surface-dim": "#131313",
+                        "error-container": "#93000a",
+                        "on-secondary-fixed": "#001e30",
+                        "on-tertiary-fixed": "#002108",
+                        "tertiary": "#64ff85",
+                        "secondary-container": "#025c89",
+                        "on-tertiary": "#003912",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary-container": "#006024",
+                        "on-secondary-fixed-variant": "#004b70",
+                        "primary-container": "#cdbdff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .acrylic {
+            backdrop-filter: blur(48px);
+            background: rgba(19, 19, 19, 0.7);
+        }
+        .ghost-border {
+            outline: 1px solid rgba(72, 69, 79, 0.15);
+        }
+        .primary-gradient {
+            background: linear-gradient(135deg, #CDBDFF 0%, #7C4DFF 100%);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container min-h-screen overflow-x-hidden">
+<!-- S36: Update Available Banner (Integrated in TopAppBar Logic) -->
+<header class="w-full h-12 sticky top-0 z-50 flex items-center justify-between px-6 bg-[#131313]/80 backdrop-blur-3xl shadow-[0_1px_0_0_rgba(72,69,79,0.15)]">
+<div class="flex items-center gap-6">
+<span class="font-headline text-xs uppercase tracking-widest text-[#CDBDFF] font-bold">Sentinel vNext</span>
+<!-- S36: Subtle Update Indicator -->
+<div class="flex items-center gap-2 px-3 py-1 bg-primary-container/10 rounded-full cursor-pointer hover:bg-primary-container/20 transition-colors">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label text-[10px] uppercase tracking-wider text-primary">Update Available: v2.4.1</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative group">
+<input class="bg-surface-container-lowest border-none text-[10px] tracking-widest uppercase py-1 px-4 w-48 focus:ring-0 focus:border-b-2 focus:border-primary transition-all" placeholder="SEARCH SYSTEM..." type="text"/>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-gray-400 hover:text-white cursor-pointer text-lg">notifications</span>
+<span class="material-symbols-outlined text-gray-400 hover:text-white cursor-pointer text-lg">help_outline</span>
+<span class="material-symbols-outlined text-gray-400 hover:text-white cursor-pointer text-lg">close</span>
+</div>
+</div>
+</header>
+<div class="flex">
+<!-- SideNavBar -->
+<aside class="flex flex-col py-8 fixed left-0 top-0 h-full h-screen w-64 bg-[#1C1B1B] font-['Manrope'] tracking-tight text-sm z-40">
+<div class="text-xl font-bold tracking-tighter text-[#CDBDFF] mb-8 px-8">SENTINEL <span class="text-[10px] tracking-normal font-medium opacity-50 block -mt-1">vNext</span></div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-4 py-2 transition-colors duration-200 text-[#CDBDFF] font-semibold border-l-2 border-[#CDBDFF] pl-6 bg-[#353534]/30" href="#">
+<span class="material-symbols-outlined" data-icon="timer">timer</span>
+<span>Timer</span>
+</a>
+<a class="flex items-center gap-4 py-2 transition-colors duration-200 text-gray-500 hover:text-gray-300 hover:bg-[#353534]/50 pl-6 border-l-2 border-transparent" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span>Planner</span>
+</a>
+<a class="flex items-center gap-4 py-2 transition-colors duration-200 text-gray-500 hover:text-gray-300 hover:bg-[#353534]/50 pl-6 border-l-2 border-transparent" href="#">
+<span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+<span>Reports</span>
+</a>
+<a class="flex items-center gap-4 py-2 transition-colors duration-200 text-gray-500 hover:text-gray-300 hover:bg-[#353534]/50 pl-6 border-l-2 border-transparent" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span>History</span>
+</a>
+<a class="flex items-center gap-4 py-2 transition-colors duration-200 text-gray-500 hover:text-gray-300 hover:bg-[#353534]/50 pl-6 border-l-2 border-transparent" href="#">
+<span class="material-symbols-outlined" data-icon="category">category</span>
+<span>Taxonomy</span>
+</a>
+</nav>
+<div class="mt-auto px-8 pt-8 border-t border-white/5">
+<a class="flex items-center gap-4 py-2 text-gray-500 hover:text-gray-300 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+<div class="mt-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="close up of abstract dark metallic avatar icon with subtle purple reflections on matte black background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbxgBJUA0NUKRGRxAl6Pb94x0ySosG0nt70jMSRiCyV456jcMeyDuEJFNAQ1twJdFk5xiOnzzc_xKyYV7WVEtA71prvvGW1xDEY9dLmSRjaJeURiOIOM8okXrmP1OmIV055YSfJGfFuj5TID9oOUcQNY5nodrttjS9LCYTat8FdSwl3YTXSJwmawNe0zf6VD6kwyjj9B8xWhSpNZLO0sflnlN1OoZSLr28VnuoihcUBxJZKS27nEEYaOvIM_OLZgu0zDBfYw5oN4lJ"/>
+</div>
+<div>
+<div class="text-[11px] font-bold text-on-surface">OPERATOR_01</div>
+<div class="text-[9px] text-gray-500 uppercase tracking-widest">PRO STATUS</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 min-h-[calc(100vh-3rem)] p-12 relative overflow-hidden">
+<!-- S35: Sleep Resume Prompt -->
+<div class="max-w-4xl mx-auto mt-12 mb-24">
+<div class="bg-surface-container-low p-10 rounded-xl relative overflow-hidden ghost-border">
+<!-- Background Decoration -->
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] -mr-32 -mt-32"></div>
+<div class="relative z-10 flex flex-col md:flex-row items-center gap-10">
+<div class="flex-shrink-0">
+<div class="w-24 h-24 rounded-full flex items-center justify-center bg-surface-container-highest border border-primary/20">
+<span class="material-symbols-outlined text-4xl text-primary" data-icon="bedtime">bedtime</span>
+</div>
+</div>
+<div class="flex-1">
+<h1 class="font-headline text-3xl font-extrabold tracking-tighter text-on-surface mb-2">Welcome back.</h1>
+<p class="font-body text-on-surface-variant max-w-lg mb-8 leading-relaxed">
+                                Sentinel paused your "Deep Work: Project Chimera" session 4 hours ago. Would you like to resume where you left off or start a fresh cycle?
+                            </p>
+<div class="flex flex-wrap gap-4">
+<button class="px-6 py-3 primary-gradient text-on-primary font-headline text-sm font-bold rounded-md hover:opacity-90 transition-all flex items-center gap-3">
+<span class="material-symbols-outlined text-lg" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                                    RESUME PREVIOUS SESSION
+                                </button>
+<button class="px-6 py-3 bg-surface-container-highest text-on-surface font-headline text-sm font-bold rounded-md hover:bg-surface-bright transition-all border border-outline-variant/20">
+                                    START FRESH
+                                </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bento Layout Content Example -->
+<div class="grid grid-cols-12 gap-6 max-w-6xl mx-auto">
+<div class="col-span-8 bg-surface-container-low p-8 rounded-xl ghost-border h-64">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h3 class="font-headline text-lg font-bold">System Load</h3>
+<span class="text-[10px] text-primary uppercase tracking-[0.2em]">Live Telemetry</span>
+</div>
+<span class="material-symbols-outlined text-outline" data-icon="monitoring">monitoring</span>
+</div>
+<div class="w-full h-24 flex items-end gap-1">
+<div class="flex-1 bg-primary/20 h-[40%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 h-[60%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/40 h-[30%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/60 h-[80%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/30 h-[50%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/70 h-[90%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary h-[100%] rounded-t-sm"></div>
+</div>
+</div>
+<div class="col-span-4 bg-primary-container/5 p-8 rounded-xl ghost-border h-64 flex flex-col justify-between">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="security">security</span>
+<div>
+<div class="text-3xl font-headline font-extrabold text-primary">99.8%</div>
+<div class="text-xs text-on-surface-variant font-medium">Focus Integrity Maintained</div>
+</div>
+</div>
+</div>
+<!-- CORNER OVERLAYS (S37, S38, S39 Showcase Container) -->
+<div class="fixed bottom-8 right-8 flex flex-col items-end gap-6 z-[100]">
+<!-- S39: Corner Overlay Monitoring -->
+<div class="w-80 acrylic rounded-xl shadow-2xl p-4 ghost-border border-white/5 overflow-hidden">
+<div class="flex items-center gap-3 mb-4 cursor-grab active:cursor-grabbing">
+<div class="w-1.5 h-6 bg-surface-container-highest rounded-full"></div>
+<div class="flex-1">
+<span class="text-[9px] font-bold text-primary uppercase tracking-widest">MONITORING ACTIVE</span>
+</div>
+<span class="material-symbols-outlined text-xs text-gray-500" data-icon="close">close</span>
+</div>
+<div class="flex justify-between items-end mb-4">
+<div class="text-3xl font-headline font-bold text-on-surface tracking-tighter">24:18</div>
+<div class="text-right">
+<div class="text-[10px] text-error font-bold uppercase">Distraction Alert</div>
+<div class="text-[11px] text-on-surface-variant">Browser: Reddit.com</div>
+</div>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full mb-4 overflow-hidden">
+<div class="bg-primary h-full w-2/3 shadow-[0_0_8px_rgba(205,189,255,0.5)]"></div>
+</div>
+<div class="flex justify-center">
+<button class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center hover:bg-surface-bright transition-colors">
+<span class="material-symbols-outlined" data-icon="pause" style="font-variation-settings: 'FILL' 1;">pause</span>
+</button>
+</div>
+</div>
+<!-- S38: Corner Overlay Compact -->
+<div class="w-64 acrylic rounded-xl shadow-xl p-4 ghost-border border-white/5">
+<div class="flex items-center gap-3 mb-3 cursor-grab active:cursor-grabbing">
+<div class="w-1 h-4 bg-surface-container-highest rounded-full"></div>
+<div class="text-2xl font-headline font-bold text-on-surface tracking-tighter flex-1">12:05</div>
+<button class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-sm" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-1/2"></div>
+</div>
+</div>
+<!-- S37: Corner Overlay Pill -->
+<div class="bg-surface-container-highest rounded-full px-4 py-2 ghost-border shadow-lg flex items-center gap-4 hover:bg-surface-bright transition-all cursor-pointer group">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_8px_rgba(100,255,133,0.5)]"></span>
+<span class="font-headline font-bold text-sm tracking-tight">45:00</span>
+</div>
+<div class="w-px h-3 bg-outline-variant"></div>
+<span class="material-symbols-outlined text-sm text-on-surface-variant group-hover:text-primary transition-colors" data-icon="open_in_full">open_in_full</span>
+</div>
+</div>
+</main>
+</div>
+<!-- Background Ambient Effects -->
+<div class="fixed top-0 left-0 w-full h-full pointer-events-none z-[-1] overflow-hidden opacity-40">
+<div class="absolute top-[10%] right-[5%] w-[40vw] h-[40vw] bg-primary/10 blur-[150px] rounded-full"></div>
+<div class="absolute bottom-[-10%] left-[20%] w-[30vw] h-[30vw] bg-secondary/5 blur-[120px] rounded-full"></div>
+</div>
+</body></html>

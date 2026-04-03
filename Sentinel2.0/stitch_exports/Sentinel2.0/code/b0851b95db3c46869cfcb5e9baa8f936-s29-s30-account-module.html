@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sentinel vNext - Account</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#e5e2e1",
+                        "secondary": "#8ecdff",
+                        "inverse-primary": "#635690",
+                        "on-primary-fixed": "#1f1048",
+                        "surface": "#131313",
+                        "primary-fixed": "#e8deff",
+                        "surface-container-high": "#2a2a2a",
+                        "background": "#131313",
+                        "on-surface-variant": "#cac4d0",
+                        "tertiary-fixed": "#69ff87",
+                        "tertiary-fixed-dim": "#3be36a",
+                        "on-background": "#e5e2e1",
+                        "primary-fixed-dim": "#cdbdff",
+                        "outline": "#938f9a",
+                        "on-surface": "#e5e2e1",
+                        "on-tertiary-fixed-variant": "#00531e",
+                        "surface-variant": "#353534",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-container": "#9ed3ff",
+                        "surface-bright": "#393939",
+                        "surface-tint": "#cdbdff",
+                        "on-secondary": "#00344f",
+                        "inverse-on-surface": "#313030",
+                        "error": "#ffb4ab",
+                        "surface-container-low": "#1c1b1b",
+                        "secondary-fixed-dim": "#8ecdff",
+                        "tertiary-container": "#3be269",
+                        "surface-container": "#201f1f",
+                        "surface-container-highest": "#353534",
+                        "on-primary-fixed-variant": "#4b3e76",
+                        "outline-variant": "#48454f",
+                        "secondary-fixed": "#cae6ff",
+                        "on-primary": "#34275e",
+                        "primary": "#e7ddff",
+                        "on-primary-container": "#574a83",
+                        "on-error": "#690005",
+                        "surface-dim": "#131313",
+                        "error-container": "#93000a",
+                        "on-secondary-fixed": "#001e30",
+                        "on-tertiary-fixed": "#002108",
+                        "tertiary": "#64ff85",
+                        "secondary-container": "#025c89",
+                        "on-tertiary": "#003912",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary-container": "#006024",
+                        "on-secondary-fixed-variant": "#004b70",
+                        "primary-container": "#cdbdff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { background-color: #131313; color: #e5e2e1; font-family: 'Inter', sans-serif; overflow: hidden; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-panel { background: rgba(53, 53, 52, 0.4); backdrop-filter: blur(40px); outline: 1px solid rgba(72, 69, 79, 0.15); }
+        .primary-gradient { background: linear-gradient(135deg, #CDBDFF 0%, #7C4DFF 100%); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="flex min-h-screen">
+<!-- Persistent SideNavBar (Authority: Shared Components JSON) -->
+<aside class="flex flex-col py-8 fixed left-0 top-0 h-full h-screen w-64 border-r-0 bg-[#1C1B1B] dark:bg-[#1C1B1B] font-['Manrope'] tracking-tight text-sm z-50">
+<div class="text-xl font-bold tracking-tighter text-[#CDBDFF] mb-8 px-8">SENTINEL <span class="text-[10px] font-medium tracking-normal align-top opacity-50">vNext</span></div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center space-x-3 text-gray-500 hover:text-gray-300 pl-4 py-3 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="timer">timer</span>
+<span>Timer</span>
+</a>
+<a class="flex items-center space-x-3 text-gray-500 hover:text-gray-300 pl-4 py-3 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span>Planner</span>
+</a>
+<a class="flex items-center space-x-3 text-gray-500 hover:text-gray-300 pl-4 py-3 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+<span>Reports</span>
+</a>
+<a class="flex items-center space-x-3 text-gray-500 hover:text-gray-300 pl-4 py-3 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span>History</span>
+</a>
+<a class="flex items-center space-x-3 text-gray-500 hover:text-gray-300 pl-4 py-3 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="category">category</span>
+<span>Taxonomy</span>
+</a>
+<a class="flex items-center space-x-3 text-gray-500 hover:text-gray-300 pl-4 py-3 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+<!-- Active Navigation State Applied to Account -->
+<a class="flex items-center space-x-3 text-[#CDBDFF] font-semibold border-l-2 border-[#CDBDFF] pl-4 py-3 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span>Account</span>
+</a>
+</nav>
+<div class="px-8 mt-auto pt-8">
+<div class="h-1 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary-fixed-dim w-3/4"></div>
+</div>
+<p class="text-[10px] text-outline mt-2 tracking-widest uppercase">Encryption Active</p>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 flex flex-col relative h-screen overflow-y-auto no-scrollbar bg-background">
+<!-- TopAppBar (Authority: Shared Components JSON) -->
+<header class="flex items-center justify-between px-6 w-full h-12 sticky top-0 z-50 bg-[#131313]/80 backdrop-blur-3xl shadow-[0_1px_0_0_rgba(72,69,79,0.15)]">
+<div class="flex items-center space-x-4">
+<span class="font-['Manrope'] text-xs uppercase tracking-widest text-[#CDBDFF]">Sentinel vNext</span>
+<span class="text-outline text-[10px] tracking-widest">/</span>
+<span class="font-['Manrope'] text-xs uppercase tracking-widest text-on-surface">Identity Management</span>
+</div>
+<div class="flex items-center space-x-4">
+<div class="relative">
+<span class="material-symbols-outlined text-outline text-sm absolute left-3 top-1/2 -translate-y-1/2">search</span>
+<input class="bg-surface-container-lowest border-none rounded-lg text-xs py-1.5 pl-9 pr-4 w-48 focus:ring-1 focus:ring-primary outline-none text-on-surface-variant" placeholder="Command..." type="text"/>
+</div>
+<div class="flex items-center space-x-4 text-gray-400">
+<span class="material-symbols-outlined text-xl hover:text-white transition-opacity cursor-pointer">notifications</span>
+<span class="material-symbols-outlined text-xl hover:text-white transition-opacity cursor-pointer">help_outline</span>
+<span class="material-symbols-outlined text-xl hover:text-white transition-opacity cursor-pointer">close</span>
+</div>
+</div>
+</header>
+<!-- Content Split (70/30 Editorial Layout) -->
+<section class="flex flex-1 p-12 gap-12 max-w-[1280px] mx-auto w-full">
+<!-- Left Side: Interactive State Container (S29/S30 Toggle Simulation Layout) -->
+<div class="flex-[3] flex flex-col space-y-12">
+<!-- S30: Signed In View (Primary Dashboard Style) -->
+<div class="space-y-8">
+<div>
+<h1 class="text-5xl font-['Manrope'] font-extrabold tracking-tighter text-on-surface mb-2">Vault Identity</h1>
+<p class="text-outline-variant font-['Inter'] text-lg">Local-first: your data remains on this machine.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- User Identity Card -->
+<div class="glass-panel p-8 rounded-xl flex flex-col justify-between min-h-[220px] relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-8xl" data-icon="shield">shield</span>
+</div>
+<div>
+<div class="flex items-center space-x-4 mb-6">
+<div class="w-16 h-16 rounded-full bg-surface-container-highest flex items-center justify-center text-primary-fixed-dim">
+<span class="material-symbols-outlined text-3xl" data-icon="person">person</span>
+</div>
+<div>
+<h3 class="text-xl font-bold text-primary-fixed-dim">Alex Sterling</h3>
+<p class="text-sm text-outline">Master Identity • Local Access Only</p>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-['Manrope'] tracking-widest text-outline uppercase">
+<span>Node ID</span>
+<span class="text-on-surface">ST-0922-LX</span>
+</div>
+<div class="flex justify-between text-xs font-['Manrope'] tracking-widest text-outline uppercase">
+<span>Encryption</span>
+<span class="text-tertiary">AES-256-GCM</span>
+</div>
+</div>
+</div>
+<button class="mt-8 self-start text-xs font-['Manrope'] tracking-widest uppercase py-2 px-4 border border-outline-variant hover:bg-on-error hover:text-white hover:border-transparent transition-all rounded-lg">
+                                Logout Session
+                            </button>
+</div>
+<!-- Local Health Card -->
+<div class="bg-surface-container-low p-8 rounded-xl space-y-6">
+<h4 class="text-xs font-['Manrope'] tracking-widest text-outline uppercase">Data Residency</h4>
+<div class="space-y-4">
+<div class="flex items-start space-x-3">
+<span class="material-symbols-outlined text-tertiary" data-icon="check_circle">check_circle</span>
+<div>
+<p class="text-sm font-medium text-on-surface">Offline-First Engine</p>
+<p class="text-xs text-outline-variant">Database is stored on your disk.</p>
+</div>
+</div>
+<div class="flex items-start space-x-3">
+<span class="material-symbols-outlined text-secondary" data-icon="info">info</span>
+<div>
+<p class="text-sm font-medium text-on-surface">No Cloud Relay</p>
+<p class="text-xs text-outline-variant">Telemetry is strictly disabled.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- S29: Cloud Sync Framing (Asymmetric Split) -->
+<div class="pt-12 border-t border-outline-variant/10">
+<div class="flex gap-12 items-center">
+<div class="flex-1 space-y-6">
+<h2 class="text-3xl font-['Manrope'] font-bold text-on-surface tracking-tight">Optional Cloud Sync</h2>
+<p class="text-outline-variant leading-relaxed">
+                                Cloud sync is optional and disabled by default. If enabled, your vault is zero-knowledge encrypted before leaving your hardware.
+                            </p>
+<div class="space-y-4 pt-4">
+<div class="relative group">
+<input class="w-full bg-surface-container-lowest border-none rounded-xl py-4 px-5 text-sm focus:ring-2 focus:ring-primary transition-all outline-none" placeholder="Vault Email" type="email"/>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 opacity-30 group-focus-within:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-xl">alternate_email</span>
+</div>
+</div>
+<div class="relative group">
+<input class="w-full bg-surface-container-lowest border-none rounded-xl py-4 px-5 text-sm focus:ring-2 focus:ring-primary transition-all outline-none" placeholder="Vault Password" type="password"/>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 opacity-30 group-focus-within:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-xl">key</span>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 primary-gradient text-on-primary-fixed py-4 rounded-xl font-bold font-['Manrope'] tracking-tight hover:brightness-110 transition-all shadow-xl shadow-primary/5 active:scale-[0.98]">
+                                        Initialize Sync
+                                    </button>
+<button class="flex items-center justify-center px-6 bg-surface-container-high rounded-xl hover:bg-surface-bright transition-colors">
+<span class="material-symbols-outlined text-xl">google</span>
+</button>
+</div>
+<p class="text-[10px] text-center text-outline-variant font-['Manrope'] tracking-[0.2em] uppercase pt-2">
+                                    Manual Import/Export also available
+                                </p>
+</div>
+</div>
+<!-- Visual Anchor for Cloud -->
+<div class="flex-1 hidden lg:block">
+<div class="aspect-square relative rounded-3xl overflow-hidden bg-surface-container-low">
+<img class="object-cover w-full h-full opacity-40 mix-blend-luminosity" data-alt="Abstract cinematic visualization of digital encryption nodes and deep purple light pulses in a dark high-tech void" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJ3oBk9XuYLHy6tNE4NVjLEEdtq96stycaDLCtnGlR_e_wjhkEh4BuHPIQDXkagW2hp0y_wQ6g4rXtqVa4Nysx9NXAGaQ9DpwihYK1-rhBFCrVO8xE2XOqCHkHeJ-7nsf2hegH-odwg9hnXhEQmo8zFi_H_4QF4rtifmm6ImvyE8R2AOP0iA3Gf00P1DKYXlwq2z5IsGvfEl4EOmMP09Vl06f5DxHtw2WOX9BxJ6D626dX1eKlon1N-oh5--F0_q0pusBhGKJSf5IS"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent"></div>
+<div class="absolute bottom-8 left-8 right-8 text-center">
+<span class="material-symbols-outlined text-4xl text-primary mb-2" style="font-variation-settings: 'FILL' 1;">cloud_off</span>
+<h5 class="text-sm font-bold text-on-surface">Sentinel Isolation Protocol</h5>
+<p class="text-xs text-outline">Your keys never leave your device.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Side: Secondary Utility / Metadata (30% Split) -->
+<div class="flex-1 flex flex-col space-y-8 sticky top-24 h-fit">
+<div class="glass-panel p-6 rounded-xl space-y-6">
+<h4 class="text-xs font-['Manrope'] tracking-widest text-primary uppercase">Security Log</h4>
+<div class="space-y-4">
+<div class="flex gap-4">
+<div class="w-1 h-8 bg-tertiary rounded-full"></div>
+<div>
+<p class="text-xs font-medium text-on-surface">Database Integrity Verified</p>
+<p class="text-[10px] text-outline-variant">2 minutes ago • Internal Shell</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-1 h-8 bg-primary rounded-full"></div>
+<div>
+<p class="text-xs font-medium text-on-surface">Local Access Authorized</p>
+<p class="text-[10px] text-outline-variant">14 minutes ago • System</p>
+</div>
+</div>
+<div class="flex gap-4 opacity-50">
+<div class="w-1 h-8 bg-outline rounded-full"></div>
+<div>
+<p class="text-xs font-medium text-on-surface">Last Sync Attempt</p>
+<p class="text-[10px] text-outline-variant">3 days ago • Disabled</p>
+</div>
+</div>
+</div>
+</div>
+<div class="p-6 rounded-xl border border-outline-variant/10 bg-surface-container-lowest/50 space-y-4">
+<h4 class="text-xs font-['Manrope'] tracking-widest text-outline uppercase">Privacy Manifest</h4>
+<p class="text-xs text-outline-variant leading-relaxed">
+                        Sentinel vNext is designed as a sanctuary. We do not track, profile, or sell your behavior. Every byte of your productivity data is encrypted using your local master key.
+                    </p>
+<a class="inline-flex items-center text-xs text-primary font-['Manrope'] font-bold hover:underline" href="#">
+                        Read Technical Specification 
+                        <span class="material-symbols-outlined text-sm ml-1">arrow_outward</span>
+</a>
+</div>
+<div class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
+<img class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700" data-alt="Minimalist architectural void with soft indirect lighting and obsidian surfaces creating a peaceful atmosphere" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDetRdwa4wVx-AihAy48X6emO1BlHaRa5LVV3_qTdY5UtH9_iOMPdY89a9fE64YUlx-ZDGbEvsllC9idaoeoe4IhuJfEsWYZwDCU8_AN8abDv15WgMyv-eccjfrMKrka_znJP8Bu0mj1tzNdY3qdddkGES_YZ-MllhhARhUY-XCBEVqt0yY8RBcBd-vHBYZBA3I60RUwyis0PBI3tVQEFQ1fMN_3dDonQYJwatBhc8mZiBC0XVbEahbeJPiKH9cNqL_GaEzc7FNv4fF"/>
+<div class="absolute inset-0 bg-primary/10 mix-blend-overlay"></div>
+<div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+<span class="material-symbols-outlined text-primary mb-2">lock_open</span>
+<p class="text-[10px] uppercase tracking-widest font-bold">Open Source Core</p>
+<p class="text-[9px] text-outline-variant mt-1">Audit the encryption logic on GitHub</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Background Ambient Glows -->
+<div class="fixed top-[-10%] right-[-5%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full -z-10"></div>
+<div class="fixed bottom-[-10%] left-[20%] w-[30%] h-[30%] bg-secondary/5 blur-[100px] rounded-full -z-10"></div>
+</main>
+</body></html>

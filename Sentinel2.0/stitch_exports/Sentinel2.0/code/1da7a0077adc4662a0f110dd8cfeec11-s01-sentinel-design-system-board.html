@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sentinel vNext - S01 Design System Board</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#e5e2e1",
+                        "secondary": "#8ecdff",
+                        "inverse-primary": "#635690",
+                        "on-primary-fixed": "#1f1048",
+                        "surface": "#131313",
+                        "primary-fixed": "#e8deff",
+                        "surface-container-high": "#2a2a2a",
+                        "background": "#131313",
+                        "on-surface-variant": "#cac4d0",
+                        "tertiary-fixed": "#69ff87",
+                        "tertiary-fixed-dim": "#3be36a",
+                        "on-background": "#e5e2e1",
+                        "primary-fixed-dim": "#cdbdff",
+                        "outline": "#938f9a",
+                        "on-surface": "#e5e2e1",
+                        "on-tertiary-fixed-variant": "#00531e",
+                        "surface-variant": "#353534",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-container": "#9ed3ff",
+                        "surface-bright": "#393939",
+                        "surface-tint": "#cdbdff",
+                        "on-secondary": "#00344f",
+                        "inverse-on-surface": "#313030",
+                        "error": "#ffb4ab",
+                        "surface-container-low": "#1c1b1b",
+                        "secondary-fixed-dim": "#8ecdff",
+                        "tertiary-container": "#3be269",
+                        "surface-container": "#201f1f",
+                        "surface-container-highest": "#353534",
+                        "on-primary-fixed-variant": "#4b3e76",
+                        "outline-variant": "#48454f",
+                        "secondary-fixed": "#cae6ff",
+                        "on-primary": "#34275e",
+                        "primary": "#e7ddff",
+                        "on-primary-container": "#574a83",
+                        "on-error": "#690005",
+                        "surface-dim": "#131313",
+                        "error-container": "#93000a",
+                        "on-secondary-fixed": "#001e30",
+                        "on-tertiary-fixed": "#002108",
+                        "tertiary": "#64ff85",
+                        "secondary-container": "#025c89",
+                        "on-tertiary": "#003912",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary-container": "#006024",
+                        "on-secondary-fixed-variant": "#004b70",
+                        "primary-container": "#cdbdff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #131313; color: #e5e2e1; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .acrylic-blur { backdrop-filter: blur(48px); -webkit-backdrop-filter: blur(48px); }
+        .ghost-border { outline: 1px solid rgba(72, 69, 79, 0.15); }
+        .primary-gradient { background: linear-gradient(135deg, #cdbdff 0%, #7c4dff 100%); }
+    </style>
+</head>
+<body class="flex bg-background min-h-screen">
+<!-- Shared SideNavBar -->
+<nav class="flex flex-col py-8 fixed left-0 top-0 h-full h-screen w-64 bg-[#1C1B1B] dark:bg-[#1C1B1B] border-none font-['Manrope'] tracking-tight text-sm">
+<div class="text-xl font-bold tracking-tighter text-[#CDBDFF] mb-8 px-8">SENTINEL</div>
+<div class="flex flex-col flex-1 space-y-1">
+<a class="flex items-center gap-3 h-10 text-gray-500 hover:text-gray-300 pl-4 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">timer</span>
+<span>Timer</span>
+</a>
+<a class="flex items-center gap-3 h-10 text-gray-500 hover:text-gray-300 pl-4 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span>Planner</span>
+</a>
+<a class="flex items-center gap-3 h-10 text-gray-500 hover:text-gray-300 pl-4 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">bar_chart</span>
+<span>Reports</span>
+</a>
+<a class="flex items-center gap-3 h-10 text-gray-500 hover:text-gray-300 pl-4 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">history</span>
+<span>History</span>
+</a>
+<a class="flex items-center gap-3 h-10 text-gray-500 hover:text-gray-300 pl-4 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">category</span>
+<span>Taxonomy</span>
+</a>
+<a class="flex items-center gap-3 h-10 text-[#CDBDFF] font-semibold border-l-2 border-[#CDBDFF] pl-4 bg-[#353534]/50" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-3 h-10 text-gray-500 hover:text-gray-300 pl-4 hover:bg-[#353534]/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span>Account</span>
+</a>
+</div>
+<div class="px-8 mt-auto">
+<div class="p-4 bg-surface-container-highest rounded-xl ghost-border">
+<p class="text-[10px] text-outline font-headline uppercase tracking-widest mb-2">Build Status</p>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+<span class="text-xs font-medium">vNext Stable</span>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Shell -->
+<main class="ml-64 flex-1 flex flex-col min-h-screen">
+<!-- Shared TopAppBar -->
+<header class="flex items-center justify-between px-6 w-full w-full h-12 sticky top-0 z-50 bg-[#131313]/80 backdrop-blur-3xl bg-[#131313] shadow-[0_1px_0_0_rgba(72,69,79,0.15)]">
+<div class="flex items-center gap-4">
+<span class="font-headline text-xs uppercase tracking-widest text-primary-fixed-dim">S01 Design System Board</span>
+<span class="text-[10px] text-outline px-2 py-0.5 border border-outline-variant/30 rounded">PRIVATE_SHELL</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
+<input class="bg-surface-container-lowest border-none h-8 pl-9 pr-4 text-[10px] font-headline tracking-widest w-64 focus:ring-1 focus:ring-primary rounded-lg transition-all" placeholder="SEARCH ASSETS..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-gray-400 hover:text-white transition-opacity">notifications</button>
+<button class="material-symbols-outlined text-gray-400 hover:text-white transition-opacity">help_outline</button>
+<button class="material-symbols-outlined text-gray-400 hover:text-white transition-opacity">close</button>
+</div>
+</div>
+</header>
+<!-- Design Board Canvas -->
+<div class="p-10 max-w-7xl mx-auto w-full">
+<!-- Hero Title -->
+<section class="mb-16">
+<h1 class="font-headline text-6xl font-extrabold tracking-tighter mb-4 text-on-surface">Obsidian Sanctuary</h1>
+<p class="font-body text-xl text-outline max-w-2xl leading-relaxed">A desktop-native framework for high-focus intelligence and privacy-first productivity. Defined by intelligent silence and editorial precision.</p>
+</section>
+<div class="grid grid-cols-12 gap-8">
+<!-- Typography Column (60%) -->
+<div class="col-span-12 lg:col-span-7 space-y-12">
+<div class="p-8 bg-surface-container-low rounded-xl ghost-border">
+<h2 class="font-headline text-xs uppercase tracking-[0.2em] text-outline mb-10">01. Typography Scale</h2>
+<div class="space-y-10">
+<div>
+<p class="text-[10px] font-headline text-primary mb-2">Display Large / Manrope ExtraBold -2%</p>
+<p class="font-headline text-7xl font-extrabold tracking-tighter leading-none">The Silence of Flow</p>
+</div>
+<div>
+<p class="text-[10px] font-headline text-primary mb-2">Headline / Manrope Bold</p>
+<p class="font-headline text-4xl font-bold tracking-tight">Structured Intentionality</p>
+</div>
+<div class="grid grid-cols-2 gap-8">
+<div>
+<p class="text-[10px] font-headline text-primary mb-2">Body / Inter Regular</p>
+<p class="font-body text-base text-on-surface-variant leading-relaxed">Sentinel utilizes Inter for all functional UI data, ensuring clarity during high-cognitive tasks and privacy management.</p>
+</div>
+<div>
+<p class="text-[10px] font-headline text-primary mb-2">Label / Inter SemiBold 0.05em</p>
+<p class="font-label text-sm font-semibold tracking-wider uppercase text-on-surface">System Action Label</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Components Grid (Bento Style) -->
+<div class="grid grid-cols-2 gap-6">
+<!-- Buttons & Actions -->
+<div class="p-8 bg-surface-container-low rounded-xl ghost-border space-y-6">
+<h2 class="font-headline text-xs uppercase tracking-[0.2em] text-outline mb-2">03. Interactive States</h2>
+<div class="flex flex-col gap-4">
+<button class="primary-gradient h-12 rounded-lg px-6 flex items-center justify-center font-headline font-bold text-on-primary-fixed shadow-lg shadow-primary/10 active:scale-95 transition-all">
+                                    Primary Action
+                                </button>
+<button class="bg-surface-container-highest h-12 rounded-lg px-6 flex items-center justify-center font-headline font-semibold text-on-surface hover:bg-surface-bright transition-all">
+                                    Secondary Utility
+                                </button>
+<button class="h-10 px-6 flex items-center justify-center font-headline text-xs uppercase tracking-widest text-primary-fixed-dim hover:text-white transition-colors">
+                                    Tertiary Ghost
+                                </button>
+</div>
+<div class="pt-4 space-y-4">
+<div class="flex items-center justify-between p-4 bg-surface-container-lowest rounded-lg">
+<span class="text-sm font-medium">Telemetry Shield</span>
+<div class="w-10 h-5 bg-tertiary-fixed rounded-full relative cursor-pointer">
+<div class="absolute right-0.5 top-0.5 w-4 h-4 bg-white rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Data & Visuals -->
+<div class="p-8 bg-surface-container-low rounded-xl ghost-border space-y-6">
+<h2 class="font-headline text-xs uppercase tracking-[0.2em] text-outline mb-2">04. Visual Feedback</h2>
+<div class="p-4 bg-surface-container-lowest rounded-lg border-b-2 border-primary">
+<p class="text-[10px] text-outline font-headline uppercase mb-1">Active Focus Input</p>
+<p class="text-lg font-body text-primary-fixed-dim">Obsidian_Sanctuary</p>
+</div>
+<div class="flex gap-2 flex-wrap">
+<span class="px-3 py-1 bg-primary/10 text-primary-fixed-dim text-[10px] font-bold rounded-full uppercase tracking-tighter">Active State</span>
+<span class="px-3 py-1 bg-tertiary/10 text-tertiary text-[10px] font-bold rounded-full uppercase tracking-tighter">Encrypted</span>
+<span class="px-3 py-1 bg-error/10 text-error text-[10px] font-bold rounded-full uppercase tracking-tighter">Breached</span>
+</div>
+<div class="relative overflow-hidden rounded-xl h-24 bg-surface-container-highest">
+<img class="w-full h-full object-cover opacity-40" data-alt="abstract digital waves of flowing violet and deep charcoal silk-like textures with soft focus and ambient lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7d83sej8LUtQ06hmXmSSmn7hRKqYK5V8xSUAyGkx5OVZyRZJql4cmH8po7_dvvdJ-jOjzKF4zlHEktiO31N9q56GC3XkR5a2HkYPQm1DrIrIWPWxJHyWYK5rJrirEIboZqwX9ICYbTXe3gsS-E6QZJLR9YHv2o6X9RN94Ua5TLFhnaKM7OIFMymiv-P3a-ZjX0xUTqQKCB_8kwG0Bwcpw-Pp4ZhXX8L-XBgNnc2Ef44B2lfGEEYXOKWGeTXUcy-kNn8ml9j6g9fBb"/>
+<div class="absolute inset-0 flex items-center justify-center acrylic-blur">
+<span class="text-[10px] font-headline tracking-[0.4em] text-white/50">MICA_TEXTURE_PREVIEW</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Color & Surface Column (40%) -->
+<div class="col-span-12 lg:col-span-5 space-y-8">
+<!-- Color Swatches -->
+<div class="p-8 bg-surface-container-low rounded-xl ghost-border">
+<h2 class="font-headline text-xs uppercase tracking-[0.2em] text-outline mb-8">02. Color Tokens</h2>
+<div class="space-y-4">
+<div class="flex items-center gap-4 group">
+<div class="w-16 h-16 rounded-xl bg-surface ghost-border flex-shrink-0"></div>
+<div>
+<p class="font-headline text-sm font-bold">Surface Base</p>
+<p class="font-mono text-[10px] text-outline uppercase">#131313</p>
+</div>
+</div>
+<div class="flex items-center gap-4 group">
+<div class="w-16 h-16 rounded-xl bg-surface-container-low ghost-border flex-shrink-0"></div>
+<div>
+<p class="font-headline text-sm font-bold">Surface Low</p>
+<p class="font-mono text-[10px] text-outline uppercase">#1C1B1B</p>
+</div>
+</div>
+<div class="flex items-center gap-4 group">
+<div class="w-16 h-16 rounded-xl bg-surface-container-highest ghost-border flex-shrink-0"></div>
+<div>
+<p class="font-headline text-sm font-bold">Surface Highest</p>
+<p class="font-mono text-[10px] text-outline uppercase">#353534</p>
+</div>
+</div>
+<div class="pt-4 border-t border-outline-variant/20 grid grid-cols-3 gap-4">
+<div class="space-y-2">
+<div class="h-10 rounded-lg primary-gradient"></div>
+<p class="text-[9px] font-headline uppercase tracking-tighter text-center">Primary</p>
+</div>
+<div class="space-y-2">
+<div class="h-10 rounded-lg bg-secondary"></div>
+<p class="text-[9px] font-headline uppercase tracking-tighter text-center">Secondary</p>
+</div>
+<div class="space-y-2">
+<div class="h-10 rounded-lg bg-tertiary"></div>
+<p class="text-[9px] font-headline uppercase tracking-tighter text-center">Tertiary</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Elevation & Radius -->
+<div class="p-8 bg-surface-container-low rounded-xl ghost-border">
+<h2 class="font-headline text-xs uppercase tracking-[0.2em] text-outline mb-6">05. Elevation &amp; Grid</h2>
+<div class="space-y-6">
+<div class="flex items-center justify-between">
+<div class="w-12 h-12 bg-surface-container-highest rounded shadow-2xl flex items-center justify-center">
+<span class="text-[10px] text-outline">SM</span>
+</div>
+<div class="w-14 h-14 bg-surface-container-highest rounded-lg shadow-2xl flex items-center justify-center">
+<span class="text-[10px] text-outline">LG</span>
+</div>
+<div class="w-16 h-16 bg-surface-container-highest rounded-xl shadow-2xl flex items-center justify-center">
+<span class="text-[10px] text-outline">XL</span>
+</div>
+</div>
+<div class="p-6 bg-surface-container-lowest rounded-xl ghost-border">
+<div class="flex flex-col gap-3">
+<div class="flex justify-between items-center text-[10px] font-headline uppercase text-outline">
+<span>Focus Timer Layout</span>
+<span>60/40 Split</span>
+</div>
+<div class="flex gap-2 h-12">
+<div class="w-[60%] bg-primary/20 rounded-lg border border-primary/30"></div>
+<div class="w-[40%] bg-secondary/10 rounded-lg border border-secondary/20"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Custom Component Preview -->
+<div class="p-1 overflow-hidden rounded-xl bg-gradient-to-br from-primary-container/20 to-transparent">
+<div class="bg-surface-container-lowest p-6 rounded-[calc(0.75rem-1px)] space-y-4">
+<div class="flex justify-between items-start">
+<div>
+<p class="font-headline text-xs font-bold text-primary">Sentinel Focus</p>
+<h3 class="font-headline text-4xl font-extrabold tracking-tight mt-1">25:00</h3>
+</div>
+<span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">timer</span>
+</div>
+<div class="h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full w-2/3 primary-gradient rounded-full"></div>
+</div>
+<div class="flex justify-between text-[10px] font-headline uppercase text-outline tracking-widest">
+<span>Deep Work Loop</span>
+<span>Cycle 02/04</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Empty States & Modals Section -->
+<section class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Empty State -->
+<div class="p-12 bg-surface-container-low rounded-xl ghost-border flex flex-col items-center text-center">
+<div class="w-16 h-16 rounded-full bg-surface-container-highest flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-outline text-3xl">inbox</span>
+</div>
+<h3 class="font-headline text-xl font-bold mb-2">No active sessions</h3>
+<p class="text-on-surface-variant max-w-xs mb-8 text-sm">Initialize your first focus sprint to begin tracking telemetry and optimizing your cognitive load.</p>
+<button class="bg-surface-bright h-10 px-6 rounded-lg text-xs font-headline uppercase tracking-widest hover:scale-105 transition-transform">Initialize vNext</button>
+</div>
+<!-- Toast/Banner Layer -->
+<div class="p-8 bg-surface-container-low rounded-xl ghost-border space-y-4 relative overflow-hidden">
+<h2 class="font-headline text-xs uppercase tracking-[0.2em] text-outline mb-6">06. System Alerts</h2>
+<div class="flex items-center gap-4 p-4 bg-[#002108]/40 border border-tertiary-container/20 rounded-lg">
+<span class="material-symbols-outlined text-tertiary">check_circle</span>
+<div class="flex-1">
+<p class="text-xs font-bold text-tertiary">SYNC_COMPLETE</p>
+<p class="text-[10px] text-on-surface-variant">All local logs successfully encrypted and synced.</p>
+</div>
+<span class="material-symbols-outlined text-outline text-sm">close</span>
+</div>
+<div class="flex items-center gap-4 p-4 bg-error-container/20 border border-error/20 rounded-lg">
+<span class="material-symbols-outlined text-error">warning</span>
+<div class="flex-1">
+<p class="text-xs font-bold text-error">PRIVACY_ALERT</p>
+<p class="text-[10px] text-on-surface-variant">Unidentified process attempting to read clipboard.</p>
+</div>
+<button class="text-[10px] font-bold text-error uppercase">Purge</button>
+</div>
+<!-- Overlay Shell Preview -->
+<div class="mt-8 p-4 bg-surface-container-highest/50 rounded-lg acrylic-blur ghost-border">
+<div class="flex justify-between items-center mb-2">
+<span class="text-[10px] font-headline uppercase tracking-[0.2em] text-primary">Contextual_Overlay</span>
+<div class="flex gap-1">
+<div class="w-2 h-2 rounded-full bg-error"></div>
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+</div>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed">This layer demonstrates the mica-inspired transparency used for floating context menus and property inspectors.</p>
+</div>
+</div>
+</section>
+</div>
+<!-- System Footer Metadata -->
+<footer class="mt-auto px-10 py-6 border-t border-outline-variant/10 flex justify-between items-center">
+<div class="flex items-center gap-6">
+<span class="text-[10px] font-mono text-outline">LATENCY: 12ms</span>
+<span class="text-[10px] font-mono text-outline">ENCRYPTION: AES-256-GCM</span>
+</div>
+<div class="text-[10px] font-headline uppercase tracking-[0.5em] text-outline-variant">Designed for Intelligence</div>
+</footer>
+</main>
+</body></html>

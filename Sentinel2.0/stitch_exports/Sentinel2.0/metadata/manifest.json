@@ -1,0 +1,135 @@
+﻿{
+    "projectId":  "17458471670074414345",
+    "projectTitle":  "Sentinel2.0",
+    "exportedAt":  "2026-04-03T18:27:32.7500004+05:30",
+    "exportedScreenCount":  15,
+    "exportedScreens":  [
+                            {
+                                "id":  "1da7a0077adc4662a0f110dd8cfeec11",
+                                "title":  "S01 Sentinel - Design System Board",
+                                "screenshotUrl":  "https://lh3.googleusercontent.com/aida/ADBb0ugrRzZ1CJe-TcUfFps4mGnp18eLNl-8lr6sWSVrb4Th4wr8sL7jQma9SvHEgULiZ1J-Eg5ndOstwxQpbs4hd8izasXP5JM0fQqVbbdKunY14mOZBd7g5o91P3lzGfFzadsnOQt9cmvHwsItfkfLKs_cnV-Be1VaLSqJv0G0VsqXfEXYibgrpA4HO6F2DnVYFHHZU_YIsosWKTp4xa_61aJ_vl5eXgrEKr9VQyySD62DgfzTgJ8iXosl7Qs",
+                                "htmlCodeUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sX2RjNDQ0NTJiYjFkNDRhNTQ4NzlhYzdkZDM2ZmQyOTVkEgsSBxDlreOqnxIYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzQ1ODQ3MTY3MDA3NDQxNDM0NQ\u0026filename=\u0026opi=89354086",
+                                "imagePath":  ".\\stitch_exports\\Sentinel2.0\\images\\1da7a0077adc4662a0f110dd8cfeec11-s01-sentinel-design-system-board.png",
+                                "htmlPath":  ".\\stitch_exports\\Sentinel2.0\\code\\1da7a0077adc4662a0f110dd8cfeec11-s01-sentinel-design-system-board.html"
+                            },
+                            {
+                                "id":  "a5d5ca2cd80d418d8161cd9386075253",
+                                "title":  "S03 \u0026 S04 App Shells (Narrow/Wide)",
+                                "screenshotUrl":  "https://lh3.googleusercontent.com/aida/ADBb0uhO3WyRI4ZyfNWRYNwGa8qd11bhdQoXA0BE5pGK2Shfzl3GdflRS7Y07kaXPVTsAyMFSeSeYs1zPtTkge_9qMngKFx75LY5_tFOhRoWiG2nS6byzfxjkGcZQnhkJZlgPctKXc7_RW7KyC2pu3brfDaSUA20T8ahQDuuqwz7cTQXyZElWVgeYJL_kkP32cdsm8E_FK5PSz9-jwOoR366Mtj3hqjm0zrLRk56OjRzGNwi_zOiHnE-M-WlaERg",
+                                "htmlCodeUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzk1MDAzM2I4NDAyNTRiMDlhZWM4ODBjM2NiZGFkNGI0EgsSBxDlreOqnxIYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzQ1ODQ3MTY3MDA3NDQxNDM0NQ\u0026filename=\u0026opi=89354086",
+                                "imagePath":  ".\\stitch_exports\\Sentinel2.0\\images\\a5d5ca2cd80d418d8161cd9386075253-s03-s04-app-shells-narrow-wide.png",
+                                "htmlPath":  ".\\stitch_exports\\Sentinel2.0\\code\\a5d5ca2cd80d418d8161cd9386075253-s03-s04-app-shells-narrow-wide.html"
+                            },
+                            {
+                                "id":  "bfb442b1df1843f7b4d40e2ff7a9b53e",
+                                "title":  "S05 Sentinel - Timer Home Idle",
+                                "screenshotUrl":  "https://lh3.googleusercontent.com/aida/ADBb0uiUPzaiwhcnyTakkteZDovFjPOL4njDn_8O10mB0oYGsDLyd8QrdvxFLAKAIjFk8ha1daVjOZko3rtUbH9oOcQsXknWg0wS7bSsVgCkbUdBgeGbzvubaYHU4AUwZx5mWRdmKhbKLwEWkPVwCHL3VjdKcpKglqUN-wvSBfLCw-d3vmE__FtNi3nQIeN4-ELgEKQQcgRAwg9yu3XmuGRvVNbgXoEykUNqcz9qA_JBOGspdV1pqq982K9oUf0",
+                                "htmlCodeUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzI2ZmYxOTEyMzU0OTRhMzE5MTc5Y2JmNDRkMmQ2OTQ1EgsSBxDlreOqnxIYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzQ1ODQ3MTY3MDA3NDQxNDM0NQ\u0026filename=\u0026opi=89354086",
+                                "imagePath":  ".\\stitch_exports\\Sentinel2.0\\images\\bfb442b1df1843f7b4d40e2ff7a9b53e-s05-sentinel-timer-home-idle.png",
+                                "htmlPath":  ".\\stitch_exports\\Sentinel2.0\\code\\bfb442b1df1843f7b4d40e2ff7a9b53e-s05-sentinel-timer-home-idle.html"
+                            },
+                            {
+                                "id":  "587089162ba84ae8bcc8969e50d5cec1",
+                                "title":  "S02 Sentinel - Component Library",
+                                "screenshotUrl":  "https://lh3.googleusercontent.com/aida/ADBb0ujlavtefNvPXJNhu5iDvrqV4tf-OD7IY7Jml5F_iRY8L2T9K6spXyA39w4GXa5COOp-I73sWdJ1Mn30Zwg-809QYMnM_E-lIEIiDGjcMFwvt4SZ_uCu-7ihL8EdraZ0KI6_Qoy2Vrf4NBgJXIP1AglvBMW_ZvPqJDaQ-6QCcZ-K-OXvbOsNou_WTYrXha8cdEKfY_WzErsfSNgG6w-7fgKtaYeJf0IHB_DOOKTPsG_Nb_xY8jaG5Z96dOGt",
+                                "htmlCodeUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzg3YTM4OWUwY2IyZjRkMzZhZmI1MGJhZDkyYTNkZGE4EgsSBxDlreOqnxIYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzQ1ODQ3MTY3MDA3NDQxNDM0NQ\u0026filename=\u0026opi=89354086",
+                                "imagePath":  ".\\stitch_exports\\Sentinel2.0\\images\\587089162ba84ae8bcc8969e50d5cec1-s02-sentinel-component-library.png",
+                                "htmlPath":  ".\\stitch_exports\\Sentinel2.0\\code\\587089162ba84ae8bcc8969e50d5cec1-s02-sentinel-component-library.html"
+                            },
+                            {
+                                "id":  "117bbe31b4544f5e9a1baa9f3a628be9",
+                                "title":  "S06-S08 Timer States (Running/Paused/Snoozed)",
+                                "screenshotUrl":  "https://lh3.googleusercontent.com/aida/ADBb0uiq0Rj3g3Asd7p6zYAmqWndd6HPOCMwSDP5GHol1OtYkVglF9QYkYTVqmRT8cTrSuNS_bnQN0LtVx93K9kJt2IpZsezGEwlLg83sHlArxMf2gIn2e03XLsoVWn1g4ktKw2oAkx_q_B9JGVl50Ju1gP1U2C46cZXG1hnRG1uZak65istcTrWTYQOWrWJhYS5QEu0LRdeozoaaLxlxgbHPO67lF5pxjFvtelXbrBUNaOAqGz41W0cmt-k9wA",
+                                "htmlCodeUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzMzZjc1N2RjNWFiMTQwNzJiZjk3MTA1M2EwMDFlNTVkEgsSBxDlreOqnxIYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzQ1ODQ3MTY3MDA3NDQxNDM0NQ\u0026filename=\u0026opi=89354086",
+                                "imagePath":  ".\\stitch_exports\\Sentinel2.0\\images\\117bbe31b4544f5e9a1baa9f3a628be9-s06-s08-timer-states-running-paused-snoozed.png",
+                                "htmlPath":  ".\\stitch_exports\\Sentinel2.0\\code\\117bbe31b4544f5e9a1baa9f3a628be9-s06-s08-timer-states-running-paused-snoozed.html"
+                            },
+                            {
+                                "id":  "f0e33145be8f45908961c7c465c7bd30",
+                                "title":  "S09-S10 Preset Picker \u0026 Completion",
+                                "screenshotUrl":  "https://lh3.googleusercontent.com/aida/ADBb0ug3zjfZ7P5kcERNmQaARZRfJl1aANZv1hWG8yGY_PGgDIdbSadwO1pZG929drLtfZ8RoN3o9QCiYPv3x5T5RnYiO9w1z5Nlx6qM5S9rrCj8FpX5aop4_9U7nWYrxpY4WR4FmeFutNEbpfrSFKYkB1tub4Go7QlMUrw12bI_vaJXxOMAk2CgRDX5eV4zMDBqg92sMZn3My04vyt8QLGfDDx40jWxcBQ4kTuP95qN00rNo0Gh_uXjmXsih--E",
+                                "htmlCodeUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzNmZmUwODBhMDgxMDQ1YzhiZjFkYzFjZjJkMzExODRjEgsSBxDlreOqnxIYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzQ1ODQ3MTY3MDA3NDQxNDM0NQ\u0026filename=\u0026opi=89354086",
+                                "imagePath":  ".\\stitch_exports\\Sentinel2.0\\images\\f0e33145be8f45908961c7c465c7bd30-s09-s10-preset-picker-completion.png",
+                                "htmlPath":  ".\\stitch_exports\\Sentinel2.0\\code\\f0e33145be8f45908961c7c465c7bd30-s09-s10-preset-picker-completion.html"
+                            },
+                            {
+                                "id":  "b9223fcffb8e49108b5e1925976db14d",
+                                "title":  "S11-S13 Intervention System",
+                                "screenshotUrl":  "https://lh3.googleusercontent.com/aida/ADBb0uhhFYALB2JIGgPnY6RsPS9iEIUaKyYx-x61u3erpTV0UtUmK3I8vLj1dM28OVizpWzaFypKmr77u4Cwlp8WPvsRok8vNyXmh0RuDEUqeSW33xyS6vp5Iu5OR6FYigjU464c0_N55xAbPHS4VFfibEOuGTpmIJMN72ZKwAN6YVkksIYsR7eujZjeJ2OuWKBCbLFN0t9GlB4JudJuxazv4MkW4ZTlsuar13Bt1vRz6GmPUM3qycqx_srZiGc",
+                                "htmlCodeUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sX2I4ZDZiNDM4NTBmYzRmNDQ5ODM0YmI4NTQ1YzkwYWUyEgsSBxDlreOqnxIYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzQ1ODQ3MTY3MDA3NDQxNDM0NQ\u0026filename=\u0026opi=89354086",
+                                "imagePath":  ".\\stitch_exports\\Sentinel2.0\\images\\b9223fcffb8e49108b5e1925976db14d-s11-s13-intervention-system.png",
+                                "htmlPath":  ".\\stitch_exports\\Sentinel2.0\\code\\b9223fcffb8e49108b5e1925976db14d-s11-s13-intervention-system.html"
+                            },
+                            {
+                                "id":  "7e73d6f3a337465394ebd892b0cdfb45",
+                                "title":  "S14-S18 Planner Module",
+                                "screenshotUrl":  "https://lh3.googleusercontent.com/aida/ADBb0ujFqMth8XMfLj0tqnSMVIexPoH8hOeoRgnAXLNaPVNaY368XLsO2lQp7_-pHYpa3h1jLYmvAlKxasoPhmzHx8NRSQeifG7pTd5nOWo5x-4SenUGqz53vicZftkrlEnywURnGIk61zK1DRRgDqlYuuISVYd294WRDsO2TK_4t9mtmEGZn8vdzP7SoezVfQ6_-kGjlBvrWz3DiR9Bs-1Gl3fy3LMfcxnI3sPQ8anfP6tVcmo3AkKBeD-nk0Y",
+                                "htmlCodeUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzEzNmFmOGJmNDgzZTRiMWJiNmRiMmIxOTJjYTllNzk5EgsSBxDlreOqnxIYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzQ1ODQ3MTY3MDA3NDQxNDM0NQ\u0026filename=\u0026opi=89354086",
+                                "imagePath":  ".\\stitch_exports\\Sentinel2.0\\images\\7e73d6f3a337465394ebd892b0cdfb45-s14-s18-planner-module.png",
+                                "htmlPath":  ".\\stitch_exports\\Sentinel2.0\\code\\7e73d6f3a337465394ebd892b0cdfb45-s14-s18-planner-module.html"
+                            },
+                            {
+                                "id":  "68ce3826c15145d18acc16459fdf1d39",
+                                "title":  "S19-S21 Reports Module",
+                                "screenshotUrl":  "https://lh3.googleusercontent.com/aida/ADBb0uiiCx_QdLqWlv5R1cC5muVpRFnW30TlM7r-I3epz_n2fYEUe7_d47qqZ7gyQ3bwcKo7WrOCPupko8OyauFrpZs1nQiuM-qdUtUJn8DO3hULmXWIR9TZZejgzYeCTb95PK4HkOdU19g70dG0v9HroIEacSao9GO9VJIvJA86pQwN8PBCJVnpOQu1sLUZLNP-vTmR7ICWmToboFayZTm5x9p6_9wusilqohvg0VWms4vlX0CxqcqD6_mLlkK9",
+                                "htmlCodeUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sX2NkNzcyYjYyZmMwZDQ3YTdiYjU3OWQ3ODM2NGRhNTJiEgsSBxDlreOqnxIYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzQ1ODQ3MTY3MDA3NDQxNDM0NQ\u0026filename=\u0026opi=89354086",
+                                "imagePath":  ".\\stitch_exports\\Sentinel2.0\\images\\68ce3826c15145d18acc16459fdf1d39-s19-s21-reports-module.png",
+                                "htmlPath":  ".\\stitch_exports\\Sentinel2.0\\code\\68ce3826c15145d18acc16459fdf1d39-s19-s21-reports-module.html"
+                            },
+                            {
+                                "id":  "95db421e5807432ba6c66cb11f3562ea",
+                                "title":  "S22-S23 Session History",
+                                "screenshotUrl":  "https://lh3.googleusercontent.com/aida/ADBb0ugsOcrDMbfU4B-Q-0Xr8RylKHDaFw0SWk_OtKNOZFnnUksYxZeOfOW2pw9rKxV_paYmCg2WvZ7ENSL4ULrkIZgOV2LPQVEpiBXLsn7owQoknjgjVFc0aPI7TlnMKN6r81-ur7AE3q91OyFs0D19mjfUQ7SOF-Ay1cuz0WLDk5kzxTulJodEIom8sDPURs64n8e2CJ2nn8Db71VsxiGsPUAVew13C1ME6trtxU8IusWShr0ffyLkDR2L_0ga",
+                                "htmlCodeUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzE1ZWNiMTAyMmM4ODQ3MTU4NTM0NTI2YjAwMjcxNDBmEgsSBxDlreOqnxIYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzQ1ODQ3MTY3MDA3NDQxNDM0NQ\u0026filename=\u0026opi=89354086",
+                                "imagePath":  ".\\stitch_exports\\Sentinel2.0\\images\\95db421e5807432ba6c66cb11f3562ea-s22-s23-session-history.png",
+                                "htmlPath":  ".\\stitch_exports\\Sentinel2.0\\code\\95db421e5807432ba6c66cb11f3562ea-s22-s23-session-history.html"
+                            },
+                            {
+                                "id":  "349bb96345594de0ac03cbea122d5cdb",
+                                "title":  "S24-S26 Taxonomy Manager",
+                                "screenshotUrl":  "https://lh3.googleusercontent.com/aida/ADBb0uhsjYTQJ8xa777nhOe1TZbk_J26HXElB9wzFb6Fm7qtZhCLbhdcAYR3ZM1R6wD4Kwwt7xa9D6hvqGGGPoaODVz5E9REVtt9QlIplQgHwIxsTXmIFxmVk_tyFXbEfyxiR-TyoF40v5bv4xXhDraJCwB_f1bSJXWHqxFqwPtm6Q63nNQA9xDeBKc_aN8My16JJBRtOFhnztrNZp6_RKKHi7TyrE6yqDXTodP8L0VfSHg3zIHfl-4h2DuT8dg1",
+                                "htmlCodeUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzU1MjAxMzVmZjYyMjQ2YjliZGMwMjUzMGFlNTQyYzY5EgsSBxDlreOqnxIYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzQ1ODQ3MTY3MDA3NDQxNDM0NQ\u0026filename=\u0026opi=89354086",
+                                "imagePath":  ".\\stitch_exports\\Sentinel2.0\\images\\349bb96345594de0ac03cbea122d5cdb-s24-s26-taxonomy-manager.png",
+                                "htmlPath":  ".\\stitch_exports\\Sentinel2.0\\code\\349bb96345594de0ac03cbea122d5cdb-s24-s26-taxonomy-manager.html"
+                            },
+                            {
+                                "id":  "64d69b70828c480eaf817991c81d6fbc",
+                                "title":  "S27-S28 Settings Module",
+                                "screenshotUrl":  "https://lh3.googleusercontent.com/aida/ADBb0ujRQ7sj2pTyykaY-xn0tE18-yZpD2_GxnAetr7K5TUqawCQhkEeFo8Rb3ecmw-gCe0wQ87Qimfq7nPaLMQA7hz7SUo4NDbW5Zw03BknVUaIzKnmWqFf2YaaN_1oAcok_3hLLbkdJdI58AuZO3QUQ6bpe-uwxBKPtKGApQ-kPWw5owGfaao05AcW89S_p4qjU6zAdZdiGUaACx7yyVee29K8kX67Lk7mE80UezgvIKYVw8v0YjtjR6jz6sWV",
+                                "htmlCodeUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sX2JiNzVlYzJiNmNjNDQyM2NhZTEyNDhkMzFlZmNmNTQwEgsSBxDlreOqnxIYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzQ1ODQ3MTY3MDA3NDQxNDM0NQ\u0026filename=\u0026opi=89354086",
+                                "imagePath":  ".\\stitch_exports\\Sentinel2.0\\images\\64d69b70828c480eaf817991c81d6fbc-s27-s28-settings-module.png",
+                                "htmlPath":  ".\\stitch_exports\\Sentinel2.0\\code\\64d69b70828c480eaf817991c81d6fbc-s27-s28-settings-module.html"
+                            },
+                            {
+                                "id":  "b0851b95db3c46869cfcb5e9baa8f936",
+                                "title":  "S29-S30 Account Module",
+                                "screenshotUrl":  "https://lh3.googleusercontent.com/aida/ADBb0uiHhC6vlNA-e9MS2FHb32wuffkpYMlTKZa6FBLjcVwjHwotr8BPiUr4Vxbwebcvb1KPykyqKk4BrAsvwrLbB-IXMmGWJjYWO10h5-mzsT_3cBuQHBsMcg-RLvDrsBHDmRilbzGZSqVkfnEpweTjucHGlh_5OV5VfjcRoLroUGqnBVgufYFigksQITlxtzzvNRB5E9aYErTrzj34fE7_wAVQHzbEM5GVnn-iBm5r64RE_Cn7OdqbBVZPc4RC",
+                                "htmlCodeUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzEwNjUwYzAwZGFhMTQ4ZDViZDRkMDc5YTA4ZTdiYjlmEgsSBxDlreOqnxIYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzQ1ODQ3MTY3MDA3NDQxNDM0NQ\u0026filename=\u0026opi=89354086",
+                                "imagePath":  ".\\stitch_exports\\Sentinel2.0\\images\\b0851b95db3c46869cfcb5e9baa8f936-s29-s30-account-module.png",
+                                "htmlPath":  ".\\stitch_exports\\Sentinel2.0\\code\\b0851b95db3c46869cfcb5e9baa8f936-s29-s30-account-module.html"
+                            },
+                            {
+                                "id":  "6b2fb81a38f14764ae431ac4d1a748c1",
+                                "title":  "S31-S34 Onboarding Flow",
+                                "screenshotUrl":  "https://lh3.googleusercontent.com/aida/ADBb0ugqQcK795s2WYxdzozhkmHjVcCbNr5Chz-r4liCtEkbymMKilC0VbyNJ-kQu3eiDeuO88WvqaUbC2gS889xsA9RBu9BtNcuT8U76qtAf4g032URRftzVz2q5LDEvR_e6H9wVNkANZxYb9y1wpb-fyWcmHDzBCyAhQ6uJ9p1SvBctK9JecLbSAO_3Accfetn8XkMut69E1R4ggIBEB_7HaCx6nbKHl2odtJ9BKbjk4boY9a_xLVF_78uxo-L",
+                                "htmlCodeUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzkyOTRlYTVlNTIzNjRlNGZiZjYzM2MxNzRjZmFjNDZkEgsSBxDlreOqnxIYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzQ1ODQ3MTY3MDA3NDQxNDM0NQ\u0026filename=\u0026opi=89354086",
+                                "imagePath":  ".\\stitch_exports\\Sentinel2.0\\images\\6b2fb81a38f14764ae431ac4d1a748c1-s31-s34-onboarding-flow.png",
+                                "htmlPath":  ".\\stitch_exports\\Sentinel2.0\\code\\6b2fb81a38f14764ae431ac4d1a748c1-s31-s34-onboarding-flow.html"
+                            },
+                            {
+                                "id":  "3949619491f6462bb6129abecd31d0b1",
+                                "title":  "S35-S39 Alerts \u0026 Corner Overlays",
+                                "screenshotUrl":  "https://lh3.googleusercontent.com/aida/ADBb0uhN3S9yhSpy9G2zkjyQHiGNIvbvPqreNl8PFXk5DthPNO5CM6vYEu8pnQwQX-bJL1QRUHN5nKfYJlpobPlDpe0oyaTnYxmgtrYAKPbgZzZ0YCZjwt7H0thZy1grHquby9O1-IIw61BRkc0JidSx5gIwkBvolFAecNONYuXVprYkWymxq6zz3JdJo0foQO-BhvB-96p2kcyZhts_ymEuIaMtcSbqrv2QeoOrsRCjl4qMkH4vDXy6x9K5B7u7",
+                                "htmlCodeUrl":  "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzQwNmU1MTIyZjQ2NjQwZDBhMjk4YmE5MTQ3YjVhMjZiEgsSBxDlreOqnxIYAZIBJAoKcHJvamVjdF9pZBIWQhQxNzQ1ODQ3MTY3MDA3NDQxNDM0NQ\u0026filename=\u0026opi=89354086",
+                                "imagePath":  ".\\stitch_exports\\Sentinel2.0\\images\\3949619491f6462bb6129abecd31d0b1-s35-s39-alerts-corner-overlays.png",
+                                "htmlPath":  ".\\stitch_exports\\Sentinel2.0\\code\\3949619491f6462bb6129abecd31d0b1-s35-s39-alerts-corner-overlays.html"
+                            }
+                        ],
+    "designSystem":  {
+                         "requestedId":  "asset-stub-assets-a0fd946a77324b21a11a53067c13ac1c-1775220461536",
+                         "stitchInstanceId":  "assets-a0fd946a77324b21a11a53067c13ac1c-1775220461536",
+                         "sourceAsset":  "assets/a0fd946a77324b21a11a53067c13ac1c",
+                         "status":  "not-downloadable-as-screen",
+                         "reason":  "This item is a design system asset instance, not a screen. get_screen returns not found for this id."
+                     }
+}
